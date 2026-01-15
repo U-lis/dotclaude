@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.3] - 2026-01-15
+
+### Added
+
+- `/code all` option for automatic execution of all phases without user intervention
+- Phase detection algorithm (GLOBAL.md parsing with file system fallback)
+- Topological sort for dependency-based execution order
+- Parallel phase support with git worktree isolation
+- Comprehensive execution report format
+
+### Changed
+
+- Updated `/code` skill description to include `all` argument
+
 ## [0.0.2] - 2026-01-15
 
 ### Changed

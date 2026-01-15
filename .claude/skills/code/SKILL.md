@@ -1,6 +1,6 @@
 ---
 name: code
-description: Execute coding work for a specific phase. Use when implementing a phase like /code 1, /code 2, /code 3A, or /code 3.5 for merge phases.
+description: Execute coding work for a specific phase. Use when implementing a phase like /code 1, /code 2, /code 3A, /code 3.5 for merge phases, or /code all for fully automatic execution of all phases.
 user-invocable: true
 ---
 
@@ -23,6 +23,7 @@ User invokes `/code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
 | Argument | Description | Example |
 |----------|-------------|---------|
 | phase | Phase identifier | `1`, `2`, `3A`, `3.5` |
+| all | Execute all phases automatically | `all` |
 
 ## Workflow
 
@@ -142,3 +143,159 @@ After phase completion:
 1. If more phases: `/code [next-phase]`
 2. If parallel phases done: `/code {k}.5` for merge
 3. If all phases done: `/finalize`
+
+---
+
+## `/code all` - Automatic Full Execution
+
+Execute all phases without user intervention.
+
+### Prerequisites
+
+- Planning documents exist in `claude_works/{subject}/`
+- GLOBAL.md contains Phase Overview table (recommended)
+- All PHASE_*_PLAN_*.md files present
+
+### Workflow
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│ 1. Detect and Parse Phases                                  │
+│    - Read GLOBAL.md Phase Overview table                    │
+│    - Fallback: scan PHASE_*_PLAN_*.md files                 │
+│    - Build dependency graph                                 │
+├─────────────────────────────────────────────────────────────┤
+│ 2. Topological Sort                                         │
+│    - Group phases into execution layers                     │
+│    - Layer 0: no dependencies (PHASE_1)                     │
+│    - Layer N: depends on Layer N-1                          │
+├─────────────────────────────────────────────────────────────┤
+│ 3. Execute Each Layer                                       │
+│    - Sequential phase: execute normally                     │
+│    - Parallel phases (3A, 3B, 3C):                          │
+│      ├── Setup worktrees for each                           │
+│      ├── Execute each in its worktree                       │
+│      └── (Sequential execution, worktree isolation)         │
+├─────────────────────────────────────────────────────────────┤
+│ 4. Handle Merge Phases (PHASE_{k}.5)                        │
+│    - Merge all parallel branches                            │
+│    - Resolve conflicts                                      │
+│    - Run full test suite                                    │
+│    - Clean up worktrees                                     │
+├─────────────────────────────────────────────────────────────┤
+│ 5. Continue Until All Phases Complete                       │
+├─────────────────────────────────────────────────────────────┤
+│ 6. Error Handling                                           │
+│    - On phase failure after 3 retries: mark SKIPPED         │
+│    - Continue to next phase (do NOT halt)                   │
+│    - Record all issues for final report                     │
+├─────────────────────────────────────────────────────────────┤
+│ 7. Auto-Commit                                              │
+│    - Commit after each successful phase                     │
+│    - Message: feat({subject}): complete PHASE_{k}           │
+├─────────────────────────────────────────────────────────────┤
+│ 8. Generate Comprehensive Report                            │
+│    - Aggregate all phase results                            │
+│    - List successes, failures, skipped                      │
+│    - Recommend next steps                                   │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Phase Detection Algorithm
+
+**Primary: Parse GLOBAL.md**
+
+1. Read `claude_works/{subject}/GLOBAL.md`
+2. Locate "Phase Overview" table (`| Phase |`)
+3. Extract each row: phase_id, description, status, dependencies
+4. Parse dependencies: `"Phase 1, 2"` → `["1", "2"]`
+5. Build dependency graph (DAG)
+
+**Fallback: File System Scan**
+
+1. Glob for `claude_works/{subject}/PHASE_*_PLAN_*.md`
+2. Extract phase_id from filename: `PHASE_(\d+[A-Z]?)_PLAN_`
+3. Infer dependencies:
+   - Sequential: `PHASE_X` depends on `PHASE_{X-1}`
+   - Parallel: `PHASE_{k}A/B/C` depends on `PHASE_{k-1}`
+   - Merge: `PHASE_{k}.5` depends on all `PHASE_{k}[A-Z]`
+
+### Execution Order Example
+
+Given phases: 1, 2, 3A, 3B, 3C, 3.5, 4
+
+```
+Layer 0: Execute PHASE_1
+Layer 1: Execute PHASE_2
+Layer 2: Execute PHASE_3A, 3B, 3C (in worktrees, sequentially)
+Layer 3: Execute PHASE_3.5 (merge)
+Layer 4: Execute PHASE_4
+```
+
+### Parallel Phase Execution
+
+```bash
+# Setup worktrees
+git worktree add ../subject-3A -b feature/subject-3A
+git worktree add ../subject-3B -b feature/subject-3B
+git worktree add ../subject-3C -b feature/subject-3C
+
+# Execute each phase in its worktree (sequentially)
+cd ../subject-3A && [execute PHASE_3A]
+cd ../subject-3B && [execute PHASE_3B]
+cd ../subject-3C && [execute PHASE_3C]
+
+# Return to main, merge, cleanup
+cd ../project
+git merge feature/subject-3A --no-edit
+git merge feature/subject-3B --no-edit
+git merge feature/subject-3C --no-edit
+git worktree remove ../subject-3A
+git worktree remove ../subject-3B
+git worktree remove ../subject-3C
+```
+
+### CLAUDE.md Rule Exceptions
+
+For `/code all` mode, these CLAUDE.md rules are overridden:
+
+- **"Do NOT git commit without explicit user instruction"**
+  → `/code all` invocation IS the explicit instruction for auto-commit
+
+- **"Do NOT proceed to next phase without user instruction"**
+  → `/code all` invocation IS the explicit instruction to proceed automatically
+
+### Output
+
+```markdown
+# /code all - Execution Complete
+
+## Summary
+- Total Phases: 6
+- Successful: 5
+- Skipped: 1 (PHASE_3A)
+- Commits: 5
+
+## Phase Results
+
+| Phase | Status | Commit | Notes |
+|-------|--------|--------|-------|
+| 1 | SUCCESS | abc123 | - |
+| 2 | SUCCESS | def456 | - |
+| 3A | SKIPPED | - | Type errors after 3 retries |
+| 3B | SUCCESS | ghi789 | - |
+| 3C | SUCCESS | jkl012 | - |
+| 3.5 | SUCCESS | mno345 | Merged 3B, 3C (3A excluded) |
+| 4 | SUCCESS | pqr678 | - |
+
+## Issues Requiring Manual Review
+
+- PHASE_3A: Type error in `src/moduleA/handler.py:45`
+  - Error: `Incompatible return type...`
+
+## Next Steps
+
+1. Manually resolve PHASE_3A issues
+2. Run `/code 3A` to retry
+3. Run `/finalize` to complete documentation
+```
