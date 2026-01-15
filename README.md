@@ -31,11 +31,11 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands
-│   │   ├── init-feature.md      # /init-feature
-│   │   ├── design.md            # /design
-│   │   ├── validate-spec.md     # /validate-spec
-│   │   ├── code.md              # /code [phase]
-│   │   └── finalize.md          # /finalize
+│   │   ├── init-feature/SKILL.md   # /init-feature
+│   │   ├── design/SKILL.md         # /design
+│   │   ├── validate-spec/SKILL.md  # /validate-spec
+│   │   ├── code/SKILL.md           # /code [phase]
+│   │   └── finalize/SKILL.md       # /finalize
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
