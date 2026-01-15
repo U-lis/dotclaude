@@ -1,3 +1,9 @@
+---
+name: validate-spec
+description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /validate-spec.
+user-invocable: true
+---
+
 # /validate-spec
 
 Validate consistency across all planning documents using spec-validator agent.

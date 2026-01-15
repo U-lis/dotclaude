@@ -1,3 +1,9 @@
+---
+name: code
+description: Execute coding work for a specific phase. Use when implementing a phase like /code 1, /code 2, /code 3A, or /code 3.5 for merge phases.
+user-invocable: true
+---
+
 # /code [phase]
 
 Execute coding work for a specific phase.

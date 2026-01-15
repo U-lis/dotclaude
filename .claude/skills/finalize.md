@@ -1,3 +1,9 @@
+---
+name: finalize
+description: Complete project documentation and final cleanup. Use after all phases are complete or when user invokes /finalize.
+user-invocable: true
+---
+
 # /finalize
 
 Complete project documentation and final cleanup.

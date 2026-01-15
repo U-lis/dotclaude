@@ -1,10 +1,16 @@
-# /init-project
+---
+name: init-feature
+description: Initialize a new feature by gathering requirements and creating SPEC document. Use when starting a new feature, project initialization, or when user invokes /init-feature.
+user-invocable: true
+---
 
-Initialize a new project by gathering requirements and creating initial SPEC document.
+# /init-feature
+
+Initialize a new feature by gathering requirements and creating initial SPEC document.
 
 ## Trigger
 
-User invokes `/init-project` or requests to start a new feature/project.
+User invokes `/init-feature` or requests to start a new feature/project.
 
 ## Workflow
 
@@ -14,15 +20,21 @@ User invokes `/init-project` or requests to start a new feature/project.
 │    - Ask about project purpose                          │
 │    - Identify core features                             │
 │    - Clarify constraints and non-functional requirements│
+│    - Determine {keyword} for branch naming              │
 ├─────────────────────────────────────────────────────────┤
-│ 2. Create Project Structure                             │
+│ 2. Create Feature Branch                                │
+│    - Confirm {keyword} with user                        │
+│    - git checkout -b feature/{keyword}                  │
+│    - This becomes base branch for all worktrees         │
+├─────────────────────────────────────────────────────────┤
+│ 3. Create Project Structure                             │
 │    - mkdir -p claude_works/{subject}                    │
 ├─────────────────────────────────────────────────────────┤
-│ 3. Draft SPEC.md                                        │
+│ 4. Draft SPEC.md                                        │
 │    - Use TechnicalWriter agent                          │
 │    - Write initial specification                        │
 ├─────────────────────────────────────────────────────────┤
-│ 4. Review with User                                     │
+│ 5. Review with User                                     │
 │    - Present SPEC draft                                 │
 │    - Iterate based on feedback                          │
 └─────────────────────────────────────────────────────────┘
@@ -47,14 +59,18 @@ User invokes `/init-project` or requests to start a new feature/project.
 - What is explicitly out of scope?
 - What are the boundaries of this work?
 
+### Branch Naming
+- Confirm the {keyword} for `feature/{keyword}` branch name
+
 ## Output
 
-Create `claude_works/{subject}/SPEC.md` with:
-- Overview
-- Functional Requirements (as checklist)
-- Non-Functional Requirements
-- Constraints
-- Out of Scope
+1. Feature branch `feature/{keyword}` created and checked out
+2. Create `claude_works/{subject}/SPEC.md` with:
+   - Overview
+   - Functional Requirements (as checklist)
+   - Non-Functional Requirements
+   - Constraints
+   - Out of Scope
 
 ## Next Steps
 

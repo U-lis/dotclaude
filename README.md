@@ -31,7 +31,7 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands
-│   │   ├── init-project.md      # /init-project
+│   │   ├── init-feature.md      # /init-feature
 │   │   ├── design.md            # /design
 │   │   ├── validate-spec.md     # /validate-spec
 │   │   ├── code.md              # /code [phase]
@@ -63,7 +63,7 @@ User → Orchestrator → Designer → TechnicalWriter → spec-validator
 
 | Command | Description |
 |---------|-------------|
-| `/init-project` | Gather requirements and create SPEC.md |
+| `/init-feature` | Gather requirements and create SPEC.md |
 | `/design` | Transform SPEC into implementation plan |
 | `/validate-spec` | Validate document consistency |
 | `/code [phase]` | Execute coding for specified phase |
@@ -135,7 +135,7 @@ rm -rf /tmp/dotclaude
 
 ```bash
 # In Claude Code session
-/init-project
+/init-feature
 # Answer questions about your feature
 # SPEC.md is created
 
