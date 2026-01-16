@@ -151,8 +151,44 @@ Max retry attempts (3) exceeded
 Manual review required before proceeding.
 ```
 
-## Checklist Update Authority
+## Checklist Update Authority (MANDATORY)
 
-Upon successful validation, this agent is authorized to:
-- Check off completed items in PHASE_{k}_PLAN_{keyword}.md
-- Update phase status in GLOBAL.md (if applicable)
+**These updates are REQUIRED, not optional.**
+
+Upon successful validation:
+
+### 1. Update PHASE_{k}_PLAN_{keyword}.md
+
+**MUST** check off each completed item:
+
+```markdown
+## Completion Checklist
+
+- [x] Item 1: Verified in {file}:{line}
+- [x] Item 2: Verified in {file}:{line}
+- [ ] Item 3: NOT implemented (if applicable)
+```
+
+### 2. Update GLOBAL.md Phase Overview
+
+**MUST** update phase status in table:
+
+```markdown
+| Phase | Description | Status | Dependencies |
+|-------|-------------|--------|--------------|
+| 1 | ... | Complete | - |
+```
+
+Status values:
+- `Not Started` → `In Progress` → `Complete`
+- `Skipped` (if validation failed after 3 attempts)
+
+### 3. Verification Before Reporting
+
+Before reporting validation complete:
+
+- [ ] All implemented items checked in PHASE_*_PLAN.md
+- [ ] GLOBAL.md phase status updated
+- [ ] Files actually modified (not just reported)
+
+**DO NOT report completion without updating documents.**

@@ -68,8 +68,8 @@ Before reporting validation complete:
 
 ## Completion Checklist
 
-- [ ] "## Checklist Update Authority (MANDATORY)" header
-- [ ] "MUST check off" instruction for PHASE_*_PLAN.md
-- [ ] "MUST update phase status" instruction for GLOBAL.md
-- [ ] Status values defined (Not Started, In Progress, Complete, Skipped)
-- [ ] "DO NOT report completion" warning
+- [x] "## Checklist Update Authority (MANDATORY)" header
+- [x] "MUST check off" instruction for PHASE_*_PLAN.md
+- [x] "MUST update phase status" instruction for GLOBAL.md
+- [x] Status values defined (Not Started, In Progress, Complete, Skipped)
+- [x] "DO NOT report completion" warning
