@@ -15,6 +15,8 @@ Initialize a new feature by gathering requirements through step-by-step question
 
 **IMPORTANT**: Read `_shared/init-workflow.md` first. This skill follows the common init workflow.
 
+**CRITICAL**: Do NOT use plan mode (EnterPlanMode). Proceed directly through all workflow steps.
+
 ## Trigger
 
 User invokes `/init-feature` or is routed from `/start-new`.

@@ -15,6 +15,8 @@ Initialize refactoring work by gathering refactor details through step-by-step q
 
 **IMPORTANT**: Read `_shared/init-workflow.md` first. This skill follows the common init workflow.
 
+**CRITICAL**: Do NOT use plan mode (EnterPlanMode). Proceed directly through all workflow steps.
+
 ## Trigger
 
 User invokes `/init-refactor` or is routed from `/start-new` (리팩토링 selected).

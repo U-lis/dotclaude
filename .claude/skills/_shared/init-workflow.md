@@ -2,6 +2,20 @@
 
 This file defines the shared workflow for all init-xxx skills (init-feature, init-bugfix, init-refactor).
 
+## Plan Mode Policy
+
+**CRITICAL**: init-xxx skills MUST NOT use plan mode (EnterPlanMode).
+
+Reasons:
+- Plan mode is for implementation planning, not requirements gathering
+- ExitPlanMode can cause workflow interruption
+- User approval happens at SPEC.md review stage, not plan approval
+
+Instead:
+- Use AskUserQuestion for sequential requirements gathering
+- Proceed directly through workflow steps
+- User reviews and approves at Step 7 (SPEC.md review)
+
 ## Generic Workflow Diagram
 
 ```
