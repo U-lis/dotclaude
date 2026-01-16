@@ -14,6 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `check-init-complete.sh` Stop hook for workflow enforcement
 - SPEC.md SOT awareness rules to TechnicalWriter agent
 - Mandatory commit steps to design/init-xxx workflows
+- Plan Mode Policy to init-xxx skills (must NOT use EnterPlanMode)
+
+### Fixed
+
+- Stop hook infinite loop on main branch after /merge-main
 
 ### Changed
 
