@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.8] - 2026-01-16
+## [0.0.6] - 2026-01-16
 
 ### Added
 
@@ -13,30 +13,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MUST rules for code-validator checklist updates
 - `check-validation-complete.sh` Stop hook for validation enforcement
 - Pre-Commit Checklist to /code skill
-
-### Changed
-
-- code-validator "Checklist Update Authority" section now MANDATORY
-
-## [0.0.7] - 2026-01-16
-
-### Added
-
 - Non-Stop Execution feature for init-workflow
 - Execution Rules for automatic skill chaining
 - Scope-to-Skill Chain Mapping table
 - CLAUDE.md Rule Overrides for chained execution
 - Progress Indicator format for multi-skill execution
 - Final Summary Report format after workflow completion
-
-## [0.0.6] - 2026-01-16
-
-### Added
-
 - Three-level dependency analysis (file/module/test) to Designer agent
 - Explicit parallelization criteria table for phase identification
 - Conflict prediction section for parallel phase merge planning
 - Enhanced handoff requirements for parallel phases
+
+### Changed
+
+- code-validator "Checklist Update Authority" section now MANDATORY
 
 ## [0.0.5] - 2026-01-16
 
