@@ -47,14 +47,14 @@ These steps CANNOT be skipped under any circumstances:
 - Step 5: Create SPEC.md file in `claude_works/{subject}/`
 - Step 6: Commit SPEC.md with git add/commit
 - Step 7: Present SPEC.md to user and get approval
-- Step 8: Ask "다음으로 진행할 작업은?" question
+- Step 8: Ask "어디까지 진행할까요?" question
 
 ### Prohibited Actions
 NEVER do any of the following:
 - Skip directly to implementation after gathering requirements
 - Bypass SPEC.md file creation
 - Skip the Next Step Selection question
-- Start coding without user explicitly selecting "기능 개발"
+- Start coding without user explicitly selecting a scope that includes "Code"
 - Assume permission bypass means skipping workflow steps
 
 ### Correct Execution Order
@@ -74,48 +74,25 @@ Even with permission bypass, follow this exact order:
 After SPEC is approved, ask:
 
 ```
-Question: "다음으로 진행할 작업은?"
-Header: "다음 작업"
+Question: "어디까지 진행할까요?"
+Header: "진행 범위"
 Options:
   - label: "Design"
-    description: "GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md 작성"
-  - label: "기능 개발"
-    description: "Phase 선택 후 코드 구현"
-  - label: "main merge 및 branch 정리"
-    description: "현재 브랜치를 main에 병합"
-  - label: "CHANGELOG 작성"
-    description: "새 버전을 위한 CHANGELOG 업데이트"
-  - label: "새 버전 태깅"
-    description: "git tag로 새 버전 생성"
+    description: "설계 문서만 작성 (GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md)"
+  - label: "Design → Code"
+    description: "설계 + 코드 구현"
+  - label: "Design → Code → CHANGELOG"
+    description: "설계 + 코드 구현 + CHANGELOG 작성"
+  - label: "Design → Code → CHANGELOG → Merge"
+    description: "설계 + 코드 + CHANGELOG + main 병합 및 브랜치 정리"
 multiSelect: false
 ```
-
-### If "기능 개발" selected:
-
-```
-Question: "현재 {N}개 phase가 계획되어 있습니다. 어디까지 진행할까요?"
-Header: "Phase 선택"
-Options:
-  - label: "전부 다"
-    description: "모든 phase를 순서대로 진행"
-  - label: "Phase 1까지: {name}"
-    description: "Phase 1만 진행"
-  - label: "Phase 2까지: {name}"
-    description: "Phase 1-2 진행"
-  - label: "Phase 3까지: {name}"
-    description: "Phase 1-3 진행"
-  ...
-multiSelect: false
-```
-
-Note: Single selection. Each option includes all previous phases due to dependencies.
 
 ## Routing
 
 | Selection | Action |
 |-----------|--------|
-| Design | Invoke `/design` skill |
-| 기능 개발 | Invoke `/code` with selected phase range |
-| main merge | Execute merge workflow |
-| CHANGELOG | Invoke changelog writing workflow |
-| 새 버전 태깅 | Execute git tag workflow |
+| Design | Invoke `/design` |
+| Design → Code | `/design`, then `/code all` |
+| Design → Code → CHANGELOG | `/design`, `/code all`, changelog workflow |
+| Design → Code → CHANGELOG → Merge | Full: design, code, changelog, merge, branch cleanup |
