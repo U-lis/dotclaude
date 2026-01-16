@@ -110,3 +110,81 @@ multiSelect: false
 | Design → Code | `/design`, then `/code all` |
 | Design → Code → CHANGELOG | `/design`, `/code all`, changelog workflow |
 | Design → Code → CHANGELOG → Merge | Full: design, code, changelog, merge, branch cleanup |
+
+## Non-Stop Execution
+
+When user selects a scope with multiple steps (e.g., "Design → Code"), execute all steps automatically without stopping.
+
+### Execution Rules
+
+1. **DO NOT** ask "What's next?" between chained skills
+2. **DO NOT** wait for user input between steps
+3. **MUST** proceed immediately to next skill in chain
+4. **MUST** halt chain on error and report to user
+
+### Scope-to-Skill Chain Mapping
+
+| User Selection | Skill Chain |
+|----------------|-------------|
+| Design | `/design` → STOP |
+| Design → Code | `/design` → `/code all` → STOP |
+| Design → Code → CHANGELOG | `/design` → `/code all` → CHANGELOG → STOP |
+| Design → Code → CHANGELOG → Merge | `/design` → `/code all` → CHANGELOG → `/merge-main` → STOP |
+
+### CLAUDE.md Rule Overrides
+
+During non-stop execution, these CLAUDE.md rules are suspended:
+
+- **"Do NOT proceed to next phase without user instruction"**
+  → User's scope selection IS the instruction to proceed
+
+- **"Report summary upon completion and wait for user review"**
+  → Report only at final STOP point, not between skills
+
+### On Error
+
+If any skill fails during chain:
+1. STOP the chain immediately
+2. Report error to user
+3. Suggest manual resolution
+4. User can resume by re-selecting scope
+
+### Progress Indicator
+
+During multi-skill execution, display:
+
+```
+═══════════════════════════════════════════════════════════
+[Step 2/4] Code implementation
+Current: Executing /code all
+═══════════════════════════════════════════════════════════
+```
+
+### Final Summary Report
+
+After all skills complete, display:
+
+```markdown
+# Workflow Complete
+
+## Scope: {selected scope}
+
+## Results
+
+| Step | Skill | Status |
+|------|-------|--------|
+| 1 | /design | SUCCESS |
+| 2 | /code all | SUCCESS |
+| 3 | CHANGELOG | SUCCESS |
+| 4 | /merge-main | SUCCESS |
+
+## Files Changed
+- claude_works/{subject}/*.md
+- [implementation files...]
+- CHANGELOG.md
+
+## Next Steps
+1. Review changes: `git log --oneline -10`
+2. Push to remote: `git push origin main`
+3. (Optional) Create tag: `/tagging`
+```
