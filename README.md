@@ -53,15 +53,15 @@ This repository provides a structured workflow for software development using sp
 ## Workflow
 
 ```
-User → Orchestrator → Designer → TechnicalWriter → spec-validator
-                                                         ↓
-                      (documents finalized)            (loop)
-                           ↓
-    Orchestrator → Coder(s) ←→ code-validator
-                      ↓
-              TechnicalWriter → README/CHANGELOG
-                      ↓
-                 git commit
+User → /start-new → Requirements → SPEC.md → User Approval
+                                                   ↓
+                                      "어디까지 진행할까요?"
+                                        (Scope Selection)
+                                                   ↓
+                    ┌──────────────────────────────┴──────────────────────────────┐
+                    │                    Non-Stop Execution                        │
+                    │  /design → /code all → CHANGELOG → /merge-main → Summary    │
+                    └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Skills (Commands)
@@ -73,11 +73,13 @@ User → Orchestrator → Designer → TechnicalWriter → spec-validator
 | `/init-bugfix` | Gather bug details and create SPEC.md for bug fixes |
 | `/init-refactor` | Gather refactor info and create SPEC.md for refactoring |
 | `/design` | Transform SPEC into implementation plan |
-| `/validate-spec` | Validate document consistency |
+| `/validate-spec` | Validate document consistency (optional) |
 | `/code [phase]` | Execute coding for specified phase |
 | `/code all` | Execute all phases automatically |
 | `/merge-main` | Merge feature branch to main with conflict resolution |
 | `/tagging` | Create version tag based on CHANGELOG |
+
+**Non-Stop Execution**: After SPEC.md approval, select execution scope to run multiple skills automatically without manual intervention.
 
 ## Agents
 
@@ -148,30 +150,34 @@ rm -rf /tmp/dotclaude
 /start-new
 # Select work type: Feature / Bugfix / Refactor
 # Answer step-by-step questions
-# SPEC.md is created
+# SPEC.md is created and reviewed
 
-/design
-# Designer creates implementation plan
-# GLOBAL.md, PHASE_*_PLAN_*.md, PHASE_*_TEST.md created
+# After SPEC.md approval, select execution scope:
+# "어디까지 진행할까요?"
+#   - Design                              → /design only
+#   - Design → Code                       → /design → /code all
+#   - Design → Code → CHANGELOG           → /design → /code all → CHANGELOG
+#   - Design → Code → CHANGELOG → Merge   → Full workflow to main merge
 
-/validate-spec
-# Validates document consistency
+# System executes non-stop to selected target
+# Final summary report displayed at completion
 
-/code 1
-# Implements Phase 1
-
-/code 2
-# Implements Phase 2
-
-# Or run all phases automatically:
-/code all
-
-# Update CHANGELOG, then merge to main:
-/merge-main
-# Merges feature branch to main, handles conflicts, cleans up branch
-
+# After merge, optionally create version tag:
 /tagging
-# Creates version tag from CHANGELOG
+```
+
+### Manual Execution (Alternative)
+
+Individual skills can still be invoked manually:
+
+```bash
+/design              # Create implementation plan
+/validate-spec       # Validate document consistency (optional)
+/code 1              # Implement Phase 1
+/code 2              # Implement Phase 2
+/code all            # Implement all phases automatically
+/merge-main          # Merge to main, cleanup branch
+/tagging             # Create version tag from CHANGELOG
 ```
 
 ## License
