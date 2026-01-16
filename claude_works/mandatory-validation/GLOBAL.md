@@ -42,7 +42,7 @@
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Add Mandatory Validation section to /code skill | Not Started | - |
+| 1 | Add Mandatory Validation section to /code skill | Complete | - |
 | 2 | Strengthen code-validator checklist instructions | Not Started | - |
 | 3 | Create and register Stop hook | Not Started | - |
 
