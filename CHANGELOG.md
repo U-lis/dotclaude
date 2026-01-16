@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] - 2026-01-16
+
+### Added
+
+- Non-Stop Execution feature for init-workflow
+- Execution Rules for automatic skill chaining
+- Scope-to-Skill Chain Mapping table
+- CLAUDE.md Rule Overrides for chained execution
+- Progress Indicator format for multi-skill execution
+- Final Summary Report format after workflow completion
+
 ## [0.0.6] - 2026-01-16
 
 ### Added
