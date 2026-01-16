@@ -31,7 +31,10 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands
+│   │   ├── start-new/SKILL.md      # /start-new (entry point)
 │   │   ├── init-feature/SKILL.md   # /init-feature
+│   │   ├── init-bugfix/SKILL.md    # /init-bugfix
+│   │   ├── init-refactor/SKILL.md  # /init-refactor
 │   │   ├── design/SKILL.md         # /design
 │   │   ├── validate-spec/SKILL.md  # /validate-spec
 │   │   ├── code/SKILL.md           # /code [phase]
@@ -63,10 +66,14 @@ User → Orchestrator → Designer → TechnicalWriter → spec-validator
 
 | Command | Description |
 |---------|-------------|
-| `/init-feature` | Gather requirements and create SPEC.md |
+| `/start-new` | Entry point - routes to init-feature/bugfix/refactor |
+| `/init-feature` | Gather requirements and create SPEC.md for new features |
+| `/init-bugfix` | Gather bug details and create SPEC.md for bug fixes |
+| `/init-refactor` | Gather refactor info and create SPEC.md for refactoring |
 | `/design` | Transform SPEC into implementation plan |
 | `/validate-spec` | Validate document consistency |
 | `/code [phase]` | Execute coding for specified phase |
+| `/code all` | Execute all phases automatically |
 | `/finalize` | Complete documentation and cleanup |
 
 ## Agents
@@ -131,12 +138,13 @@ cp /tmp/dotclaude/CLAUDE.md .
 rm -rf /tmp/dotclaude
 ```
 
-### Start a New Feature
+### Start New Work
 
 ```bash
 # In Claude Code session
-/init-feature
-# Answer questions about your feature
+/start-new
+# Select work type: Feature / Bugfix / Refactor
+# Answer step-by-step questions
 # SPEC.md is created
 
 /design
@@ -151,6 +159,9 @@ rm -rf /tmp/dotclaude
 
 /code 2
 # Implements Phase 2
+
+# Or run all phases automatically:
+/code all
 
 /finalize
 # Updates README, CHANGELOG, final commit

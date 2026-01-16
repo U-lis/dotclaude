@@ -44,6 +44,35 @@ User invokes `/init-refactor` or is routed from `/start-new` (리팩토링 selec
 └─────────────────────────────────────────────────────────┘
 ```
 
+## Mandatory Workflow Rules
+
+**CRITICAL**: The following rules MUST be followed regardless of plan mode or permission settings.
+
+### Steps 5-7 are MANDATORY
+These steps CANNOT be skipped under any circumstances:
+- Step 5: Create SPEC.md file in `claude_works/{subject}/`
+- Step 6: Present SPEC.md to user and get approval
+- Step 7: Ask "다음으로 진행할 작업은?" question
+
+### Prohibited Actions
+NEVER do any of the following:
+- Skip directly to implementation after gathering requirements
+- Bypass SPEC.md file creation
+- Skip the Next Step Selection question
+- Start coding without user explicitly selecting "기능 개발"
+- Assume permission bypass means skipping workflow steps
+
+### Correct Execution Order
+Even with permission bypass, follow this exact order:
+1. Gather requirements (Step-by-Step Questions)
+2. Auto-generate branch keyword
+3. Create branch: `git checkout -b refactor/{keyword}`
+4. Create directory: `mkdir -p claude_works/{subject}`
+5. **Create SPEC.md file** (MANDATORY)
+6. **Present SPEC.md for user review** (MANDATORY)
+7. **Ask Next Step Selection question** (MANDATORY)
+8. Route based on user's explicit choice
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
