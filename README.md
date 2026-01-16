@@ -31,14 +31,16 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands
-│   │   ├── start-new/SKILL.md      # /start-new (entry point)
-│   │   ├── init-feature/SKILL.md   # /init-feature
-│   │   ├── init-bugfix/SKILL.md    # /init-bugfix
-│   │   ├── init-refactor/SKILL.md  # /init-refactor
-│   │   ├── design/SKILL.md         # /design
-│   │   ├── validate-spec/SKILL.md  # /validate-spec
-│   │   ├── code/SKILL.md           # /code [phase]
-│   │   └── finalize/SKILL.md       # /finalize
+│   │   ├── _shared/init-workflow.md  # Common init workflow
+│   │   ├── start-new/SKILL.md        # /start-new (entry point)
+│   │   ├── init-feature/SKILL.md     # /init-feature
+│   │   ├── init-bugfix/SKILL.md      # /init-bugfix
+│   │   ├── init-refactor/SKILL.md    # /init-refactor
+│   │   ├── design/SKILL.md           # /design
+│   │   ├── validate-spec/SKILL.md    # /validate-spec
+│   │   ├── code/SKILL.md             # /code [phase]
+│   │   ├── merge-main/SKILL.md       # /merge-main
+│   │   └── tagging/SKILL.md          # /tagging
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -74,7 +76,8 @@ User → Orchestrator → Designer → TechnicalWriter → spec-validator
 | `/validate-spec` | Validate document consistency |
 | `/code [phase]` | Execute coding for specified phase |
 | `/code all` | Execute all phases automatically |
-| `/finalize` | Complete documentation and cleanup |
+| `/merge-main` | Merge feature branch to main with conflict resolution |
+| `/tagging` | Create version tag based on CHANGELOG |
 
 ## Agents
 
@@ -163,8 +166,12 @@ rm -rf /tmp/dotclaude
 # Or run all phases automatically:
 /code all
 
-/finalize
-# Updates README, CHANGELOG, final commit
+# Update CHANGELOG, then merge to main:
+/merge-main
+# Merges feature branch to main, handles conflicts, cleans up branch
+
+/tagging
+# Creates version tag from CHANGELOG
 ```
 
 ## License
