@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2026-01-16
+
+### Added
+
+- `/merge-main` skill for feature-to-main merge with conflict resolution and branch cleanup
+- `/tagging` skill for CHANGELOG-based version tagging
+- `check-init-complete.sh` Stop hook for workflow enforcement
+- SPEC.md SOT awareness rules to TechnicalWriter agent
+- Mandatory commit steps to design/init-xxx workflows
+
+### Changed
+
+- Next Step Selection to cumulative sequential flow (Design → Code → CHANGELOG → Merge)
+- Extract common init workflow to `_shared/init-workflow.md`
+- Slim down init-xxx SKILL.md files (-28% lines, ~350 duplicate lines removed)
+- Updated `/code` SKILL.md to reference new workflow (/merge-main → /tagging)
+
+### Removed
+
+- `/finalize` skill (replaced by /merge-main and /tagging)
+
 ## [0.0.4] - 2026-01-16
 
 ### Added
