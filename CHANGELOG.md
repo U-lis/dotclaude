@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.4] - 2026-01-16
+
+### Added
+
+- `/start-new` skill as entry point for all new work (routes to init-feature/bugfix/refactor)
+- `/init-bugfix` skill for bug fix workflow with 6-step questions
+- `/init-refactor` skill for refactoring workflow with 6-step questions
+- Step-by-step question gathering for all init skills using AskUserQuestion tool
+- Next Step Selection routing after SPEC.md approval
+
+### Fixed
+
+- Workflow bypass bug in init-xxx skills when using plan mode with permission bypass
+- Added "Mandatory Workflow Rules" section to all init-xxx skills
+- Steps 5-7 (SPEC.md creation, user review, Next Step Selection) are now explicitly mandatory
+
+### Changed
+
+- Updated README.md to document all init skills and /code all option
+
 ## [0.0.3] - 2026-01-15
 
 ### Added
