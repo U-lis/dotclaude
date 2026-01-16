@@ -88,9 +88,9 @@ chmod +x .claude/hooks/check-validation-complete.sh
 
 ## Completion Checklist
 
-- [ ] `check-validation-complete.sh` created
-- [ ] Script is executable (chmod +x)
-- [ ] Script checks for code changes (excluding claude_works/ and .md)
-- [ ] Script checks for unchecked PHASE_*_PLAN items
-- [ ] Script outputs JSON block decision
-- [ ] settings.json updated with Stop hook
+- [x] `check-validation-complete.sh` created
+- [x] Script is executable (chmod +x)
+- [x] Script checks for code changes (excluding claude_works/ and .md)
+- [x] Script checks for unchecked PHASE_*_PLAN items
+- [x] Script outputs JSON block decision
+- [x] settings.json updated with Stop hook

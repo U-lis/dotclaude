@@ -44,13 +44,13 @@
 |-------|-------------|--------|--------------|
 | 1 | Add Mandatory Validation section to /code skill | Complete | - |
 | 2 | Strengthen code-validator checklist instructions | Complete | - |
-| 3 | Create and register Stop hook | Not Started | - |
+| 3 | Create and register Stop hook | Complete | - |
 
 ---
 
 ## Completion Criteria
 
-- [ ] /code skill has "Mandatory Validation" section with enforcement language
-- [ ] code-validator has explicit MUST instructions for checklist updates
-- [ ] Stop hook detects code changes + unchecked items
-- [ ] Stop hook registered in settings.json
+- [x] /code skill has "Mandatory Validation" section with enforcement language
+- [x] code-validator has explicit MUST instructions for checklist updates
+- [x] Stop hook detects code changes + unchecked items
+- [x] Stop hook registered in settings.json
