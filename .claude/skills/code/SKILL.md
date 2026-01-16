@@ -142,7 +142,7 @@ git worktree remove ../subject-3C
 After phase completion:
 1. If more phases: `/code [next-phase]`
 2. If parallel phases done: `/code {k}.5` for merge
-3. If all phases done: `/finalize`
+3. If all phases done: `/merge-main` → `/tagging`
 
 ---
 
@@ -297,5 +297,5 @@ For `/code all` mode, these CLAUDE.md rules are overridden:
 
 1. Manually resolve PHASE_3A issues
 2. Run `/code 3A` to retry
-3. Run `/finalize` to complete documentation
+3. Run `/merge-main` → `/tagging`
 ```
