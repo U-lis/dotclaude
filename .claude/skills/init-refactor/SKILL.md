@@ -1,38 +1,38 @@
 ---
-name: init-feature
-description: Initialize a new feature by gathering requirements and creating SPEC document. Use when starting a new feature, project initialization, or when user invokes /init-feature.
+name: init-refactor
+description: Initialize refactoring work by gathering refactor details through step-by-step questions. Use when starting refactoring work or when routed from /start-new.
 user-invocable: true
 ---
 
-# /init-feature
+# /init-refactor
 
-Initialize a new feature by gathering requirements through step-by-step questions.
+Initialize refactoring work by gathering refactor details through step-by-step questions.
 
 ## Trigger
 
-User invokes `/init-feature` or is routed from `/start-new`.
+User invokes `/init-refactor` or is routed from `/start-new` (리팩토링 selected).
 
 ## Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ 1. Gather Requirements (Step-by-Step)                   │
-│    - 8 sequential questions using AskUserQuestion       │
-│    - Each question builds on previous answers           │
+│ 1. Gather Refactor Info (Step-by-Step)                  │
+│    - 6 sequential questions using AskUserQuestion       │
+│    - Understand target and goals                        │
 ├─────────────────────────────────────────────────────────┤
 │ 2. Auto-Generate Branch Keyword                         │
-│    - Extract core concept from conversation             │
+│    - Extract core target from conversation              │
 │    - No user question needed                            │
 ├─────────────────────────────────────────────────────────┤
-│ 3. Create Feature Branch                                │
-│    - git checkout -b feature/{keyword}                  │
+│ 3. Create Refactor Branch                               │
+│    - git checkout -b refactor/{keyword}                 │
 ├─────────────────────────────────────────────────────────┤
 │ 4. Create Project Structure                             │
 │    - mkdir -p claude_works/{subject}                    │
 ├─────────────────────────────────────────────────────────┤
 │ 5. Draft SPEC.md                                        │
-│    - Use TechnicalWriter agent                          │
-│    - Write initial specification                        │
+│    - Use refactor-specific template                     │
+│    - Include XP principles reference                    │
 ├─────────────────────────────────────────────────────────┤
 │ 6. Review with User                                     │
 │    - Present SPEC draft                                 │
@@ -48,109 +48,96 @@ User invokes `/init-feature` or is routed from `/start-new`.
 
 Use AskUserQuestion tool for each step sequentially:
 
-### Step 1: 목표
+### Step 1: 대상
 ```
-Question: "이 기능의 주요 목표는 무엇인가요?"
-Header: "목표"
-→ Free text response
-```
-
-### Step 2: 문제
-```
-Question: "어떤 문제를 해결하려고 하나요?"
-Header: "문제"
-→ Free text response
+Question: "리팩토링 대상은 무엇인가요?"
+Header: "리팩토링 대상"
+→ Free text (파일, 모듈, 클래스, 함수 등)
 ```
 
-### Step 3: 핵심 기능
+### Step 2: 문제점
 ```
-Question: "반드시 있어야 하는 핵심 기능은 무엇인가요?"
-Header: "핵심 기능"
-→ Free text (can list multiple)
-```
-
-### Step 4: 부가 기능
-```
-Question: "있으면 좋지만 필수는 아닌 기능이 있나요?"
-Header: "부가 기능"
+Question: "현재 어떤 문제가 있나요?"
+Header: "문제점"
 Options:
-  - label: "없음"
-    description: "필수 기능만 구현"
-→ Or free text via "Other"
-```
-
-### Step 5: 기술 제약
-```
-Question: "기술적 제약이 있나요?"
-Header: "기술 제약"
-Options:
-  - label: "언어/프레임워크 지정"
-    description: "특정 기술 스택 사용 필요"
-  - label: "기존 패턴 따르기"
-    description: "코드베이스의 기존 패턴 준수"
-  - label: "제약 없음"
-    description: "자유롭게 구현 가능"
-multiSelect: false
-```
-
-### Step 6: 성능 요구
-```
-Question: "성능 요구사항이 있나요?"
-Header: "성능"
-Options:
-  - label: "있음"
-    description: "상세 내용을 입력해주세요"
-  - label: "없음"
-    description: "특별한 성능 요구사항 없음"
-multiSelect: false
-```
-
-### Step 7: 보안 고려
-```
-Question: "보안 고려사항이 있나요?"
-Header: "보안"
-Options:
-  - label: "인증/인가 필요"
-    description: "사용자 인증 또는 권한 검증 필요"
-  - label: "데이터 암호화"
-    description: "민감 데이터 암호화 필요"
-  - label: "입력 검증"
-    description: "사용자 입력 검증 필요"
-  - label: "없음"
-    description: "특별한 보안 요구사항 없음"
+  - label: "중복 코드 (DRY 위반)"
+    description: "같은 로직이 여러 곳에 반복됨"
+  - label: "긴 메서드/클래스 (SRP 위반)"
+    description: "하나의 단위가 너무 많은 책임을 가짐"
+  - label: "복잡한 조건문"
+    description: "if/switch 문이 복잡하게 중첩됨"
+  - label: "강한 결합도"
+    description: "모듈간 의존성이 높음"
+  - label: "테스트 어려움"
+    description: "유닛 테스트 작성이 어려움"
 multiSelect: true
 ```
 
-### Step 8: 범위 제외
+### Step 3: 목표 상태
 ```
-Question: "명시적으로 범위에서 제외할 것은?"
-Header: "범위 제외"
+Question: "리팩토링 후 기대하는 상태는?"
+Header: "목표"
+→ Free text (목표 아키텍처, 패턴 등)
+```
+
+### Step 4: 동작 변경
+```
+Question: "기존 동작이 변경되어도 괜찮나요?"
+Header: "동작 변경"
 Options:
+  - label: "동작 유지 필수"
+    description: "순수 리팩토링, 기능 변경 없음"
+  - label: "일부 변경 가능"
+    description: "개선을 위해 동작 변경 허용"
+multiSelect: false
+```
+
+### Step 5: 테스트 현황
+```
+Question: "관련된 테스트가 있나요?"
+Header: "테스트"
+Options:
+  - label: "있음"
+    description: "테스트 커버리지 확보됨"
+  - label: "일부 있음"
+    description: "부분적으로 테스트 존재"
   - label: "없음"
-    description: "제외할 항목 없음"
+    description: "테스트 먼저 작성 필요"
+multiSelect: false
+```
+
+### Step 6: 의존 모듈
+```
+Question: "이 코드를 사용하는 다른 모듈이 있나요?"
+Header: "의존성"
+Options:
+  - label: "없음/모름"
+    description: "다른 모듈에서 사용 안함 또는 파악 필요"
 → Or free text via "Other"
 ```
 
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
-- Extract core concept from answers (Steps 1-3)
-- Format: `feature/{keyword}`
+- Extract core target from answers (Step 1)
+- Format: `refactor/{keyword}`
 - Examples:
-  - feature/external-api
-  - feature/user-metrics
-  - feature/step-by-step-init
+  - refactor/user-service
+  - refactor/extract-api-client
+  - refactor/simplify-auth-flow
 
 ## Output
 
-1. Feature branch `feature/{keyword}` created and checked out
+1. Refactor branch `refactor/{keyword}` created and checked out
 2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` with:
-   - Overview (from Steps 1-2)
-   - Functional Requirements (from Steps 3-4)
-   - Non-Functional Requirements (from Steps 6-7)
-   - Constraints (from Step 5)
-   - Out of Scope (from Step 8)
+3. `claude_works/{subject}/SPEC.md` with refactor-specific format:
+   - Target (from Step 1)
+   - Current Problems (from Step 2)
+   - Goal State (from Step 3)
+   - Behavior Change Policy (from Step 4)
+   - Test Coverage (from Step 5)
+   - Dependencies (from Step 6)
+   - XP Principle Reference (auto-added based on problems)
 
 ## Next Step Selection
 
@@ -185,8 +172,6 @@ Options:
     description: "Phase 1만 진행"
   - label: "Phase 2까지: {name}"
     description: "Phase 1-2 진행"
-  - label: "Phase 3까지: {name}"
-    description: "Phase 1-3 진행"
   ...
 multiSelect: false
 ```

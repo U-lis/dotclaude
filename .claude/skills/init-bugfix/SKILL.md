@@ -1,38 +1,38 @@
 ---
-name: init-feature
-description: Initialize a new feature by gathering requirements and creating SPEC document. Use when starting a new feature, project initialization, or when user invokes /init-feature.
+name: init-bugfix
+description: Initialize bug fix work by gathering bug details through step-by-step questions. Use when starting bug fix work or when routed from /start-new.
 user-invocable: true
 ---
 
-# /init-feature
+# /init-bugfix
 
-Initialize a new feature by gathering requirements through step-by-step questions.
+Initialize bug fix work by gathering bug details through step-by-step questions.
 
 ## Trigger
 
-User invokes `/init-feature` or is routed from `/start-new`.
+User invokes `/init-bugfix` or is routed from `/start-new` (버그 수정 selected).
 
 ## Workflow
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│ 1. Gather Requirements (Step-by-Step)                   │
-│    - 8 sequential questions using AskUserQuestion       │
-│    - Each question builds on previous answers           │
+│ 1. Gather Bug Info (Step-by-Step)                       │
+│    - 6 sequential questions using AskUserQuestion       │
+│    - Understand bug symptoms and context                │
 ├─────────────────────────────────────────────────────────┤
 │ 2. Auto-Generate Branch Keyword                         │
-│    - Extract core concept from conversation             │
+│    - Extract core issue from conversation               │
 │    - No user question needed                            │
 ├─────────────────────────────────────────────────────────┤
-│ 3. Create Feature Branch                                │
-│    - git checkout -b feature/{keyword}                  │
+│ 3. Create Bugfix Branch                                 │
+│    - git checkout -b bugfix/{keyword}                   │
 ├─────────────────────────────────────────────────────────┤
 │ 4. Create Project Structure                             │
 │    - mkdir -p claude_works/{subject}                    │
 ├─────────────────────────────────────────────────────────┤
 │ 5. Draft SPEC.md                                        │
-│    - Use TechnicalWriter agent                          │
-│    - Write initial specification                        │
+│    - Use bug-specific template                          │
+│    - Include reproduction steps                         │
 ├─────────────────────────────────────────────────────────┤
 │ 6. Review with User                                     │
 │    - Present SPEC draft                                 │
@@ -48,109 +48,93 @@ User invokes `/init-feature` or is routed from `/start-new`.
 
 Use AskUserQuestion tool for each step sequentially:
 
-### Step 1: 목표
+### Step 1: 증상
 ```
-Question: "이 기능의 주요 목표는 무엇인가요?"
-Header: "목표"
-→ Free text response
-```
-
-### Step 2: 문제
-```
-Question: "어떤 문제를 해결하려고 하나요?"
-Header: "문제"
-→ Free text response
+Question: "어떤 버그/문제가 발생하고 있나요?"
+Header: "버그 증상"
+→ Free text (증상 설명)
 ```
 
-### Step 3: 핵심 기능
+### Step 2: 재현 조건
 ```
-Question: "반드시 있어야 하는 핵심 기능은 무엇인가요?"
-Header: "핵심 기능"
-→ Free text (can list multiple)
+Question: "버그가 발생하는 조건이나 재현 단계가 있나요?"
+Header: "재현 조건"
+→ Free text (재현 단계)
 ```
 
-### Step 4: 부가 기능
+### Step 3: 예상 원인
 ```
-Question: "있으면 좋지만 필수는 아닌 기능이 있나요?"
-Header: "부가 기능"
+Question: "예상되는 원인이 있나요?"
+Header: "예상 원인"
 Options:
-  - label: "없음"
-    description: "필수 기능만 구현"
-→ Or free text via "Other"
-```
-
-### Step 5: 기술 제약
-```
-Question: "기술적 제약이 있나요?"
-Header: "기술 제약"
-Options:
-  - label: "언어/프레임워크 지정"
-    description: "특정 기술 스택 사용 필요"
-  - label: "기존 패턴 따르기"
-    description: "코드베이스의 기존 패턴 준수"
-  - label: "제약 없음"
-    description: "자유롭게 구현 가능"
+  - label: "특정 코드 의심"
+    description: "특정 파일이나 함수가 원인으로 의심됨"
+  - label: "외부 의존성 문제"
+    description: "라이브러리나 외부 서비스 관련 문제"
+  - label: "설정 오류"
+    description: "환경 설정이나 config 문제"
+  - label: "모르겠음"
+    description: "원인 파악이 필요함"
 multiSelect: false
 ```
 
-### Step 6: 성능 요구
+### Step 4: 심각도
 ```
-Question: "성능 요구사항이 있나요?"
-Header: "성능"
+Question: "버그의 심각도는 어느 정도인가요?"
+Header: "심각도"
 Options:
-  - label: "있음"
-    description: "상세 내용을 입력해주세요"
-  - label: "없음"
-    description: "특별한 성능 요구사항 없음"
+  - label: "Critical"
+    description: "서비스 불가 또는 데이터 손실 위험"
+  - label: "Major"
+    description: "주요 기능 장애"
+  - label: "Minor"
+    description: "불편함이 있으나 우회 가능"
+  - label: "Trivial"
+    description: "미미한 문제"
 multiSelect: false
 ```
 
-### Step 7: 보안 고려
+### Step 5: 관련 파일
 ```
-Question: "보안 고려사항이 있나요?"
-Header: "보안"
+Question: "관련된 파일이나 모듈을 알고 있나요?"
+Header: "관련 파일"
 Options:
-  - label: "인증/인가 필요"
-    description: "사용자 인증 또는 권한 검증 필요"
-  - label: "데이터 암호화"
-    description: "민감 데이터 암호화 필요"
-  - label: "입력 검증"
-    description: "사용자 입력 검증 필요"
-  - label: "없음"
-    description: "특별한 보안 요구사항 없음"
-multiSelect: true
+  - label: "모름"
+    description: "조사가 필요함"
+→ Or free text via "Other" (파일 경로 입력)
 ```
 
-### Step 8: 범위 제외
+### Step 6: 영향 범위
 ```
-Question: "명시적으로 범위에서 제외할 것은?"
-Header: "범위 제외"
+Question: "이 버그가 영향을 주는 다른 기능이 있나요?"
+Header: "영향 범위"
 Options:
-  - label: "없음"
-    description: "제외할 항목 없음"
+  - label: "없음/모름"
+    description: "다른 기능에 영향 없거나 파악 필요"
 → Or free text via "Other"
 ```
 
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
-- Extract core concept from answers (Steps 1-3)
-- Format: `feature/{keyword}`
+- Extract core issue from answers (Steps 1-2)
+- Format: `bugfix/{keyword}`
 - Examples:
-  - feature/external-api
-  - feature/user-metrics
-  - feature/step-by-step-init
+  - bugfix/wrong-script-path
+  - bugfix/null-pointer-exception
+  - bugfix/login-timeout
 
 ## Output
 
-1. Feature branch `feature/{keyword}` created and checked out
+1. Bugfix branch `bugfix/{keyword}` created and checked out
 2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` with:
-   - Overview (from Steps 1-2)
-   - Functional Requirements (from Steps 3-4)
-   - Non-Functional Requirements (from Steps 6-7)
-   - Constraints (from Step 5)
-   - Out of Scope (from Step 8)
+3. `claude_works/{subject}/SPEC.md` with bug-specific format:
+   - Bug Description (from Step 1)
+   - Reproduction Steps (from Step 2)
+   - Expected Cause (from Step 3)
+   - Severity (from Step 4)
+   - Related Files (from Step 5)
+   - Impact Scope (from Step 6)
 
 ## Next Step Selection
 
@@ -185,8 +169,6 @@ Options:
     description: "Phase 1만 진행"
   - label: "Phase 2까지: {name}"
     description: "Phase 1-2 진행"
-  - label: "Phase 3까지: {name}"
-    description: "Phase 1-3 진행"
   ...
 multiSelect: false
 ```
