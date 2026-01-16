@@ -36,7 +36,11 @@ User invokes `/design` after SPEC.md is ready.
 │    - Create PHASE_{k}_TEST.md for each phase            │
 │    - Create PHASE_{k}.5_PLAN_MERGE.md if parallel phases│
 ├─────────────────────────────────────────────────────────┤
-│ 4. Review with User                                     │
+│ 4. Commit Documents                                     │
+│    - git add claude_works/{subject}/*.md                │
+│    - git commit -m "docs: add design documents"         │
+├─────────────────────────────────────────────────────────┤
+│ 5. Review with User                                     │
 │    - Present design and phase breakdown                 │
 │    - Iterate based on feedback                          │
 └─────────────────────────────────────────────────────────┘

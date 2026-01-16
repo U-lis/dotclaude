@@ -34,11 +34,15 @@ User invokes `/init-feature` or is routed from `/start-new`.
 │    - Use TechnicalWriter agent                          │
 │    - Write initial specification                        │
 ├─────────────────────────────────────────────────────────┤
-│ 6. Review with User                                     │
+│ 6. Commit SPEC.md                                       │
+│    - git add claude_works/{subject}/SPEC.md             │
+│    - git commit -m "docs: add SPEC.md for {subject}"    │
+├─────────────────────────────────────────────────────────┤
+│ 7. Review with User                                     │
 │    - Present SPEC draft                                 │
 │    - Iterate based on feedback                          │
 ├─────────────────────────────────────────────────────────┤
-│ 7. Next Step Selection                                  │
+│ 8. Next Step Selection                                  │
 │    - Ask what to do next                                │
 │    - Route to appropriate action                        │
 └─────────────────────────────────────────────────────────┘
@@ -48,11 +52,12 @@ User invokes `/init-feature` or is routed from `/start-new`.
 
 **CRITICAL**: The following rules MUST be followed regardless of plan mode or permission settings.
 
-### Steps 5-7 are MANDATORY
+### Steps 5-8 are MANDATORY
 These steps CANNOT be skipped under any circumstances:
 - Step 5: Create SPEC.md file in `claude_works/{subject}/`
-- Step 6: Present SPEC.md to user and get approval
-- Step 7: Ask "다음으로 진행할 작업은?" question
+- Step 6: Commit SPEC.md with git add/commit
+- Step 7: Present SPEC.md to user and get approval
+- Step 8: Ask "다음으로 진행할 작업은?" question
 
 ### Prohibited Actions
 NEVER do any of the following:
@@ -69,9 +74,10 @@ Even with permission bypass, follow this exact order:
 3. Create branch: `git checkout -b feature/{keyword}`
 4. Create directory: `mkdir -p claude_works/{subject}`
 5. **Create SPEC.md file** (MANDATORY)
-6. **Present SPEC.md for user review** (MANDATORY)
-7. **Ask Next Step Selection question** (MANDATORY)
-8. Route based on user's explicit choice
+6. **Commit SPEC.md** (MANDATORY)
+7. **Present SPEC.md for user review** (MANDATORY)
+8. **Ask Next Step Selection question** (MANDATORY)
+9. Route based on user's explicit choice
 
 ## Step-by-Step Questions
 
