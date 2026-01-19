@@ -91,11 +91,13 @@ Options:
 → Or free text via "Other"
 ```
 
-## Codebase Analysis (MANDATORY)
+## Analysis Phase (MANDATORY)
 
-**CRITICAL**: After gathering user input (Steps 1-6), MUST perform codebase analysis before creating SPEC.md.
+**CRITICAL**: After gathering user input (Steps 1-6), execute analysis phases.
 
-### Analysis Flow
+See `_shared/analysis-phases.md` for detailed instructions. Bugfix has additional requirements below.
+
+### Step B: Codebase Investigation (Bugfix - Enhanced)
 
 #### Case 1: User specified related files (Step 5)
 1. Use Read tool to analyze the specified files
@@ -109,6 +111,34 @@ Options:
    - Keywords from symptom description
    - Function/class names if mentioned
 3. Narrow down to relevant files
+
+#### Additional: Recent Change Analysis
+- Run `git log -20 --oneline -- {affected_file}` for affected files
+- Check if bug correlates with recent commits
+- Document potential regression sources
+
+### Step C: Conflict Detection (Bugfix Focus)
+
+For bugfixes, detect conflicts between:
+
+1. **Proposed fix vs other code paths**
+   - Will fixing this break other functionality?
+   - Are there callers depending on current (buggy) behavior?
+
+2. **Proposed fix vs recent changes**
+   - Does fix conflict with recent refactoring?
+   - Are parallel bug fixes in progress?
+
+Document all conflicts and get user resolution via AskUserQuestion.
+
+### Step D: Edge Case Generation (Bugfix Focus)
+
+Generate edge cases specifically for the bug:
+1. Variations of the reproduction steps
+2. Boundary conditions that might trigger same bug
+3. Related scenarios that should NOT trigger the bug (regression prevention)
+
+Present to user for confirmation.
 
 ### Required Analysis Outputs
 
@@ -126,6 +156,16 @@ Document the following (all required):
 3. **Fix Strategy**:
    - Concrete modification plan
    - Expected behavior after fix
+
+4. **Conflict Analysis** (NEW):
+   - Conflicts with existing code paths
+   - Conflicts with recent changes
+   - User resolutions for each conflict
+
+5. **Edge Cases** (NEW):
+   - Reproduction variations
+   - Boundary conditions
+   - Regression prevention cases
 
 ### Inconclusive Analysis Handling
 
@@ -173,5 +213,18 @@ If analysis cannot identify root cause:
 - Root Cause Analysis (from codebase investigation)
   - Exact code location (file:line)
   - Why the bug occurs
+  - Recent change correlation (if any)
 - Affected Code Locations (files and functions to modify)
 - Fix Strategy (concrete modification plan)
+- **Conflict Analysis** (conflicts and resolutions)
+- **Edge Cases** (for test coverage)
+
+## Workflow Integration
+
+After Analysis Phase completes:
+1. Analysis results are included in SPEC.md
+2. SPEC.md is committed (Step 7 in init-workflow)
+3. User reviews SPEC.md (Step 8)
+4. Next Step Selection (Step 9)
+
+See `_shared/init-workflow.md` for complete workflow.

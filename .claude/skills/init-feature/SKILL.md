@@ -108,6 +108,47 @@ Options:
 → Or free text via "Other"
 ```
 
+## Analysis Phase
+
+**MANDATORY**: After gathering user requirements (Steps 1-8), execute analysis phases.
+
+See `_shared/analysis-phases.md` for detailed instructions.
+
+### Feature-Specific Analysis
+
+#### Step B: Codebase Investigation (Feature Focus)
+
+For new features, focus on:
+
+1. **Similar Functionality Search**
+   - Grep for keywords from user's goal (Step 1)
+   - Look for existing implementations that overlap
+   - Document: "Similar feature found at {file}:{line}"
+
+2. **Modification Points**
+   - Identify files that need modification
+   - Find integration points (APIs, events, hooks)
+   - Document: "Integration required at {file}:{function}"
+
+3. **Pattern Discovery**
+   - Find existing patterns to follow (naming conventions, file structure)
+   - Identify shared utilities to reuse
+   - Document: "Follow pattern from {file}"
+
+#### Step C: Conflict Detection (Feature Focus)
+
+For features, check:
+- Does new API conflict with existing API names?
+- Does new data model conflict with existing schemas?
+- Does new behavior contradict existing feature behavior?
+
+#### Step D: Edge Case Generation (Feature Focus)
+
+Generate cases for:
+- New feature with empty/null inputs
+- New feature at scale (many items, large data)
+- New feature interaction with existing features
+
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
@@ -128,3 +169,17 @@ Options:
    - Non-Functional Requirements (from Steps 6-7)
    - Constraints (from Step 5)
    - Out of Scope (from Step 8)
+   - **Analysis Results** (from Analysis Phase):
+     - Related Code (existing similar functionality)
+     - Conflicts Identified (with resolutions)
+     - Edge Cases (confirmed by user)
+
+## Workflow Integration
+
+After Analysis Phase completes:
+1. Analysis results are included in SPEC.md
+2. SPEC.md is committed (Step 7 in init-workflow)
+3. User reviews SPEC.md (Step 8)
+4. Next Step Selection (Step 9)
+
+See `_shared/init-workflow.md` for complete workflow.
