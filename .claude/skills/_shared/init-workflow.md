@@ -14,7 +14,7 @@ Reasons:
 Instead:
 - Use AskUserQuestion for sequential requirements gathering
 - Proceed directly through workflow steps
-- User reviews and approves at Step 7 (SPEC.md review)
+- User reviews and approves at Step 8 (SPEC.md review)
 
 ## Generic Workflow Diagram
 
@@ -34,38 +34,81 @@ Instead:
 │ 4. Create Project Structure                             │
 │    - mkdir -p claude_works/{subject}                    │
 ├─────────────────────────────────────────────────────────┤
-│ 5. Draft SPEC.md                                        │
-│    - Use TechnicalWriter agent                          │
-│    - Write initial specification                        │
+│ 5. Analysis Phase (Steps A-E)                           │
+│    - See analysis-phases.md for details                 │
+│    - Input analysis, codebase investigation, conflicts  │
 ├─────────────────────────────────────────────────────────┤
-│ 6. Commit SPEC.md                                       │
+│ 6. Draft SPEC.md                                        │
+│    - Use TechnicalWriter agent                          │
+│    - Include Analysis Results section                   │
+├─────────────────────────────────────────────────────────┤
+│ 7. Commit SPEC.md                                       │
 │    - git add claude_works/{subject}/SPEC.md             │
 │    - git commit -m "docs: add SPEC.md for {subject}"    │
 ├─────────────────────────────────────────────────────────┤
-│ 7. Review with User                                     │
+│ 8. Review with User                                     │
 │    - Present SPEC draft                                 │
 │    - Iterate based on feedback                          │
 ├─────────────────────────────────────────────────────────┤
-│ 8. Next Step Selection                                  │
+│ 9. Next Step Selection                                  │
 │    - Ask what to do next                                │
 │    - Route to appropriate action                        │
 └─────────────────────────────────────────────────────────┘
 ```
 
+## Analysis Phase Workflow
+
+**MANDATORY**: Execute analysis phases A-E after gathering requirements and before creating SPEC.md.
+
+See `_shared/analysis-phases.md` for detailed instructions.
+
+```
+┌─────────────────────────────────────────────────────────┐
+│ Step A: Input Analysis                                  │
+│    - Identify gaps and ambiguities in user responses    │
+│    - Generate clarifying questions                      │
+│    - Resolve via AskUserQuestion                        │
+├─────────────────────────────────────────────────────────┤
+│ Step B: Codebase Investigation                          │
+│    - Search for related code and patterns               │
+│    - Work-type specific analysis (see skill files)      │
+│    - Max 10 file reads                                  │
+├─────────────────────────────────────────────────────────┤
+│ Step C: Conflict Detection                              │
+│    - Compare requirements vs existing implementation    │
+│    - Document and resolve conflicts with user           │
+├─────────────────────────────────────────────────────────┤
+│ Step D: Edge Case Generation                            │
+│    - Generate boundary conditions and error scenarios   │
+│    - User confirms or adds cases                        │
+├─────────────────────────────────────────────────────────┤
+│ Step E: Summary + Clarification                         │
+│    - Present complete summary to user                   │
+│    - Iterate until user confirms (max 3 iterations)     │
+└─────────────────────────────────────────────────────────┘
+```
+
+**Iteration Limits**:
+- Input clarification: max 5 questions per category
+- Clarification loop: max 3 iterations
+- Codebase search: max 10 file reads
+
 ## Mandatory Workflow Rules
 
 **CRITICAL**: The following rules MUST be followed regardless of plan mode or permission settings.
 
-### Steps 5-8 are MANDATORY
+### Steps 5-9 are MANDATORY
 These steps CANNOT be skipped under any circumstances:
-- Step 5: Create SPEC.md file in `claude_works/{subject}/`
-- Step 6: Commit SPEC.md with git add/commit
-- Step 7: Present SPEC.md to user and get approval
-- Step 8: Ask "어디까지 진행할까요?" question
+- Step 5: **Analysis Phase (A-E)** - Execute all analysis sub-phases
+- Step 6: Create SPEC.md file in `claude_works/{subject}/` (includes Analysis Results)
+- Step 7: Commit SPEC.md with git add/commit
+- Step 8: Present SPEC.md to user and get approval
+- Step 9: Ask "어디까지 진행할까요?" question
 
 ### Prohibited Actions
 NEVER do any of the following:
 - Skip directly to implementation after gathering requirements
+- Skip Analysis Phase (Steps A-E)
 - Bypass SPEC.md file creation
 - Skip the Next Step Selection question
 - Start coding without user explicitly selecting a scope that includes "Code"
@@ -77,11 +120,12 @@ Even with permission bypass, follow this exact order:
 2. Auto-generate branch keyword
 3. Create branch: `git checkout -b {type}/{keyword}`
 4. Create directory: `mkdir -p claude_works/{subject}`
-5. **Create SPEC.md file** (MANDATORY)
-6. **Commit SPEC.md** (MANDATORY)
-7. **Present SPEC.md for user review** (MANDATORY)
-8. **Ask Next Step Selection question** (MANDATORY)
-9. Route based on user's explicit choice
+5. **Analysis Phase (A-E)** (MANDATORY) - See analysis-phases.md
+6. **Create SPEC.md file** (MANDATORY) - Include Analysis Results
+7. **Commit SPEC.md** (MANDATORY)
+8. **Present SPEC.md for user review** (MANDATORY)
+9. **Ask Next Step Selection question** (MANDATORY)
+10. Route based on user's explicit choice
 
 ## Next Step Selection
 
