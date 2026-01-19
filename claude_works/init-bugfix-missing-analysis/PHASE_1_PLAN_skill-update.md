@@ -14,28 +14,28 @@ Update `.claude/skills/init-bugfix/SKILL.md` to include codebase analysis step a
 
 Location: After Step 6 (영향 범위), before "## Branch Keyword" section
 
-- [ ] Add new section header `### Step 7: Codebase Analysis`
-- [ ] Document conditional analysis flow (known files vs unknown)
-- [ ] Specify use of Explore agent for unknown file search
-- [ ] Specify use of Read tool for known file analysis
-- [ ] Define required outputs: root cause, affected code, fix strategy
-- [ ] Add handling for inconclusive analysis case
+- [x] Add new section header `### Step 7: Codebase Analysis`
+- [x] Document conditional analysis flow (known files vs unknown)
+- [x] Specify use of Explore agent for unknown file search
+- [x] Specify use of Read tool for known file analysis
+- [x] Define required outputs: root cause, affected code, fix strategy
+- [x] Add handling for inconclusive analysis case
 
 ### 2. Update Output Section
 
 Location: `## Output` section at end of file
 
-- [ ] Restructure SPEC.md format into two main sections
-- [ ] Add "User-Reported Information" subsection (Steps 1-6)
-- [ ] Add "AI Analysis Results" subsection (Step 7 output)
-- [ ] Define required fields for each subsection
+- [x] Restructure SPEC.md format into two main sections
+- [x] Add "User-Reported Information" subsection (Steps 1-6)
+- [x] Add "AI Analysis Results" subsection (Step 7 output)
+- [x] Define required fields for each subsection
 
 ### 3. Add Workflow Summary
 
 Location: After Step 7, before "## Branch Keyword"
 
-- [ ] Add `## Workflow` section
-- [ ] Document complete flow: questions → analysis → branch → SPEC → commit
+- [x] Add `## Workflow` section
+- [x] Document complete flow: questions → analysis → branch → SPEC → commit
 
 ## Acceptance Criteria
 

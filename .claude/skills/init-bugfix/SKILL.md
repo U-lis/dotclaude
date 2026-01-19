@@ -91,6 +91,60 @@ Options:
 → Or free text via "Other"
 ```
 
+## Codebase Analysis (MANDATORY)
+
+**CRITICAL**: After gathering user input (Steps 1-6), MUST perform codebase analysis before creating SPEC.md.
+
+### Analysis Flow
+
+#### Case 1: User specified related files (Step 5)
+1. Use Read tool to analyze the specified files
+2. Search for code patterns matching described symptoms
+3. Identify the exact code causing the bug
+
+#### Case 2: User said "모름" (unknown files)
+1. Use Task tool with Explore agent to search codebase
+2. Search patterns based on:
+   - Error messages from Step 1
+   - Keywords from symptom description
+   - Function/class names if mentioned
+3. Narrow down to relevant files
+
+### Required Analysis Outputs
+
+Document the following (all required):
+
+1. **Root Cause**:
+   - Exact code location (file:line)
+   - Why the bug occurs (code-level explanation)
+   - Difference from user's expected cause (if any)
+
+2. **Affected Code Locations**:
+   - List of files requiring modification
+   - Specific functions/methods to change
+
+3. **Fix Strategy**:
+   - Concrete modification plan
+   - Expected behavior after fix
+
+### Inconclusive Analysis Handling
+
+If analysis cannot identify root cause:
+- Document what was searched
+- List possible causes with confidence levels
+- Recommend further investigation steps
+- Mark SPEC.md "Root Cause" as "Requires further investigation"
+
+## Workflow Summary
+
+```
+1. Gather user information (Steps 1-6)
+2. Analyze codebase (mandatory investigation)
+3. Create branch: bugfix/{keyword}
+4. Create SPEC.md with user info + analysis results
+5. Commit and present for user review
+```
+
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
@@ -106,9 +160,18 @@ Options:
 1. Bugfix branch `bugfix/{keyword}` created and checked out
 2. Directory `claude_works/{subject}/` created
 3. `claude_works/{subject}/SPEC.md` with bug-specific format:
-   - Bug Description (from Step 1)
-   - Reproduction Steps (from Step 2)
-   - Expected Cause (from Step 3)
-   - Severity (from Step 4)
-   - Related Files (from Step 5)
-   - Impact Scope (from Step 6)
+
+### User-Reported Information
+- Bug Description (from Step 1)
+- Reproduction Steps (from Step 2)
+- User's Expected Cause (from Step 3)
+- Severity (from Step 4)
+- Related Files (from Step 5)
+- Impact Scope (from Step 6)
+
+### AI Analysis Results
+- Root Cause Analysis (from codebase investigation)
+  - Exact code location (file:line)
+  - Why the bug occurs
+- Affected Code Locations (files and functions to modify)
+- Fix Strategy (concrete modification plan)
