@@ -175,13 +175,16 @@ git worktree remove ../{subject}-3C
 
 **Step 11: Update Documentation**
 ```
-Task tool → TechnicalWriter
-  Input:
-    document_type: "DOCS_UPDATE"
-    commit_history: {commits since last tag}
-    changes_made: {files changed}
-    target_version: {selected version}
-  Output: CHANGELOG.md, README.md updated
+Skill tool: update-docs
+
+The /update-docs skill handles:
+- Call TechnicalWriter with DOCS_UPDATE role
+- Review commits since last tag
+- Update CHANGELOG.md with new version entry
+- Update README.md if needed
+- Commit documentation changes
+
+Output: CHANGELOG.md, README.md updated
 ```
 
 **Step 12: Merge to Main**
@@ -286,8 +289,8 @@ After user selects scope (Step 5), route to appropriate skills:
 |-----------|--------|
 | Design | Invoke `/design` → STOP |
 | Design → Code | `/design` → `/code all` → STOP |
-| Design → Code → Docs | `/design` → `/code all` → CHANGELOG → STOP |
-| Design → Code → Docs → Merge | `/design` → `/code all` → CHANGELOG → `/merge-main` → STOP |
+| Design → Code → Docs | `/design` → `/code all` → `/update-docs` → STOP |
+| Design → Code → Docs → Merge | `/design` → `/code all` → `/update-docs` → `/merge-main` → STOP |
 
 ## Non-Stop Execution
 
@@ -500,5 +503,5 @@ Current: Executing {skill name}
 Example for "Design → Code → Docs → Merge":
 - [Step 1/4] Design phase - Executing /design
 - [Step 2/4] Code implementation - Executing /code all
-- [Step 3/4] Documentation update - Updating CHANGELOG
+- [Step 3/4] Documentation update - Executing /update-docs
 - [Step 4/4] Merge to main - Executing /merge-main

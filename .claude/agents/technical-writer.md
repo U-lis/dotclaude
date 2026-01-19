@@ -59,6 +59,34 @@ SPEC.md defines the authoritative requirements. When writing SPEC.md:
 - Include completion criteria as checklists
 - Reference file paths explicitly
 
+## Roles
+
+### DOCS_UPDATE Role
+
+When invoked with DOCS_UPDATE role (via /update-docs skill):
+
+**CHANGELOG.md Update:**
+1. Review commits since last tag
+2. Filter meaningful changes (exclude: merge commits, typos, wip)
+3. Classify by Keep a Changelog categories:
+   - Added: new features
+   - Changed: changes in existing functionality
+   - Deprecated: soon-to-be removed features
+   - Removed: removed features
+   - Fixed: bug fixes
+   - Security: vulnerability fixes
+4. Add new version entry at top of file
+5. Use semver (X.Y.Z), date format YYYY-MM-DD, English content
+
+**README.md Update:**
+1. Check if implementation affects:
+   - Feature list
+   - Usage examples
+   - Configuration options
+   - Workflow diagrams
+2. Only update sections with visible changes
+3. Keep existing structure intact
+
 ## Document Templates
 
 ### SPEC.md Structure

@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Summary + Clarification (Step E): Iterative user confirmation loop (max 3 iterations)
 - Iteration limits to prevent infinite loops (5 questions/category, 3 iterations, 10 file reads)
 - Analysis Results section in SPEC.md with Related Code, Conflicts, Edge Cases tables
+- `/update-docs` skill for documentation updates (CHANGELOG, README)
+- TechnicalWriter DOCS_UPDATE role for structured documentation updates
+- Init Phase Attitude section in init-workflow.md clarifying init-xxx scope
 
 ### Changed
 
@@ -29,10 +32,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - init-refactor: Added refactor-specific analysis (dependency graph, test coverage, behavior preservation)
 - init-workflow step numbers updated (5→9 total steps)
 - All init skills now reference `_shared/analysis-phases.md` for common analysis
+- Orchestrator now owns full workflow control (routing, non-stop execution, progress reporting)
+- init-workflow.md reduced by ~40% (Steps 1-8 only, routing/execution moved to orchestrator)
+- init-xxx SKILL.md files now include Invocation Behavior section (direct vs orchestrator call)
+- Orchestrator routing table updated to use `/update-docs` instead of direct CHANGELOG update
 
 ### Removed
 
 - Question Sets section from orchestrator.md (now handled by init-xxx skills)
+- CHANGELOG rules from CLAUDE.md (now handled by /update-docs + TechnicalWriter)
+- Next Step Selection from init-workflow.md (orchestrator responsibility)
+- Routing section from init-workflow.md (orchestrator responsibility)
+- Non-Stop Execution section from init-workflow.md (orchestrator responsibility)
 
 ## [0.0.8] - 2026-01-19
 

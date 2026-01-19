@@ -97,19 +97,3 @@ claude_works/{subject}/
 #### Refactoring
 - Clearly understand which XP principle this work follows and focus on that direction.
 
-## 3. Miscellaneous
-
-### 3.1. CHANGELOG
-
-#### Process
-- CHANGELOG is written just before new version tagging.
-- Review commits from latest tag to HEAD, filter meaningful changes (exclude merge, typo).
-- Classify by work type following [Keep a Changelog](https://keepachangelog.com) format.
-- Write to CHANGELOG.md.
-
-#### Rules
-- Version follows semver (X.Y.Z). Use X.Y.Z placeholder if version is unknown.
-- Each version is an individual entry (no grouping).
-- Date format: YYYY-MM-DD (tag creation date).
-- Content in English.
-- Latest version at the top of file.
