@@ -79,26 +79,23 @@ The orchestrator agent (`agents/orchestrator.md`) is the central controller that
 - **Enables parallel execution** for parallel phases
 - **Tracks state** for resumability
 
-### 16-Step Workflow
+### 13-Step Workflow
 
 | Step | Phase | Description |
 |------|-------|-------------|
 | 1 | Init | Work type selection |
-| 2 | Init | Requirements gathering |
-| 3 | Init | Branch/directory setup |
-| 4 | Init | Target version selection |
-| 5 | Init | SPEC.md creation via TechnicalWriter |
-| 6 | Init | SPEC review |
-| 7 | Init | SPEC commit |
-| 8 | Init | Scope selection |
-| 9 | Design | Designer analysis |
-| 10 | Design | Document creation via TechnicalWriter |
-| 11 | Design | Design commit |
-| 12 | Code | Phase list parsing |
-| 13 | Code | Phase execution (sequential/parallel) |
-| 14 | Docs | Documentation update |
-| 15 | Merge | Merge to main |
-| 16 | Final | Summary return |
+| 2 | Init | Call init-xxx skill (questions, analysis, branch, SPEC) |
+| 3 | Init | SPEC review |
+| 4 | Init | SPEC commit |
+| 5 | Init | Scope selection |
+| 6 | Design | Designer analysis |
+| 7 | Design | Document creation via TechnicalWriter |
+| 8 | Design | Design commit |
+| 9 | Code | Phase list parsing |
+| 10 | Code | Phase execution (sequential/parallel) |
+| 11 | Docs | Documentation update |
+| 12 | Merge | Merge to main |
+| 13 | Final | Summary return |
 
 ## Skills (Commands)
 
@@ -186,13 +183,11 @@ rm -rf /tmp/dotclaude
 
 # Orchestrator takes over:
 # 1. Asks work type (Feature/Bugfix/Refactor)
-# 2. Collects requirements via questions
-# 3. Shows latest 5 versions, asks target version
-# 4. Creates SPEC.md via TechnicalWriter
-# 5. Reviews SPEC with user
-# 6. Asks execution scope
-# 7. Executes selected scope (Design/Code/Docs/Merge)
-# 8. Returns final summary
+# 2. Calls init-xxx skill (handles questions, analysis, branch, SPEC)
+# 3. Reviews SPEC with user
+# 4. Asks execution scope
+# 5. Executes selected scope (Design/Code/Docs/Merge)
+# 6. Returns final summary
 
 # After merge, optionally create version tag:
 /tagging

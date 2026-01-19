@@ -22,11 +22,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Orchestrator Step 2 now invokes init-xxx skills via Skill tool instead of asking questions directly
+- Orchestrator workflow reduced from 16 to 13 steps (init questions, branch setup, version selection, SPEC creation delegated to init-xxx)
 - init-feature: Added feature-specific analysis (similar functionality, modification points, patterns)
 - init-bugfix: Enhanced existing analysis with recent change correlation, conflict detection, edge cases
 - init-refactor: Added refactor-specific analysis (dependency graph, test coverage, behavior preservation)
 - init-workflow step numbers updated (5→9 total steps)
 - All init skills now reference `_shared/analysis-phases.md` for common analysis
+
+### Removed
+
+- Question Sets section from orchestrator.md (now handled by init-xxx skills)
 
 ## [0.0.8] - 2026-01-19
 
