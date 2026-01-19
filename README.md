@@ -10,6 +10,7 @@ This repository provides a structured workflow for software development using sp
 - Parallel development with git worktrees
 - Automated code validation
 - Language-specific coding standards
+- **Orchestrator-managed workflow** from init to merge
 
 ## Structure
 
@@ -19,6 +20,7 @@ This repository provides a structured workflow for software development using sp
 ├── .claude/
 │   ├── settings.json            # Hooks configuration
 │   ├── agents/                  # Agent definitions
+│   │   ├── orchestrator.md      # Central workflow controller
 │   │   ├── designer.md          # Architecture and planning
 │   │   ├── technical-writer.md  # Documentation
 │   │   ├── spec-validator.md    # Specification validation
@@ -33,9 +35,9 @@ This repository provides a structured workflow for software development using sp
 │   ├── skills/                  # Workflow commands
 │   │   ├── _shared/init-workflow.md  # Common init workflow
 │   │   ├── start-new/SKILL.md        # /start-new (entry point)
-│   │   ├── init-feature/SKILL.md     # /init-feature
-│   │   ├── init-bugfix/SKILL.md      # /init-bugfix
-│   │   ├── init-refactor/SKILL.md    # /init-refactor
+│   │   ├── init-feature/SKILL.md     # /init-feature (manual)
+│   │   ├── init-bugfix/SKILL.md      # /init-bugfix (manual)
+│   │   ├── init-refactor/SKILL.md    # /init-refactor (manual)
 │   │   ├── design/SKILL.md           # /design
 │   │   ├── validate-spec/SKILL.md    # /validate-spec
 │   │   ├── code/SKILL.md             # /code [phase]
@@ -53,38 +55,71 @@ This repository provides a structured workflow for software development using sp
 ## Workflow
 
 ```
-User → /start-new → Requirements → SPEC.md → User Approval
-                                                   ↓
-                                      "어디까지 진행할까요?"
-                                        (Scope Selection)
-                                                   ↓
-                    ┌──────────────────────────────┴──────────────────────────────┐
-                    │                    Non-Stop Execution                        │
-                    │  /design → /code all → CHANGELOG → /merge-main → Summary    │
-                    └─────────────────────────────────────────────────────────────┘
+User → /start-new → Orchestrator Agent
+                          ↓
+              ┌───────────────────────┐
+              │ Orchestrator manages: │
+              │ - Init (questions)    │
+              │ - SPEC.md creation    │
+              │ - Design              │
+              │ - Code (parallel)     │
+              │ - Documentation       │
+              │ - Merge               │
+              └───────────────────────┘
+                          ↓
+                   Final Summary
 ```
+
+## Orchestrator
+
+The orchestrator agent (`agents/orchestrator.md`) is the central controller that:
+
+- **Manages entire workflow** from init to merge
+- **Coordinates subagents** via Task tool
+- **Enables parallel execution** for parallel phases
+- **Tracks state** for resumability
+
+### 16-Step Workflow
+
+| Step | Phase | Description |
+|------|-------|-------------|
+| 1 | Init | Work type selection |
+| 2 | Init | Requirements gathering |
+| 3 | Init | Branch/directory setup |
+| 4 | Init | Target version selection |
+| 5 | Init | SPEC.md creation via TechnicalWriter |
+| 6 | Init | SPEC review |
+| 7 | Init | SPEC commit |
+| 8 | Init | Scope selection |
+| 9 | Design | Designer analysis |
+| 10 | Design | Document creation via TechnicalWriter |
+| 11 | Design | Design commit |
+| 12 | Code | Phase list parsing |
+| 13 | Code | Phase execution (sequential/parallel) |
+| 14 | Docs | Documentation update |
+| 15 | Merge | Merge to main |
+| 16 | Final | Summary return |
 
 ## Skills (Commands)
 
 | Command | Description |
 |---------|-------------|
-| `/start-new` | Entry point - routes to init-feature/bugfix/refactor |
-| `/init-feature` | Gather requirements and create SPEC.md for new features |
-| `/init-bugfix` | Gather bug details and create SPEC.md for bug fixes |
-| `/init-refactor` | Gather refactor info and create SPEC.md for refactoring |
+| `/start-new` | Entry point - calls orchestrator for full workflow |
+| `/init-feature` | Manual: Gather requirements for new features |
+| `/init-bugfix` | Manual: Gather bug details for bug fixes |
+| `/init-refactor` | Manual: Gather refactor info for refactoring |
 | `/design` | Transform SPEC into implementation plan |
 | `/validate-spec` | Validate document consistency (optional) |
 | `/code [phase]` | Execute coding for specified phase |
 | `/code all` | Execute all phases automatically |
-| `/merge-main` | Merge feature branch to main with conflict resolution |
+| `/merge-main` | Merge feature branch to main |
 | `/tagging` | Create version tag based on CHANGELOG |
-
-**Non-Stop Execution**: After SPEC.md approval, select execution scope to run multiple skills automatically without manual intervention.
 
 ## Agents
 
 | Agent | Role |
 |-------|------|
+| Orchestrator | Central workflow controller |
 | Designer | Technical architecture and phase decomposition |
 | TechnicalWriter | Structured documentation |
 | spec-validator | Document consistency validation |
@@ -148,36 +183,35 @@ rm -rf /tmp/dotclaude
 ```bash
 # In Claude Code session
 /start-new
-# Select work type: Feature / Bugfix / Refactor
-# Answer step-by-step questions
-# SPEC.md is created and reviewed
 
-# After SPEC.md approval, select execution scope:
-# "어디까지 진행할까요?"
-#   - Design                              → /design only
-#   - Design → Code                       → /design → /code all
-#   - Design → Code → CHANGELOG           → /design → /code all → CHANGELOG
-#   - Design → Code → CHANGELOG → Merge   → Full workflow to main merge
-
-# System executes non-stop to selected target
-# Final summary report displayed at completion
+# Orchestrator takes over:
+# 1. Asks work type (Feature/Bugfix/Refactor)
+# 2. Collects requirements via questions
+# 3. Shows latest 5 versions, asks target version
+# 4. Creates SPEC.md via TechnicalWriter
+# 5. Reviews SPEC with user
+# 6. Asks execution scope
+# 7. Executes selected scope (Design/Code/Docs/Merge)
+# 8. Returns final summary
 
 # After merge, optionally create version tag:
 /tagging
 ```
 
-### Manual Execution (Alternative)
+### Manual Execution (Bypass Orchestrator)
 
-Individual skills can still be invoked manually:
+Individual skills can be invoked directly for debugging or partial work:
 
 ```bash
+/init-feature        # Direct feature initialization
+/init-bugfix         # Direct bugfix initialization
+/init-refactor       # Direct refactor initialization
 /design              # Create implementation plan
-/validate-spec       # Validate document consistency (optional)
+/validate-spec       # Validate document consistency
 /code 1              # Implement Phase 1
-/code 2              # Implement Phase 2
-/code all            # Implement all phases automatically
-/merge-main          # Merge to main, cleanup branch
-/tagging             # Create version tag from CHANGELOG
+/code all            # Implement all phases
+/merge-main          # Merge to main
+/tagging             # Create version tag
 ```
 
 ## License
