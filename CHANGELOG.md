@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.7] - 2026-01-19
+
+### Fixed
+
+- `/init-bugfix` missing codebase analysis step before SPEC.md creation
+- SPEC.md now includes AI analysis results (root cause, affected code, fix strategy)
+
+### Added
+
+- "Codebase Analysis (MANDATORY)" section to `/init-bugfix` skill
+- Two-part SPEC.md structure: User-Reported Information + AI Analysis Results
+- Workflow Summary section documenting complete execution flow
+- Inconclusive analysis handling documentation
+
 ## [0.0.6] - 2026-01-16
 
 ### Added
