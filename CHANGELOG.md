@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.9] - 2026-01-19
+
+### Added
+
+- Smart Init: Intelligent requirements analysis for all init-xxx skills
+- `_shared/analysis-phases.md`: Common analysis workflow with 5 phases (A-E)
+- Analysis Phase (Step 5) added to shared init-workflow between structure creation and SPEC drafting
+- Input Analysis (Step A): Detect gaps, ambiguities, conflicting statements in user input
+- Codebase Investigation (Step B): Search for related code, patterns, and modification points
+- Conflict Detection (Step C): Compare requirements vs existing implementation
+- Edge Case Generation (Step D): Generate boundary conditions and error scenarios
+- Summary + Clarification (Step E): Iterative user confirmation loop (max 3 iterations)
+- Iteration limits to prevent infinite loops (5 questions/category, 3 iterations, 10 file reads)
+- Analysis Results section in SPEC.md with Related Code, Conflicts, Edge Cases tables
+
+### Changed
+
+- init-feature: Added feature-specific analysis (similar functionality, modification points, patterns)
+- init-bugfix: Enhanced existing analysis with recent change correlation, conflict detection, edge cases
+- init-refactor: Added refactor-specific analysis (dependency graph, test coverage, behavior preservation)
+- init-workflow step numbers updated (5→9 total steps)
+- All init skills now reference `_shared/analysis-phases.md` for common analysis
+
 ## [0.0.8] - 2026-01-19
 
 ### Added
