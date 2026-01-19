@@ -21,6 +21,15 @@ Initialize bug fix work by gathering bug details through step-by-step questions.
 
 User invokes `/init-bugfix` or is routed from `/start-new` (버그 수정 selected).
 
+## Invocation Behavior
+
+| Context | Behavior |
+|---------|----------|
+| Direct (`/init-bugfix`) | Complete init phase (Steps 1-8), return control to user |
+| Via orchestrator (`/start-new`) | Complete init phase, return to orchestrator for workflow continuation |
+
+When called directly, this skill completes after SPEC review (Step 8). User must manually invoke subsequent skills if needed.
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
@@ -219,12 +228,18 @@ If analysis cannot identify root cause:
 - **Conflict Analysis** (conflicts and resolutions)
 - **Edge Cases** (for test coverage)
 
+**Note**: Scope selection and subsequent workflow handled by orchestrator when invoked via `/start-new`.
+
 ## Workflow Integration
 
-After Analysis Phase completes:
-1. Analysis results are included in SPEC.md
-2. SPEC.md is committed (Step 7 in init-workflow)
-3. User reviews SPEC.md (Step 8)
-4. Next Step Selection (Step 9)
+This skill handles Steps 1-8 of the init phase:
+1. Requirements gathering (skill-specific questions)
+2. Branch keyword generation
+3. Branch and directory creation
+4. Analysis Phase (A-E)
+5. SPEC.md creation
+6. SPEC.md commit
+7. User review
 
-See `_shared/init-workflow.md` for complete workflow.
+See `_shared/init-workflow.md` for init phase details.
+See `orchestrator.md` for full workflow (when invoked via /start-new).
