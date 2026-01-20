@@ -5,10 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.9] - 2026-01-19
+## [0.0.9] - 2026-01-20
 
 ### Added
 
+- init-xxx agents: `init-feature.md`, `init-bugfix.md`, `init-refactor.md` in agents directory
+- Hybrid pattern: thin wrapper skills delegate to full-logic agents
+- `agents/_shared/` directory for shared workflow files
+- Output Contract section to init-xxx agents for structured return values
 - Smart Init: Intelligent requirements analysis for all init-xxx skills
 - `_shared/analysis-phases.md`: Common analysis workflow with 5 phases (A-E)
 - Analysis Phase (Step 5) added to shared init-workflow between structure creation and SPEC drafting
@@ -25,7 +29,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Orchestrator Step 2 now invokes init-xxx skills via Skill tool instead of asking questions directly
+- init-xxx skills reduced from ~200 lines to ~60 lines (thin wrappers)
+- Orchestrator now calls init-xxx agents via Task tool (previously Skill tool)
+- `_shared/` directory moved from `skills/` to `agents/`
+- Orchestrator Step 2 now invokes init-xxx agents via Task tool instead of skills
 - Orchestrator workflow reduced from 16 to 13 steps (init questions, branch setup, version selection, SPEC creation delegated to init-xxx)
 - init-feature: Added feature-specific analysis (similar functionality, modification points, patterns)
 - init-bugfix: Enhanced existing analysis with recent change correlation, conflict detection, edge cases
