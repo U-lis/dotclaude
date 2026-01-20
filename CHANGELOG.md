@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.0.9] - 2026-01-20
 
+### Fixed
+
+- Orchestrator not using AskUserQuestion tool in Step 1: Added explicit "CRITICAL" instruction, prohibited text tables and number typing, clarified tool call parameters format
+- Orchestrator not calling init-xxx agents in Step 2: Added "CRITICAL" instruction with "MUST call init agent via Task tool", added "PROHIBITED" section, added mapping table for work type → agent selection
+- Orchestrator assuming tools are unavailable: Added "IMPORTANT: All these tools ARE available to you" statement in Capabilities section, emphasized "YOU HAVE THIS TOOL. USE IT." for AskUserQuestion
+
 ### Added
 
 - init-xxx agents: `init-feature.md`, `init-bugfix.md`, `init-refactor.md` in agents directory
@@ -29,6 +35,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- start-new/SKILL.md: Rule 2 now explicitly requires "call init-xxx agent via Task tool for Step 2", added "IMPORTANT" box clarifying orchestrator must not ask questions directly
+- Orchestrator Subagent Call Patterns: Init Agents section now references Step 2 instead of duplicating content
 - init-xxx skills reduced from ~200 lines to ~60 lines (thin wrappers)
 - Orchestrator now calls init-xxx agents via Task tool (previously Skill tool)
 - `_shared/` directory moved from `skills/` to `agents/`

@@ -44,17 +44,16 @@ Task tool:
     Execute the full development workflow starting from Step 1.
 
     CRITICAL RULES:
-    1. You MUST use AskUserQuestion tool for ALL user interactions
-    2. You MUST call TechnicalWriter subagent for SPEC.md creation
+    1. You MUST use AskUserQuestion tool for ALL direct user interactions (Step 1, 3, 5)
+    2. You MUST call init-xxx agent via Task tool for Step 2 (DO NOT ask work-type questions directly)
     3. You MUST present SPEC.md for user review BEFORE committing
-    4. Follow the 16-step workflow defined in your agent file exactly
+    4. Follow the 13-step workflow defined in your agent file exactly
 ```
 
 Orchestrator handles:
 - Work type selection (Feature/Bugfix/Refactor) via AskUserQuestion
-- Work-type-specific questions via AskUserQuestion
-- Target version selection via AskUserQuestion
-- SPEC.md creation via TechnicalWriter subagent
+- **Init agent call** via Task tool (init-feature/init-bugfix/init-refactor)
+  - Init agent handles: work-type-specific questions, analysis, branch/directory creation, SPEC.md
 - SPEC review via AskUserQuestion (before commit)
 - Commit SPEC.md (after approval)
 - Scope selection via AskUserQuestion
