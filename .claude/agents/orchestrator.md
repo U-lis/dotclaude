@@ -174,24 +174,25 @@ git worktree remove ../{subject}-3C
 
 **Step 11: Update Documentation**
 ```
-Skill tool: update-docs
+Task tool → TechnicalWriter (DOCS_UPDATE role)
+  Input:
+    role: "DOCS_UPDATE"
+    commits: git log since last tag
+    target_version: from init phase
+  Output: CHANGELOG.md, README.md updates
 
-The /update-docs skill handles:
-- Call TechnicalWriter with DOCS_UPDATE role
-- Review commits since last tag
-- Update CHANGELOG.md with new version entry
-- Update README.md if needed
-- Commit documentation changes
-
-Output: CHANGELOG.md, README.md updated
+Then commit:
+  git add CHANGELOG.md README.md
+  git commit -m "docs: update CHANGELOG and README for {version}"
 ```
 
 **Step 12: Merge to Main**
-```bash
-git checkout main
-git pull origin main
-git merge feature/{subject} --no-edit
-git branch -d feature/{subject}
+```
+Direct execution (Bash tool):
+  git checkout main
+  git pull origin main
+  git merge {branch} --no-edit
+  git branch -d {branch}
 ```
 
 **Step 13: Return Summary**
@@ -292,14 +293,16 @@ Task tool:
 
 ## Routing
 
-After user selects scope (Step 5), route to appropriate skills:
+After user selects scope (Step 5), execute steps directly:
 
-| Selection | Action |
-|-----------|--------|
-| Design | Invoke `/design` → STOP |
-| Design → Code | `/design` → `/code all` → STOP |
-| Design → Code → Docs | `/design` → `/code all` → `/update-docs` → STOP |
-| Design → Code → Docs → Merge | `/design` → `/code all` → `/update-docs` → `/merge-main` → STOP |
+| Selection | Execution |
+|-----------|-----------|
+| Design | Steps 6-8 (Designer + TechnicalWriter + commit) → STOP |
+| Design → Code | Steps 6-10 (Design + Code phases) → STOP |
+| Design → Code → Docs | Steps 6-11 (Design + Code + TechnicalWriter DOCS_UPDATE) → STOP |
+| Design → Code → Docs → Merge | Steps 6-12 (Full workflow) → STOP |
+
+**Execution Method**: All steps executed directly via Task tool (for agents) or Bash tool (for git operations). Do NOT invoke skills via Skill tool.
 
 ## Non-Stop Execution
 
