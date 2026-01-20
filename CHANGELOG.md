@@ -42,7 +42,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestrator now owns full workflow control (routing, non-stop execution, progress reporting)
 - init-workflow.md reduced by ~40% (Steps 1-8 only, routing/execution moved to orchestrator)
 - init-xxx SKILL.md files now include Invocation Behavior section (direct vs orchestrator call)
-- Orchestrator routing table updated to use `/update-docs` instead of direct CHANGELOG update
+- Orchestrator routing table updated to show step numbers instead of skill names
+- Orchestrator Step 11 (Docs) now uses Task tool → TechnicalWriter instead of Skill tool
+- Orchestrator Step 12 (Merge) clarified as direct Bash execution
+- Orchestrator now explicitly prohibits Skill tool usage for workflow execution
 
 ### Removed
 
