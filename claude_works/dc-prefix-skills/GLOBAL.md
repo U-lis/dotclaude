@@ -55,7 +55,7 @@ Prefix all 7 dotclaude skills with `dc:` namespace:
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | PREFIX - Add dc: prefix to all skills | Pending | None |
+| 1 | PREFIX - Add dc: prefix to all skills | Complete | None |
 
 ## Success Criteria
 
