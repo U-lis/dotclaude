@@ -60,8 +60,26 @@ Execute ALL steps defined in the loaded init file:
 3. Create work branch: `git checkout -b {type}/{keyword}`
 4. Create project directory: `mkdir -p claude_works/{subject}`
 5. Analysis phase (read `_analysis.md` for details)
-6. Draft SPEC.md via TechnicalWriter
-7. Commit SPEC.md
+6. **Target Version Question** (see below)
+7. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
+8. Commit SPEC.md
+
+**Step 2.6: Target Version Question**
+
+After analysis, before drafting SPEC.md, call AskUserQuestion tool:
+- question: "이 작업의 목표 버전은 무엇인가요? (예: 1.2.0)"
+- header: "목표 버전"
+- options:
+  - { label: "패치 (x.x.+1)", description: "버그 수정, 작은 변경" }
+  - { label: "마이너 (x.+1.0)", description: "새 기능 추가, 하위 호환" }
+  - { label: "메이저 (+1.0.0)", description: "Breaking changes 포함" }
+- multiSelect: false
+
+User can also enter specific version via "Other" option.
+
+Store the target_version for:
+- Include in SPEC.md header
+- Pass to TechnicalWriter for CHANGELOG updates (Step 11)
 
 **Step 3: SPEC Review**
 

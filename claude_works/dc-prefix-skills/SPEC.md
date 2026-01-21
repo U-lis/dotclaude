@@ -1,5 +1,7 @@
 # Dotclaude Skill Prefix Refactoring - Specification
 
+**Target Version**: 0.0.9
+
 ## Overview
 
 Add `dc:` prefix to all 7 dotclaude skill command names for clear namespace identification and improved discoverability.
