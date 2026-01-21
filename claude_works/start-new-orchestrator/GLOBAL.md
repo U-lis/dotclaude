@@ -40,7 +40,7 @@ Integrate orchestrator agent directly into /start-new skill to enable AskUserQue
 └── init-refactor.md  # Refactor questions + refactor-specific analysis (~160 lines)
 ```
 
-Total: ~1,030 lines (43% reduction from 1,815 lines)
+Total: 1,372 lines (24% reduction from 1,815 lines)
 
 ## Data Model
 
@@ -53,10 +53,10 @@ Total: ~1,030 lines (43% reduction from 1,815 lines)
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Create new file structure (5 files) | Pending | None |
-| 2 | Update references to deleted paths | Pending | Phase 1 |
-| 3 | Delete old files (6 agents, 3 skills, 1 hook) | Pending | Phase 2 |
-| 4 | End-to-end validation | Pending | Phase 3 |
+| 1 | Create new file structure (5 files) | Complete | None |
+| 2 | Update references to deleted paths | Complete | Phase 1 |
+| 3 | Delete old files (6 agents, 3 skills, 1 hook) | Complete | Phase 2 |
+| 4 | End-to-end validation | Complete | Phase 3 |
 
 ## File Operations Summary
 
