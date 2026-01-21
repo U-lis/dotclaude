@@ -22,6 +22,7 @@
     ".claude/settings.json",
     ".claude/skills/code/SKILL.md",
     ".claude/skills/design/SKILL.md",
+    ".claude/skills/dotclaude/update/SKILL.md",
     ".claude/skills/dotclaude/version/SKILL.md",
     ".claude/skills/init-bugfix/SKILL.md",
     ".claude/skills/init-feature/SKILL.md",
