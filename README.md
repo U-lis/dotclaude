@@ -33,7 +33,6 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands
-│   │   ├── _shared/init-workflow.md  # Common init workflow
 │   │   ├── start-new/SKILL.md        # /start-new (entry point)
 │   │   ├── init-feature/SKILL.md     # /init-feature (manual)
 │   │   ├── init-bugfix/SKILL.md      # /init-bugfix (manual)
@@ -42,7 +41,10 @@ This repository provides a structured workflow for software development using sp
 │   │   ├── validate-spec/SKILL.md    # /validate-spec
 │   │   ├── code/SKILL.md             # /code [phase]
 │   │   ├── merge-main/SKILL.md       # /merge-main
-│   │   └── tagging/SKILL.md          # /tagging
+│   │   ├── tagging/SKILL.md          # /tagging
+│   │   └── dotclaude/                # Update commands
+│   │       ├── version/SKILL.md      # /dotclaude:version
+│   │       └── update/SKILL.md       # /dotclaude:update
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -111,6 +113,8 @@ The orchestrator agent (`agents/orchestrator.md`) is the central controller that
 | `/code all` | Execute all phases automatically |
 | `/merge-main` | Merge feature branch to main |
 | `/tagging` | Create version tag based on CHANGELOG |
+| `/dotclaude:version` | Display installed vs latest dotclaude version |
+| `/dotclaude:update` | Update dotclaude framework to latest version |
 
 ## Agents
 
@@ -193,6 +197,28 @@ rm -rf /tmp/dotclaude
 /tagging
 ```
 
+### Update dotclaude
+
+Check for updates and apply them:
+
+```bash
+# Check current and latest version
+/dotclaude:version
+
+# Update to latest version
+/dotclaude:update
+
+# Update to specific version
+/dotclaude:update v0.1.0
+```
+
+The update process:
+- Tracks managed files via `.dotclaude-manifest.json`
+- Only updates dotclaude-managed files (preserves your customizations)
+- Smart merges `settings.json` (adds new keys, keeps your values)
+- Backs up before update, rolls back on failure
+- Requires confirmation before making changes
+
 ### Manual Execution (Bypass Orchestrator)
 
 Individual skills can be invoked directly for debugging or partial work:
@@ -207,6 +233,8 @@ Individual skills can be invoked directly for debugging or partial work:
 /code all            # Implement all phases
 /merge-main          # Merge to main
 /tagging             # Create version tag
+/dotclaude:version   # Check installed version
+/dotclaude:update    # Update to latest version
 ```
 
 ## License

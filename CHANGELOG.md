@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.10] - 2026-01-21
+
+### Added
+
+- `/dotclaude:version` skill: Display installed vs latest dotclaude version
+- `/dotclaude:update` skill: Update dotclaude framework with manifest-based file tracking
+- `.dotclaude-manifest.json`: Tracks all dotclaude-managed files for safe updates
+- Manifest-based update system: File-level updates preserve user customizations
+- Smart settings.json merge: Adds new keys from upstream while preserving local values
+- Backup and rollback: Automatic backup before update, restore on failure
+- User confirmation required before any update changes
+
+### Changed
+
+- Skills directory now includes `dotclaude/` namespace for update-related skills
+
 ## [0.0.9] - 2026-01-20
 
 ### Fixed
