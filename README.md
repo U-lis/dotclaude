@@ -20,7 +20,6 @@ This repository provides a structured workflow for software development using sp
 ├── .claude/
 │   ├── settings.json            # Hooks configuration
 │   ├── agents/                  # Agent definitions
-│   │   ├── orchestrator.md      # Central workflow controller
 │   │   ├── designer.md          # Architecture and planning
 │   │   ├── technical-writer.md  # Documentation
 │   │   ├── spec-validator.md    # Specification validation
@@ -33,7 +32,12 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
 │   ├── skills/                  # Workflow commands (dc: prefix)
-│   │   ├── start-new/SKILL.md        # /dc:start-new (entry point)
+│   │   ├── start-new/           # /dc:start-new (entry point + orchestrator)
+│   │   │   ├── SKILL.md         # 13-step orchestrator workflow
+│   │   │   ├── _analysis.md     # Common analysis phases
+│   │   │   ├── init-feature.md  # Feature init instructions
+│   │   │   ├── init-bugfix.md   # Bugfix init instructions
+│   │   │   └── init-refactor.md # Refactor init instructions
 │   │   ├── design/SKILL.md           # /dc:design
 │   │   ├── validate-spec/SKILL.md    # /dc:validate-spec
 │   │   ├── code/SKILL.md             # /dc:code [phase]
@@ -69,7 +73,7 @@ User → /dc:start-new → Orchestrator Agent
 
 ## Orchestrator
 
-The orchestrator agent (`agents/orchestrator.md`) is the central controller that:
+The orchestrator workflow is integrated into `/dc:start-new` skill (`skills/start-new/SKILL.md`):
 
 - **Manages entire workflow** from init to merge
 - **Coordinates subagents** via Task tool
@@ -81,7 +85,7 @@ The orchestrator agent (`agents/orchestrator.md`) is the central controller that
 | Step | Phase | Description |
 |------|-------|-------------|
 | 1 | Init | Work type selection |
-| 2 | Init | Call init-xxx skill (questions, analysis, branch, SPEC) |
+| 2 | Init | Load init instructions (questions, analysis, target version, branch, SPEC) |
 | 3 | Init | SPEC review |
 | 4 | Init | SPEC commit |
 | 5 | Init | Scope selection |
@@ -113,12 +117,13 @@ All dotclaude skills use the `dc:` prefix for namespace identification:
 
 | Agent | Role |
 |-------|------|
-| Orchestrator | Central workflow controller |
 | Designer | Technical architecture and phase decomposition |
 | TechnicalWriter | Structured documentation |
 | spec-validator | Document consistency validation |
 | code-validator | Code quality + plan verification |
 | Coders | Language-specific implementation |
+
+Note: Orchestrator workflow is now integrated into `/dc:start-new` skill.
 
 ## Document Types
 

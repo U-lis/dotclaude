@@ -62,11 +62,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Question Sets section from orchestrator.md (now handled by init-xxx skills)
-- CHANGELOG rules from CLAUDE.md (now handled by /update-docs + TechnicalWriter)
-- Next Step Selection from init-workflow.md (orchestrator responsibility)
-- Routing section from init-workflow.md (orchestrator responsibility)
-- Non-Stop Execution section from init-workflow.md (orchestrator responsibility)
+- `agents/orchestrator.md` - integrated into `skills/start-new/SKILL.md`
+- `agents/init-feature.md`, `agents/init-bugfix.md`, `agents/init-refactor.md` - moved to `skills/start-new/`
+- `agents/_shared/init-workflow.md` - merged into `skills/start-new/SKILL.md`
+- `agents/_shared/analysis-phases.md` - moved to `skills/start-new/_analysis.md`
+- `.claude/hooks/check-init-complete.sh` - validation now in SKILL.md Step 6 checkpoint
+- `skills/init-feature/`, `skills/init-bugfix/`, `skills/init-refactor/` directories - consolidated into start-new
+- Question Sets section from orchestrator.md (now handled by init instructions)
+- CHANGELOG rules from CLAUDE.md (now handled by /dc:update-docs + TechnicalWriter)
 
 ## [0.0.8] - 2026-01-19
 
