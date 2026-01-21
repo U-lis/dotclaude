@@ -58,6 +58,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestrator now explicitly prohibits Skill tool usage for workflow execution
 - All skill commands renamed with `dc:` prefix for namespace identification (`/start-new` → `/dc:start-new`, `/code` → `/dc:code`, `/design` → `/dc:design`, `/validate-spec` → `/dc:validate-spec`, `/tagging` → `/dc:tagging`, `/merge-main` → `/dc:merge-main`, `/update-docs` → `/dc:update-docs`)
 - `/dc:start-new` workflow now includes target version question (Step 2.6) before SPEC.md creation
+- Target version question now shows recent 3 versions from CHANGELOG with key changes before asking
 
 ### Removed
 
