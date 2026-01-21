@@ -5,13 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.0.9] - 2026-01-20
+## [0.0.9] - 2026-01-21
 
 ### Fixed
 
 - Orchestrator not using AskUserQuestion tool in Step 1: Added explicit "CRITICAL" instruction, prohibited text tables and number typing, clarified tool call parameters format
 - Orchestrator not calling init-xxx agents in Step 2: Added "CRITICAL" instruction with "MUST call init agent via Task tool", added "PROHIBITED" section, added mapping table for work type → agent selection
 - Orchestrator assuming tools are unavailable: Added "IMPORTANT: All these tools ARE available to you" statement in Capabilities section, emphasized "YOU HAVE THIS TOOL. USE IT." for AskUserQuestion
+- Missing target version question in `/dc:start-new` workflow (now asks before SPEC creation)
 
 ### Added
 
@@ -32,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/update-docs` skill for documentation updates (CHANGELOG, README)
 - TechnicalWriter DOCS_UPDATE role for structured documentation updates
 - Init Phase Attitude section in init-workflow.md clarifying init-xxx scope
+- Frontmatter to `update-docs/SKILL.md` (was missing)
 
 ### Changed
 
@@ -54,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestrator Step 11 (Docs) now uses Task tool → TechnicalWriter instead of Skill tool
 - Orchestrator Step 12 (Merge) clarified as direct Bash execution
 - Orchestrator now explicitly prohibits Skill tool usage for workflow execution
+- All skill commands renamed with `dc:` prefix for namespace identification (`/start-new` → `/dc:start-new`, `/code` → `/dc:code`, `/design` → `/dc:design`, `/validate-spec` → `/dc:validate-spec`, `/tagging` → `/dc:tagging`, `/merge-main` → `/dc:merge-main`, `/update-docs` → `/dc:update-docs`)
+- `/dc:start-new` workflow now includes target version question (Step 2.6) before SPEC.md creation
 
 ### Removed
 
