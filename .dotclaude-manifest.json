@@ -1,5 +1,5 @@
 {
-  "version": "0.0.10",
+  "version": "X.Y.Z",
   "managed_files": [
     ".claude/agents/code-validator.md",
     ".claude/agents/coders/_base.md",
