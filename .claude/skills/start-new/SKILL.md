@@ -66,14 +66,38 @@ Execute ALL steps defined in the loaded init file:
 
 **Step 2.6: Target Version Question**
 
-After analysis, before drafting SPEC.md, call AskUserQuestion tool:
-- question: "이 작업의 목표 버전은 무엇인가요? (예: 1.2.0)"
-- header: "목표 버전"
-- options:
-  - { label: "패치 (x.x.+1)", description: "버그 수정, 작은 변경" }
-  - { label: "마이너 (x.+1.0)", description: "새 기능 추가, 하위 호환" }
-  - { label: "메이저 (+1.0.0)", description: "Breaking changes 포함" }
-- multiSelect: false
+After analysis, before drafting SPEC.md:
+
+1. **Read CHANGELOG.md** to gather version context:
+   ```
+   Read CHANGELOG.md → Extract recent 3 versions (including unreleased if exists)
+   For each version: version number, date, key changes (1-2 lines summary)
+   ```
+
+2. **Present version history** to user before asking:
+   ```markdown
+   ## 최근 버전 히스토리
+
+   | 버전 | 날짜 | 주요 변경사항 |
+   |------|------|--------------|
+   | 0.0.9 | 2026-01-21 | dc: prefix 추가, target version 질문 추가 |
+   | 0.0.8 | 2026-01-19 | Orchestrator 추가, 16단계 워크플로우 |
+   | 0.0.7 | 2026-01-19 | init-bugfix 분석 단계 추가 |
+   ```
+
+3. **Call AskUserQuestion** with context-aware options:
+   - question: "이 작업의 목표 버전은 무엇인가요?"
+   - header: "목표 버전"
+   - options (dynamically generated based on current version):
+     - { label: "{current}.{+1} (패치)", description: "버그 수정, 작은 변경" }
+     - { label: "{current+minor}.0 (마이너)", description: "새 기능 추가, 하위 호환" }
+     - { label: "{current+major}.0.0 (메이저)", description: "Breaking changes 포함" }
+   - multiSelect: false
+
+   Example if current is 0.0.9:
+   - { label: "0.0.10 (패치)", description: "버그 수정, 작은 변경" }
+   - { label: "0.1.0 (마이너)", description: "새 기능 추가, 하위 호환" }
+   - { label: "1.0.0 (메이저)", description: "Breaking changes 포함" }
 
 User can also enter specific version via "Other" option.
 
