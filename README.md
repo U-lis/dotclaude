@@ -32,17 +32,14 @@ This repository provides a structured workflow for software development using sp
 │   │       ├── svelte.md        # Svelte specialist
 │   │       ├── rust.md          # Rust specialist
 │   │       └── sql.md           # SQL/DB specialist
-│   ├── skills/                  # Workflow commands
-│   │   ├── _shared/init-workflow.md  # Common init workflow
-│   │   ├── start-new/SKILL.md        # /start-new (entry point)
-│   │   ├── init-feature/SKILL.md     # /init-feature (manual)
-│   │   ├── init-bugfix/SKILL.md      # /init-bugfix (manual)
-│   │   ├── init-refactor/SKILL.md    # /init-refactor (manual)
-│   │   ├── design/SKILL.md           # /design
-│   │   ├── validate-spec/SKILL.md    # /validate-spec
-│   │   ├── code/SKILL.md             # /code [phase]
-│   │   ├── merge-main/SKILL.md       # /merge-main
-│   │   └── tagging/SKILL.md          # /tagging
+│   ├── skills/                  # Workflow commands (dc: prefix)
+│   │   ├── start-new/SKILL.md        # /dc:start-new (entry point)
+│   │   ├── design/SKILL.md           # /dc:design
+│   │   ├── validate-spec/SKILL.md    # /dc:validate-spec
+│   │   ├── code/SKILL.md             # /dc:code [phase]
+│   │   ├── merge-main/SKILL.md       # /dc:merge-main
+│   │   ├── tagging/SKILL.md          # /dc:tagging
+│   │   └── update-docs/SKILL.md      # /dc:update-docs
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -55,7 +52,7 @@ This repository provides a structured workflow for software development using sp
 ## Workflow
 
 ```
-User → /start-new → Orchestrator Agent
+User → /dc:start-new → Orchestrator Agent
                           ↓
               ┌───────────────────────┐
               │ Orchestrator manages: │
@@ -99,18 +96,18 @@ The orchestrator agent (`agents/orchestrator.md`) is the central controller that
 
 ## Skills (Commands)
 
+All dotclaude skills use the `dc:` prefix for namespace identification:
+
 | Command | Description |
 |---------|-------------|
-| `/start-new` | Entry point - calls orchestrator for full workflow |
-| `/init-feature` | Manual: Gather requirements for new features |
-| `/init-bugfix` | Manual: Gather bug details for bug fixes |
-| `/init-refactor` | Manual: Gather refactor info for refactoring |
-| `/design` | Transform SPEC into implementation plan |
-| `/validate-spec` | Validate document consistency (optional) |
-| `/code [phase]` | Execute coding for specified phase |
-| `/code all` | Execute all phases automatically |
-| `/merge-main` | Merge feature branch to main |
-| `/tagging` | Create version tag based on CHANGELOG |
+| `/dc:start-new` | Entry point - calls orchestrator for full workflow |
+| `/dc:design` | Transform SPEC into implementation plan |
+| `/dc:validate-spec` | Validate document consistency (optional) |
+| `/dc:code [phase]` | Execute coding for specified phase |
+| `/dc:code all` | Execute all phases automatically |
+| `/dc:merge-main` | Merge feature branch to main |
+| `/dc:tagging` | Create version tag based on CHANGELOG |
+| `/dc:update-docs` | Update documentation (CHANGELOG, README) |
 
 ## Agents
 
@@ -179,18 +176,19 @@ rm -rf /tmp/dotclaude
 
 ```bash
 # In Claude Code session
-/start-new
+/dc:start-new
 
 # Orchestrator takes over:
 # 1. Asks work type (Feature/Bugfix/Refactor)
-# 2. Calls init-xxx skill (handles questions, analysis, branch, SPEC)
-# 3. Reviews SPEC with user
-# 4. Asks execution scope
-# 5. Executes selected scope (Design/Code/Docs/Merge)
-# 6. Returns final summary
+# 2. Gathers requirements via step-by-step questions
+# 3. Asks target version
+# 4. Creates and reviews SPEC with user
+# 5. Asks execution scope
+# 6. Executes selected scope (Design/Code/Docs/Merge)
+# 7. Returns final summary
 
 # After merge, optionally create version tag:
-/tagging
+/dc:tagging
 ```
 
 ### Manual Execution (Bypass Orchestrator)
@@ -198,15 +196,13 @@ rm -rf /tmp/dotclaude
 Individual skills can be invoked directly for debugging or partial work:
 
 ```bash
-/init-feature        # Direct feature initialization
-/init-bugfix         # Direct bugfix initialization
-/init-refactor       # Direct refactor initialization
-/design              # Create implementation plan
-/validate-spec       # Validate document consistency
-/code 1              # Implement Phase 1
-/code all            # Implement all phases
-/merge-main          # Merge to main
-/tagging             # Create version tag
+/dc:design           # Create implementation plan
+/dc:validate-spec    # Validate document consistency
+/dc:code 1           # Implement Phase 1
+/dc:code all         # Implement all phases
+/dc:update-docs      # Update documentation
+/dc:merge-main       # Merge to main
+/dc:tagging          # Create version tag
 ```
 
 ## License

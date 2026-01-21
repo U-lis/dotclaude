@@ -1,10 +1,10 @@
 ---
-name: merge-main
+name: dc:merge-main
 description: Merge feature branch to main with conflict resolution and branch cleanup
 user-invocable: true
 ---
 
-# /merge-main [branch]
+# /dc:merge-main [branch]
 
 Merge feature branch to main, resolve conflicts, cleanup.
 

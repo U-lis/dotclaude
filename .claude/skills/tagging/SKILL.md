@@ -1,10 +1,10 @@
 ---
-name: tagging
+name: dc:tagging
 description: Create version tag based on CHANGELOG
 user-invocable: true
 ---
 
-# /tagging
+# /dc:tagging
 
 Create git tag based on CHANGELOG.md version.
 

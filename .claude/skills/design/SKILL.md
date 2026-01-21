@@ -1,16 +1,16 @@
 ---
-name: design
-description: Transform SPEC into detailed implementation plan using Designer agent. Use after SPEC.md is approved or when user invokes /design.
+name: dc:design
+description: Transform SPEC into detailed implementation plan using Designer agent. Use after SPEC.md is approved or when user invokes /dc:design.
 user-invocable: true
 ---
 
-# /design
+# /dc:design
 
 Transform SPEC into detailed implementation plan using Designer agent.
 
 ## Trigger
 
-User invokes `/design` after SPEC.md is ready.
+User invokes `/dc:design` after SPEC.md is ready.
 
 ## Prerequisites
 
@@ -96,5 +96,5 @@ claude_works/{subject}/
 ## Next Steps
 
 After design is approved:
-1. Proceed to `/validate-spec` to verify document consistency
-2. Then `/code [phase]` to start implementation
+1. Proceed to `/dc:validate-spec` to verify document consistency
+2. Then `/dc:code [phase]` to start implementation

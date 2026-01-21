@@ -1,10 +1,16 @@
-# /update-docs
+---
+name: dc:update-docs
+description: Update project documentation (README, CHANGELOG) after code implementation is complete.
+user-invocable: true
+---
+
+# /dc:update-docs
 
 Update project documentation (README, CHANGELOG) after code implementation is complete.
 
 ## Trigger
 
-- User invokes `/update-docs` directly
+- User invokes `/dc:update-docs` directly
 - Orchestrator calls after all phases complete (Step 11)
 
 ## Prerequisites
@@ -118,5 +124,5 @@ Task tool:
 
 | Context | Behavior |
 |---------|----------|
-| Direct (`/update-docs`) | Complete docs update, return control to user |
+| Direct (`/dc:update-docs`) | Complete docs update, return control to user |
 | Via orchestrator | Complete docs update, return to orchestrator for continued workflow |

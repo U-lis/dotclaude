@@ -1,10 +1,10 @@
 ---
-name: start-new
+name: dc:start-new
 description: Entry point for starting new work. Executes full 13-step orchestrator workflow with AskUserQuestion support.
 user-invocable: true
 ---
 
-# /start-new
+# /dc:start-new
 
 Central workflow controller for the full 13-step development process from init to merge.
 
@@ -545,7 +545,7 @@ After all steps in the chain complete, display summary:
 ## Next Steps
 1. Review changes: `git log --oneline -10`
 2. Push to remote: `git push origin main`
-3. (Optional) Create tag: `/tagging`
+3. (Optional) Create tag: `/dc:tagging`
 ```
 
 This summary appears ONLY at the final STOP point, not between steps.

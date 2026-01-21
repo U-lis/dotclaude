@@ -1,16 +1,16 @@
 ---
-name: code
-description: Execute coding work for a specific phase. Use when implementing a phase like /code 1, /code 2, /code 3A, /code 3.5 for merge phases, or /code all for fully automatic execution of all phases.
+name: dc:code
+description: Execute coding work for a specific phase. Use when implementing a phase like /dc:code 1, /dc:code 2, /dc:code 3A, /dc:code 3.5 for merge phases, or /dc:code all for fully automatic execution of all phases.
 user-invocable: true
 ---
 
-# /code [phase]
+# /dc:code [phase]
 
 Execute coding work for a specific phase.
 
 ## Trigger
 
-User invokes `/code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
+User invokes `/dc:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
 
 ## Prerequisites
 
@@ -183,13 +183,13 @@ git worktree remove ../subject-3C
 ## Next Steps
 
 After phase completion:
-1. If more phases: `/code [next-phase]`
-2. If parallel phases done: `/code {k}.5` for merge
-3. If all phases done: `/merge-main` → `/tagging`
+1. If more phases: `/dc:code [next-phase]`
+2. If parallel phases done: `/dc:code {k}.5` for merge
+3. If all phases done: `/dc:merge-main` → `/dc:tagging`
 
 ---
 
-## `/code all` - Automatic Full Execution
+## `/dc:code all` - Automatic Full Execution
 
 Execute all phases without user intervention.
 
@@ -300,18 +300,18 @@ git worktree remove ../subject-3C
 
 ### CLAUDE.md Rule Exceptions
 
-For `/code all` mode, these CLAUDE.md rules are overridden:
+For `/dc:code all` mode, these CLAUDE.md rules are overridden:
 
 - **"Do NOT git commit without explicit user instruction"**
-  → `/code all` invocation IS the explicit instruction for auto-commit
+  → `/dc:code all` invocation IS the explicit instruction for auto-commit
 
 - **"Do NOT proceed to next phase without user instruction"**
-  → `/code all` invocation IS the explicit instruction to proceed automatically
+  → `/dc:code all` invocation IS the explicit instruction to proceed automatically
 
 ### Output
 
 ```markdown
-# /code all - Execution Complete
+# /dc:code all - Execution Complete
 
 ## Summary
 - Total Phases: 6
@@ -339,6 +339,6 @@ For `/code all` mode, these CLAUDE.md rules are overridden:
 ## Next Steps
 
 1. Manually resolve PHASE_3A issues
-2. Run `/code 3A` to retry
-3. Run `/merge-main` → `/tagging`
+2. Run `/dc:code 3A` to retry
+3. Run `/dc:merge-main` → `/dc:tagging`
 ```

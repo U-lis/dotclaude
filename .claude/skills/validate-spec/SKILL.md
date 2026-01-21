@@ -1,16 +1,16 @@
 ---
-name: validate-spec
-description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /validate-spec.
+name: dc:validate-spec
+description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /dc:validate-spec.
 user-invocable: true
 ---
 
-# /validate-spec
+# /dc:validate-spec
 
 Validate consistency across all planning documents using spec-validator agent.
 
 ## Trigger
 
-User invokes `/validate-spec` after design documents are created.
+User invokes `/dc:validate-spec` after design documents are created.
 
 ## Prerequisites
 
@@ -107,4 +107,4 @@ validate → issues found → TW fixes → re-validate → repeat until PASSED
 ## Next Steps
 
 After validation passes:
-1. Proceed to `/code [phase]` to start implementation
+1. Proceed to `/dc:code [phase]` to start implementation
