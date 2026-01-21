@@ -1,0 +1,42 @@
+{
+  "version": "0.0.9",
+  "managed_files": [
+    ".claude/agents/code-validator.md",
+    ".claude/agents/coders/_base.md",
+    ".claude/agents/coders/javascript.md",
+    ".claude/agents/coders/python.md",
+    ".claude/agents/coders/rust.md",
+    ".claude/agents/coders/sql.md",
+    ".claude/agents/coders/svelte.md",
+    ".claude/agents/designer.md",
+    ".claude/agents/init-bugfix.md",
+    ".claude/agents/init-feature.md",
+    ".claude/agents/init-refactor.md",
+    ".claude/agents/orchestrator.md",
+    ".claude/agents/spec-validator.md",
+    ".claude/agents/technical-writer.md",
+    ".claude/agents/_shared/analysis-phases.md",
+    ".claude/agents/_shared/init-workflow.md",
+    ".claude/hooks/check-init-complete.sh",
+    ".claude/hooks/check-validation-complete.sh",
+    ".claude/settings.json",
+    ".claude/skills/code/SKILL.md",
+    ".claude/skills/design/SKILL.md",
+    ".claude/skills/init-bugfix/SKILL.md",
+    ".claude/skills/init-feature/SKILL.md",
+    ".claude/skills/init-refactor/SKILL.md",
+    ".claude/skills/merge-main/SKILL.md",
+    ".claude/skills/start-new/SKILL.md",
+    ".claude/skills/tagging/SKILL.md",
+    ".claude/skills/update-docs/SKILL.md",
+    ".claude/skills/validate-spec/SKILL.md",
+    ".claude/templates/GLOBAL.md",
+    ".claude/templates/PHASE_MERGE.md",
+    ".claude/templates/PHASE_PLAN.md",
+    ".claude/templates/PHASE_TEST.md",
+    ".claude/templates/SPEC.md"
+  ],
+  "merge_files": [
+    ".claude/settings.json"
+  ]
+}
