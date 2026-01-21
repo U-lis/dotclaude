@@ -67,8 +67,8 @@
 ### Skill Invocation
 
 - [ ] FR-11: `/start-new` command triggers orchestrator workflow (same as current)
-- [ ] FR-12: `/init-feature`, `/init-bugfix`, `/init-refactor` remain as direct bypass options
-- [ ] FR-13: Hooks on init skills (check-init-complete.sh) preserved if still needed
+- [ ] FR-12: `/init-feature`, `/init-bugfix`, `/init-refactor` skills and agents DELETED (no longer needed)
+- [ ] FR-13: Hook validation moved to /start-new - validate branch/SPEC before design agent (Step 6)
 
 ---
 
@@ -116,9 +116,10 @@
 | `agents/init-refactor.md` | Moved to skills/start-new/init-refactor.md |
 | `agents/_shared/init-workflow.md` | Merged into skills/start-new/SKILL.md |
 | `agents/_shared/analysis-phases.md` | Moved to skills/start-new/_analysis.md |
-| `skills/init-feature/SKILL.md` | Wrapper no longer needed |
-| `skills/init-bugfix/SKILL.md` | Wrapper no longer needed |
-| `skills/init-refactor/SKILL.md` | Wrapper no longer needed |
+| `skills/init-feature/` (directory) | Skill no longer needed - init-feature is internal instruction |
+| `skills/init-bugfix/` (directory) | Skill no longer needed - init-bugfix is internal instruction |
+| `skills/init-refactor/` (directory) | Skill no longer needed - init-refactor is internal instruction |
+| `.claude/hooks/check-init-complete.sh` | Hook logic moved to /start-new workflow (Step 6 checkpoint) |
 
 ### Line Count Comparison
 
@@ -130,11 +131,12 @@
 | agents/init-refactor.md | 212 | skills/start-new/init-refactor.md | ~160 |
 | agents/_shared/init-workflow.md | 144 | (merged into SKILL.md) | 0 |
 | agents/_shared/analysis-phases.md | 237 | skills/start-new/_analysis.md | ~140 |
-| skills/init-feature/SKILL.md | 62 | (deleted) | 0 |
-| skills/init-bugfix/SKILL.md | 62 | (deleted) | 0 |
-| skills/init-refactor/SKILL.md | 62 | (deleted) | 0 |
+| skills/init-feature/SKILL.md | 62 | (deleted - no skill) | 0 |
+| skills/init-bugfix/SKILL.md | 62 | (deleted - no skill) | 0 |
+| skills/init-refactor/SKILL.md | 62 | (deleted - no skill) | 0 |
 | skills/start-new/SKILL.md | 92 | (replaced) | 0 |
-| **Total** | **1,795** | **Total** | **~1,030** |
+| hooks/check-init-complete.sh | ~20 | (inline in SKILL.md) | 0 |
+| **Total** | **~1,815** | **Total** | **~1,030** |
 
 ---
 
@@ -176,12 +178,12 @@ The following are explicitly NOT part of this work:
 
 ---
 
-## Open Questions
+## Resolved Questions
 
-- [ ] Should `/init-feature`, `/init-bugfix`, `/init-refactor` remain as separate skills or be deprecated?
-  - Recommendation: Keep as aliases that load specific init-xxx.md content for debugging/bypass use
-- [ ] Should hooks (check-init-complete.sh) be moved to /start-new or kept on individual init skills?
-  - Recommendation: Keep on /start-new only, since init-xxx skills become internal components
+- [x] Should `/init-feature`, `/init-bugfix`, `/init-refactor` remain as separate skills or be deprecated?
+  - **Decision: DELETE** - init-xxx becomes internal instruction files for orchestrator. No separate skill/agent needed.
+- [x] Should hooks (check-init-complete.sh) be moved to /start-new or kept on individual init skills?
+  - **Decision: Move to /start-new** - Validate branch and SPEC before calling design agent (Step 6 checkpoint).
 
 ---
 
@@ -192,11 +194,12 @@ The following are explicitly NOT part of this work:
 1. Create `skills/start-new/SKILL.md` with merged orchestrator + init-workflow content
 2. Create `skills/start-new/_analysis.md` from analysis-phases.md
 3. Create `skills/start-new/init-{feature,bugfix,refactor}.md` from agent files
+4. Add Step 6 checkpoint logic (branch/SPEC validation before design) into SKILL.md
 
 ### Phase 2: Update References
 
-1. Update any references to old agent paths
-2. Ensure /init-feature, /init-bugfix, /init-refactor skills reference new location
+1. Update any references to old agent paths in remaining files
+2. Remove init-xxx skill registrations from settings.json (if any)
 
 ### Phase 3: Delete Old Files
 
@@ -204,14 +207,18 @@ The following are explicitly NOT part of this work:
 2. Delete `agents/init-{feature,bugfix,refactor}.md`
 3. Delete `agents/_shared/init-workflow.md`
 4. Delete `agents/_shared/analysis-phases.md`
-5. Delete `skills/init-{feature,bugfix,refactor}/SKILL.md`
+5. Delete `skills/init-feature/` directory
+6. Delete `skills/init-bugfix/` directory
+7. Delete `skills/init-refactor/` directory
+8. Delete `.claude/hooks/check-init-complete.sh` (if exists)
 
 ### Phase 4: Validation
 
 1. Test `/start-new` flow end-to-end
 2. Verify AskUserQuestion works at Steps 1, 3, 5
 3. Test each work type (feature, bugfix, refactor)
-4. Verify direct init skill invocation still works
+4. Verify Step 6 checkpoint validates branch/SPEC correctly
+5. Confirm `/init-feature`, `/init-bugfix`, `/init-refactor` commands are no longer available
 
 ---
 
@@ -220,7 +227,9 @@ The following are explicitly NOT part of this work:
 1. `/start-new` executes full 13-step workflow with AskUserQuestion working
 2. All three work types (feature, bugfix, refactor) produce valid SPEC.md
 3. Token usage reduced (verify ~43% line count reduction)
-4. No regression in existing functionality
+4. Step 6 checkpoint validates branch/SPEC before design agent invocation
+5. `/init-feature`, `/init-bugfix`, `/init-refactor` commands no longer exist
+6. No regression in existing functionality (design, code, validate-spec, etc.)
 
 ---
 
