@@ -20,7 +20,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Skills directory now includes `dotclaude/` namespace for update-related skills
+- `dc:` prefix applied to all workflow skills (`/dc:start-new`, `/dc:design`, `/dc:code`, etc.)
+- Orchestrator integrated into `/dc:start-new` skill (previously separate agent)
+- Init workflow files moved to `skills/start-new/` directory:
+  - `_analysis.md`: Common analysis phases
+  - `init-feature.md`, `init-bugfix.md`, `init-refactor.md`: Work type instructions
+- Skills directory now includes `dotclaude/` namespace for framework management skills
+
+### Removed
+
+- `agents/orchestrator.md`: Merged into `skills/start-new/SKILL.md`
+- `agents/_shared/`: Moved to `skills/start-new/`
+- `agents/init-xxx.md`: Moved to `skills/start-new/init-xxx.md`
+- `skills/init-xxx/SKILL.md`: Replaced by integrated init workflow
+- `hooks/check-init-complete.sh`: No longer needed with integrated workflow
 
 ## [0.0.9] - 2026-01-21
 
