@@ -166,7 +166,7 @@ claude_works/{subject}/
 In your project's Claude Code session, say:
 
 ```
-dotclaude repo (https://github.com/{username}/dotclaude) 를 clone 해서
+dotclaude repo (https://github.com/U-lis/dotclaude) 를 clone 해서
 .claude/ 폴더와 CLAUDE.md 를 이 프로젝트에 복사해줘.
 ```
 

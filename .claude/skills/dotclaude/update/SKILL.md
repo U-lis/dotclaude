@@ -19,9 +19,9 @@ Update dotclaude framework to latest or specified version while preserving user 
 ```
 1. Check prerequisites
 2. Determine target version
-3. Fetch upstream manifest
+3. Clone upstream repository (shallow)
 4. Compare file lists
-5. Show update preview
+5. Show update preview (with changelog)
 6. Get user confirmation (AskUserQuestion)
 7. Create backup
 8. Update files
@@ -41,11 +41,11 @@ Verify requirements before proceeding:
 # Check manifest exists
 [ -f .dotclaude-manifest.json ] || echo "ERROR: Manifest not found"
 
-# Check gh CLI
-which gh || echo "ERROR: gh CLI not installed"
+# Check git CLI
+which git || echo "ERROR: git not installed"
 
-# Check network
-gh api repos/U-lis/dotclaude/tags --jq '.[0].name' || echo "ERROR: Cannot reach GitHub"
+# Check network (test GitHub access)
+git ls-remote https://github.com/U-lis/dotclaude.git HEAD || echo "ERROR: Cannot reach GitHub"
 ```
 
 If any check fails, report error and stop.
@@ -55,13 +55,13 @@ If any check fails, report error and stop.
 **If version argument provided:**
 ```bash
 # Validate tag exists
-gh api repos/U-lis/dotclaude/tags --jq '.[].name' | grep -q "^v?{version}$"
+git ls-remote --tags https://github.com/U-lis/dotclaude.git | grep -q "refs/tags/v{version}"
 ```
 
 **If no argument:**
 ```bash
 # Get latest tag
-LATEST=$(gh api repos/U-lis/dotclaude/tags --jq '.[0].name' | sed 's/^v//')
+LATEST=$(git ls-remote --tags --sort=-v:refname https://github.com/U-lis/dotclaude.git | head -1 | sed 's/.*refs\/tags\/v//')
 ```
 
 **Compare with current:**
@@ -73,21 +73,29 @@ CURRENT=$(jq -r '.version' .dotclaude-manifest.json)
 - If target is older → "Downgrade not supported" and stop
 - If target is newer → proceed
 
-### Step 3: Fetch Upstream Manifest
+### Step 3: Clone Upstream Repository
 
-Download manifest from target version:
+Shallow clone the target version:
 
 ```bash
-gh api repos/U-lis/dotclaude/contents/.dotclaude-manifest.json?ref={tag} \
-  --jq '.content' | base64 -d > /tmp/upstream-manifest.json
+UPSTREAM_DIR="/tmp/dotclaude-upstream-$$"
+git clone --depth 1 --branch "v{target_version}" \
+  https://github.com/U-lis/dotclaude.git "$UPSTREAM_DIR"
 ```
 
-Parse to extract:
-- `version`: target version
-- `managed_files`: array of file paths
-- `merge_files`: array of files to merge (not replace)
+All upstream files are now available at `$UPSTREAM_DIR/`.
 
 ### Step 4: Compare File Lists
+
+Read manifests and compute diff:
+
+```bash
+# Read upstream manifest
+UPSTREAM_MANIFEST="$UPSTREAM_DIR/.dotclaude-manifest.json"
+
+# Read local manifest
+LOCAL_MANIFEST=".dotclaude-manifest.json"
+```
 
 Compute diff between local and upstream manifest:
 
@@ -100,7 +108,13 @@ Compute diff between local and upstream manifest:
 
 ### Step 5: Show Update Preview
 
-Display changes to user:
+**Extract changelog for target version:**
+
+Read `$UPSTREAM_DIR/CHANGELOG.md` and extract the section for target version:
+- Find line starting with `## [{target_version}]` or `## [v{target_version}]`
+- Collect all lines until next `## [` header or end of file
+
+**Display preview to user:**
 
 ```markdown
 ## dotclaude Update Preview
@@ -109,6 +123,12 @@ Display changes to user:
 |--|---------|
 | Current | {current} |
 | Target | {target} |
+
+### What's New in {target}
+
+{extracted changelog section - Added, Changed, Fixed, etc.}
+
+---
 
 ### Files to Add ({count})
 - .claude/agents/new-agent.md
@@ -125,6 +145,8 @@ Display changes to user:
 ### Files to Merge ({count})
 - .claude/settings.json (new keys will be added, existing preserved)
 ```
+
+**If changelog parse fails:** Continue without changelog (show file list only, warn user).
 
 ### Step 6: Get User Confirmation
 
@@ -160,14 +182,12 @@ done
 **Add files:**
 ```bash
 mkdir -p $(dirname {file_path})
-gh api repos/U-lis/dotclaude/contents/{file_path}?ref={tag} \
-  --jq '.content' | base64 -d > {file_path}
+cp "$UPSTREAM_DIR/{file_path}" "{file_path}"
 ```
 
 **Update files:**
 ```bash
-gh api repos/U-lis/dotclaude/contents/{file_path}?ref={tag} \
-  --jq '.content' | base64 -d > {file_path}
+cp "$UPSTREAM_DIR/{file_path}" "{file_path}"
 ```
 
 **Remove files (only if user confirmed in Step 6):**
@@ -183,15 +203,11 @@ If any operation fails → go to Step 11 (rollback)
 For files in `merge_files` (additive-only merge):
 
 ```bash
-# Download upstream settings
-gh api repos/U-lis/dotclaude/contents/.claude/settings.json?ref={tag} \
-  --jq '.content' | base64 -d > /tmp/upstream-settings.json
-
 # Merge: add new keys from upstream, preserve all local values
 # Local values always take precedence
-jq -s '.[0] as $local | .[1] as $upstream |
+jq -s '.[0] as $upstream | .[1] as $local |
   $upstream * $local' \
-  .claude/settings.json /tmp/upstream-settings.json > /tmp/merged-settings.json
+  "$UPSTREAM_DIR/.claude/settings.json" .claude/settings.json > /tmp/merged-settings.json
 
 mv /tmp/merged-settings.json .claude/settings.json
 ```
@@ -206,7 +222,7 @@ mv /tmp/merged-settings.json .claude/settings.json
 Replace local manifest with upstream:
 
 ```bash
-cp /tmp/upstream-manifest.json .dotclaude-manifest.json
+cp "$UPSTREAM_DIR/.dotclaude-manifest.json" .dotclaude-manifest.json
 ```
 
 ### Step 11: Cleanup or Rollback
@@ -215,6 +231,7 @@ cp /tmp/upstream-manifest.json .dotclaude-manifest.json
 ```bash
 rm -f .dotclaude-manifest.json.backup
 rm -rf "${BACKUP_DIR}"
+rm -rf "$UPSTREAM_DIR"
 ```
 
 **On failure:**
@@ -225,8 +242,9 @@ mv .dotclaude-manifest.json.backup .dotclaude-manifest.json
 # Restore modified files
 cp -r "${BACKUP_DIR}/"* .
 
-# Cleanup backup
+# Cleanup
 rm -rf "${BACKUP_DIR}"
+rm -rf "$UPSTREAM_DIR"
 
 # Report
 echo "Update failed. Restored from backup."
@@ -259,9 +277,9 @@ echo "Update failed. Restored from backup."
 |-------|---------|
 | Manifest not found | "dotclaude not installed. Copy .claude from U-lis/dotclaude first." |
 | Network failure | "Cannot reach GitHub. Check network and try again." |
-| gh not authenticated | "GitHub CLI not authenticated. Run: `gh auth login`" |
+| Clone failed | "Failed to clone repository. Check network and permissions." |
 | Tag not found | "Version {tag} not found. Run `/dotclaude:version` to see latest." |
-| File download failed | Rollback and report specific file that failed |
+| File copy failed | Rollback and report specific file that failed |
 | JSON parse error | Skip settings merge, warn user to merge manually |
 | Permission denied | Report file path, suggest checking permissions |
 
@@ -270,6 +288,7 @@ echo "Update failed. Restored from backup."
 - **NEVER** delete user files (files not in manifest)
 - **ALWAYS** backup before modifying any file
 - **ALWAYS** rollback completely on any failure
+- **ALWAYS** cleanup temporary clone directory
 - **REQUIRE** user confirmation before making changes (Step 6)
 - **NO** auto-commit - user controls their git workflow
 - **PRESERVE** all local values during settings.json merge
