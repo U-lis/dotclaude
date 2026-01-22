@@ -5,29 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [X.Y.Z] - Unreleased
+## [0.0.10] - 2026-01-22
 
 ### Added
 
 - `/dotclaude:version` skill: Display installed vs latest dotclaude version
-- `/dotclaude:update` skill: Update dotclaude framework with manifest-based file tracking
+- `/dotclaude:update` skill: Update dotclaude framework with shallow clone-based file tracking
 - `.dotclaude-manifest.json`: Tracks all dotclaude-managed files for safe updates
 - Manifest-based update system: File-level updates preserve user customizations
 - Smart settings.json merge: Adds new keys from upstream while preserving local values
 - Backup and rollback: Automatic backup before update, restore on failure
 - User confirmation required before any update changes
+- Changelog preview in update flow
 
 ### Changed
 
 - Skills directory now includes `dotclaude/` namespace for update-related skills
 
-## [0.0.9] - 2026-01-20
+## [0.0.9] - 2026-01-21
 
 ### Fixed
 
 - Orchestrator not using AskUserQuestion tool in Step 1: Added explicit "CRITICAL" instruction, prohibited text tables and number typing, clarified tool call parameters format
 - Orchestrator not calling init-xxx agents in Step 2: Added "CRITICAL" instruction with "MUST call init agent via Task tool", added "PROHIBITED" section, added mapping table for work type → agent selection
 - Orchestrator assuming tools are unavailable: Added "IMPORTANT: All these tools ARE available to you" statement in Capabilities section, emphasized "YOU HAVE THIS TOOL. USE IT." for AskUserQuestion
+- Missing target version question in `/dc:start-new` workflow (now asks before SPEC creation)
 
 ### Added
 
@@ -48,6 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/update-docs` skill for documentation updates (CHANGELOG, README)
 - TechnicalWriter DOCS_UPDATE role for structured documentation updates
 - Init Phase Attitude section in init-workflow.md clarifying init-xxx scope
+- Frontmatter to `update-docs/SKILL.md` (was missing)
 
 ### Changed
 
@@ -70,14 +73,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Orchestrator Step 11 (Docs) now uses Task tool → TechnicalWriter instead of Skill tool
 - Orchestrator Step 12 (Merge) clarified as direct Bash execution
 - Orchestrator now explicitly prohibits Skill tool usage for workflow execution
+- All skill commands renamed with `dc:` prefix for namespace identification (`/start-new` → `/dc:start-new`, `/code` → `/dc:code`, `/design` → `/dc:design`, `/validate-spec` → `/dc:validate-spec`, `/tagging` → `/dc:tagging`, `/merge-main` → `/dc:merge-main`, `/update-docs` → `/dc:update-docs`)
+- `/dc:start-new` workflow now includes target version question (Step 2.6) before SPEC.md creation
+- Target version question now shows recent 3 versions from CHANGELOG with key changes before asking
 
 ### Removed
 
-- Question Sets section from orchestrator.md (now handled by init-xxx skills)
-- CHANGELOG rules from CLAUDE.md (now handled by /update-docs + TechnicalWriter)
-- Next Step Selection from init-workflow.md (orchestrator responsibility)
-- Routing section from init-workflow.md (orchestrator responsibility)
-- Non-Stop Execution section from init-workflow.md (orchestrator responsibility)
+- `agents/orchestrator.md` - integrated into `skills/start-new/SKILL.md`
+- `agents/init-feature.md`, `agents/init-bugfix.md`, `agents/init-refactor.md` - moved to `skills/start-new/`
+- `agents/_shared/init-workflow.md` - merged into `skills/start-new/SKILL.md`
+- `agents/_shared/analysis-phases.md` - moved to `skills/start-new/_analysis.md`
+- `.claude/hooks/check-init-complete.sh` - validation now in SKILL.md Step 6 checkpoint
+- `skills/init-feature/`, `skills/init-bugfix/`, `skills/init-refactor/` directories - consolidated into start-new
+- Question Sets section from orchestrator.md (now handled by init instructions)
+- CHANGELOG rules from CLAUDE.md (now handled by /dc:update-docs + TechnicalWriter)
 
 ## [0.0.8] - 2026-01-19
 

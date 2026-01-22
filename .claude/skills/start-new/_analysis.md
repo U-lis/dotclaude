@@ -1,6 +1,6 @@
 # Analysis Phases
 
-Common analysis workflow for init-xxx skills. Execute after gathering requirements, before creating SPEC.md.
+Common analysis workflow for init phase. Execute after gathering requirements, before creating SPEC.md.
 
 ## Iteration Limits
 
@@ -48,7 +48,7 @@ Options:
 
 ## Step B: Codebase Investigation
 
-Search codebase for related code. Work-type-specific details in each init skill.
+Search codebase for related code. Work-type-specific details in each init file.
 
 ### Common Process
 
@@ -69,9 +69,9 @@ Search codebase for related code. Work-type-specific details in each init skill.
 
 ### Work-Type Specifics
 
-- **Feature**: See init-feature/SKILL.md - focus on similar functionality, patterns
-- **Bugfix**: See init-bugfix/SKILL.md - focus on root cause, affected code
-- **Refactor**: See init-refactor/SKILL.md - focus on dependencies, test coverage
+- **Feature**: See init-feature.md - focus on similar functionality, patterns
+- **Bugfix**: See init-bugfix.md - focus on root cause, affected code
+- **Refactor**: See init-refactor.md - focus on dependencies, test coverage
 
 ---
 

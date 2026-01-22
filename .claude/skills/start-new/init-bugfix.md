@@ -1,29 +1,6 @@
-# init-bugfix Agent
+# init-bugfix Instructions
 
-You are the **init-bugfix agent**, responsible for initializing bug fix work through bug detail gathering and root cause analysis.
-
-## Role
-
-- Gather bug details through step-by-step questions
-- Execute codebase analysis (root cause, affected code, conflicts)
-- Create branch and project directory
-- Draft SPEC.md via TechnicalWriter
-
-## Capabilities
-
-- AskUserQuestion: Sequential bug detail gathering
-- Task tool: TechnicalWriter for SPEC.md creation, Explore agent for codebase search
-- Bash tool: Git operations, directory creation, git log analysis
-- Read/Grep/Glob tools: Codebase analysis
-
-## Reference
-
-- Read `_shared/init-workflow.md` for common init workflow
-- Read `_shared/analysis-phases.md` for analysis phase details
-
-## Plan Mode Policy
-
-**CRITICAL**: Do NOT use plan mode (EnterPlanMode). Proceed directly through all workflow steps.
+Instructions for initializing bug fix work through bug detail gathering and root cause analysis.
 
 ## Step-by-Step Questions
 
@@ -95,20 +72,24 @@ Options:
 → Or free text via "Other"
 ```
 
-## Analysis Phase (MANDATORY)
+---
 
-**CRITICAL**: After gathering user input (Steps 1-6), execute analysis phases.
+## Analysis Phase
 
-See `_shared/analysis-phases.md` for detailed instructions. Bugfix has additional requirements below.
+**MANDATORY**: After gathering user input (Steps 1-6), execute analysis phases.
 
-### Step B: Codebase Investigation (Bugfix - Enhanced)
+Read `_analysis.md` for the common analysis workflow (Steps A-E).
 
-#### Case 1: User specified related files (Step 5)
+### Bugfix-Specific Analysis
+
+#### Step B: Codebase Investigation (Bugfix - Enhanced)
+
+##### Case 1: User specified related files (Step 5)
 1. Use Read tool to analyze the specified files
 2. Search for code patterns matching described symptoms
 3. Identify the exact code causing the bug
 
-#### Case 2: User said "모름" (unknown files)
+##### Case 2: User said "모름" (unknown files)
 1. Use Task tool with Explore agent to search codebase
 2. Search patterns based on:
    - Error messages from Step 1
@@ -116,12 +97,12 @@ See `_shared/analysis-phases.md` for detailed instructions. Bugfix has additiona
    - Function/class names if mentioned
 3. Narrow down to relevant files
 
-#### Additional: Recent Change Analysis
+##### Additional: Recent Change Analysis
 - Run `git log -20 --oneline -- {affected_file}` for affected files
 - Check if bug correlates with recent commits
 - Document potential regression sources
 
-### Step C: Conflict Detection (Bugfix Focus)
+#### Step C: Conflict Detection (Bugfix Focus)
 
 For bugfixes, detect conflicts between:
 
@@ -135,7 +116,7 @@ For bugfixes, detect conflicts between:
 
 Document all conflicts and get user resolution via AskUserQuestion.
 
-### Step D: Edge Case Generation (Bugfix Focus)
+#### Step D: Edge Case Generation (Bugfix Focus)
 
 Generate edge cases specifically for the bug:
 1. Variations of the reproduction steps
@@ -143,6 +124,8 @@ Generate edge cases specifically for the bug:
 3. Related scenarios that should NOT trigger the bug (regression prevention)
 
 Present to user for confirmation.
+
+---
 
 ### Required Analysis Outputs
 
@@ -171,6 +154,8 @@ Document the following (all required):
    - Boundary conditions
    - Regression prevention cases
 
+---
+
 ### Inconclusive Analysis Handling
 
 If analysis cannot identify root cause:
@@ -179,15 +164,7 @@ If analysis cannot identify root cause:
 - Recommend further investigation steps
 - Mark SPEC.md "Root Cause" as "Requires further investigation"
 
-## Workflow Summary
-
-```
-1. Gather user information (Steps 1-6)
-2. Analyze codebase (mandatory investigation)
-3. Create branch: bugfix/{keyword}
-4. Create SPEC.md with user info + analysis results
-5. Commit and present for user review
-```
+---
 
 ## Branch Keyword
 
@@ -199,11 +176,11 @@ If analysis cannot identify root cause:
   - bugfix/null-pointer-exception
   - bugfix/login-timeout
 
-## Output
+---
 
-1. Bugfix branch `bugfix/{keyword}` created and checked out
-2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` with bug-specific format:
+## SPEC.md Content
+
+Create SPEC.md with bug-specific format:
 
 ### User-Reported Information
 - Bug Description (from Step 1)
@@ -223,14 +200,10 @@ If analysis cannot identify root cause:
 - **Conflict Analysis** (conflicts and resolutions)
 - **Edge Cases** (for test coverage)
 
-## Output Contract
+---
 
-Return structured result when init phase completes:
+## Output
 
-```yaml
-branch: "bugfix/{keyword}"
-subject: "{keyword}"
-spec_path: "claude_works/{subject}/SPEC.md"
-status: "SUCCESS" | "FAILED"
-error: "{error message if FAILED}"
-```
+1. Bugfix branch `bugfix/{keyword}` created and checked out
+2. Directory `claude_works/{subject}/` created
+3. `claude_works/{subject}/SPEC.md` created with all sections above

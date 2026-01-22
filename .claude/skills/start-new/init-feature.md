@@ -1,29 +1,6 @@
-# init-feature Agent
+# init-feature Instructions
 
-You are the **init-feature agent**, responsible for initializing new feature work through requirements gathering and SPEC creation.
-
-## Role
-
-- Gather feature requirements through step-by-step questions
-- Execute codebase analysis (related code, conflicts, edge cases)
-- Create branch and project directory
-- Draft SPEC.md via TechnicalWriter
-
-## Capabilities
-
-- AskUserQuestion: Sequential requirements gathering
-- Task tool: TechnicalWriter for SPEC.md creation
-- Bash tool: Git and directory operations
-- Read/Grep/Glob tools: Codebase analysis
-
-## Reference
-
-- Read `_shared/init-workflow.md` for common init workflow
-- Read `_shared/analysis-phases.md` for analysis phase details
-
-## Plan Mode Policy
-
-**CRITICAL**: Do NOT use plan mode (EnterPlanMode). Proceed directly through all workflow steps.
+Instructions for initializing new feature work through requirements gathering and SPEC creation.
 
 ## Step-by-Step Questions
 
@@ -112,11 +89,13 @@ Options:
 → Or free text via "Other"
 ```
 
+---
+
 ## Analysis Phase
 
 **MANDATORY**: After gathering user requirements (Steps 1-8), execute analysis phases.
 
-See `_shared/analysis-phases.md` for detailed instructions.
+Read `_analysis.md` for the common analysis workflow (Steps A-E).
 
 ### Feature-Specific Analysis
 
@@ -153,6 +132,8 @@ Generate cases for:
 - New feature at scale (many items, large data)
 - New feature interaction with existing features
 
+---
+
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
@@ -163,29 +144,26 @@ Generate cases for:
   - feature/user-metrics
   - feature/step-by-step-init
 
+---
+
+## SPEC.md Content
+
+After completing analysis, create SPEC.md with:
+
+1. **Overview** (from Steps 1-2)
+2. **Functional Requirements** (from Steps 3-4)
+3. **Non-Functional Requirements** (from Steps 6-7)
+4. **Constraints** (from Step 5)
+5. **Out of Scope** (from Step 8)
+6. **Analysis Results**:
+   - Related Code (existing similar functionality)
+   - Conflicts Identified (with resolutions)
+   - Edge Cases (confirmed by user)
+
+---
+
 ## Output
 
 1. Feature branch `feature/{keyword}` created and checked out
 2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` with:
-   - Overview (from Steps 1-2)
-   - Functional Requirements (from Steps 3-4)
-   - Non-Functional Requirements (from Steps 6-7)
-   - Constraints (from Step 5)
-   - Out of Scope (from Step 8)
-   - **Analysis Results** (from Analysis Phase):
-     - Related Code (existing similar functionality)
-     - Conflicts Identified (with resolutions)
-     - Edge Cases (confirmed by user)
-
-## Output Contract
-
-Return structured result when init phase completes:
-
-```yaml
-branch: "feature/{keyword}"
-subject: "{keyword}"
-spec_path: "claude_works/{subject}/SPEC.md"
-status: "SUCCESS" | "FAILED"
-error: "{error message if FAILED}"
-```
+3. `claude_works/{subject}/SPEC.md` created with all sections above

@@ -1,29 +1,6 @@
-# init-refactor Agent
+# init-refactor Instructions
 
-You are the **init-refactor agent**, responsible for initializing refactoring work through target analysis and dependency mapping.
-
-## Role
-
-- Gather refactor details through step-by-step questions
-- Execute codebase analysis (dependencies, test coverage, conflicts)
-- Create branch and project directory
-- Draft SPEC.md via TechnicalWriter
-
-## Capabilities
-
-- AskUserQuestion: Sequential refactor detail gathering
-- Task tool: TechnicalWriter for SPEC.md creation
-- Bash tool: Git operations, directory creation
-- Read/Grep/Glob tools: Codebase analysis, dependency mapping
-
-## Reference
-
-- Read `_shared/init-workflow.md` for common init workflow
-- Read `_shared/analysis-phases.md` for analysis phase details
-
-## Plan Mode Policy
-
-**CRITICAL**: Do NOT use plan mode (EnterPlanMode). Proceed directly through all workflow steps.
+Instructions for initializing refactoring work through target analysis and dependency mapping.
 
 ## Step-by-Step Questions
 
@@ -97,11 +74,13 @@ Options:
 → Or free text via "Other"
 ```
 
+---
+
 ## Analysis Phase
 
 **MANDATORY**: After gathering user requirements (Steps 1-6), execute analysis phases.
 
-See `_shared/analysis-phases.md` for detailed instructions.
+Read `_analysis.md` for the common analysis workflow (Steps A-E).
 
 ### Refactor-Specific Analysis
 
@@ -165,6 +144,16 @@ Generate edge cases for refactored code:
 
 Present to user for confirmation.
 
+---
+
+## Refactoring Safety Notes
+
+- If test coverage is low: recommend writing tests BEFORE refactoring
+- If dependency graph is complex: suggest incremental refactoring phases
+- If behavior preservation is critical: require approval for any behavioral change
+
+---
+
 ## Branch Keyword
 
 **Auto-generate from conversation context:**
@@ -175,38 +164,29 @@ Present to user for confirmation.
   - refactor/extract-api-client
   - refactor/simplify-auth-flow
 
+---
+
+## SPEC.md Content
+
+Create SPEC.md with refactor-specific format:
+
+- **Target** (from Step 1)
+- **Current Problems** (from Step 2)
+- **Goal State** (from Step 3)
+- **Behavior Change Policy** (from Step 4)
+- **Test Coverage** (from Step 5)
+- **Dependencies** (from Step 6)
+- **XP Principle Reference** (auto-added based on problems)
+- **Analysis Results**:
+  - Related Code (dependency map)
+  - Conflicts Identified (with resolutions)
+  - Edge Cases (behavioral equivalence, new pattern, regression)
+  - Test Coverage Assessment
+
+---
+
 ## Output
 
 1. Refactor branch `refactor/{keyword}` created and checked out
 2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` with refactor-specific format:
-   - Target (from Step 1)
-   - Current Problems (from Step 2)
-   - Goal State (from Step 3)
-   - Behavior Change Policy (from Step 4)
-   - Test Coverage (from Step 5)
-   - Dependencies (from Step 6)
-   - XP Principle Reference (auto-added based on problems)
-   - **Analysis Results**:
-     - Related Code (dependency map)
-     - Conflicts Identified (with resolutions)
-     - Edge Cases (behavioral equivalence, new pattern, regression)
-     - Test Coverage Assessment
-
-### Refactoring Safety Notes
-
-- If test coverage is low: recommend writing tests BEFORE refactoring
-- If dependency graph is complex: suggest incremental refactoring phases
-- If behavior preservation is critical: require approval for any behavioral change
-
-## Output Contract
-
-Return structured result when init phase completes:
-
-```yaml
-branch: "refactor/{keyword}"
-subject: "{keyword}"
-spec_path: "claude_works/{subject}/SPEC.md"
-status: "SUCCESS" | "FAILED"
-error: "{error message if FAILED}"
-```
+3. `claude_works/{subject}/SPEC.md` created with all sections above
