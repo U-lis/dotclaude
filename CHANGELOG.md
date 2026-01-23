@@ -15,8 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `hooks/hooks.json`: Hook configuration using `${CLAUDE_PLUGIN_ROOT}` for portable paths
   - Installation via `/plugin marketplace add` and `/plugin install dotclaude` commands
   - Dual installation support: Plugin marketplace (recommended) or manual (`cp -r`)
-  - Updated `/dotclaude:update` skill to detect plugin installation mode
   - Installation guide in README with Plugin vs Manual options
+- SessionStart hook (`check-update.sh`): Automatically checks for updates on session start and notifies if newer version available
+
+### Removed
+
+- `/dotclaude:update` skill: Use `/plugin update dotclaude` instead
+- `/dotclaude:version` skill: Use `claude plugin list` instead
 
 ## [0.0.12] - 2026-01-23
 
