@@ -45,8 +45,6 @@ This repository provides a structured workflow for software development using sp
 │   │   ├── merge-main/SKILL.md       # /dc:merge-main
 │   │   ├── tagging/SKILL.md          # /dc:tagging
 │   │   ├── update-docs/SKILL.md      # /dc:update-docs
-│   │   └── dotclaude/                # Framework management
-│   │       └── version/SKILL.md      # /dotclaude:version
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -115,7 +113,6 @@ All dotclaude skills use the `dc:` prefix for namespace identification:
 | `/dc:merge-main` | Merge feature branch to main |
 | `/dc:tagging` | Create version tag based on CHANGELOG |
 | `/dc:update-docs` | Update documentation (CHANGELOG, README) |
-| `/dotclaude:version` | Display installed dotclaude version |
 
 ## Agents
 
@@ -230,7 +227,6 @@ Individual skills can be invoked directly for debugging or partial work:
 /dc:update-docs      # Update documentation
 /dc:merge-main       # Merge to main
 /dc:tagging          # Create version tag
-/dotclaude:version   # Check installed version
 ```
 
 ## License
