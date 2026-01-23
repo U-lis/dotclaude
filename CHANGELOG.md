@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.11] - 2026-01-23
+
+### Added
+
+- `.gitignore` with `CLAUDE.md` entry to prevent file conflicts during updates
+
+### Changed
+
+- Migrated CLAUDE.md rules to appropriate agent/skill files:
+  - `skills/start-new/SKILL.md`: Evidence-based responses, completion reporting rules
+  - `skills/start-new/init-*.md`: DDD context, clarification required rules
+  - `agents/designer.md`: YAGNI/Occam's Razor, clarification required rules
+  - `agents/coders/_base.md`: Man pages consultation, git reset --hard FORBIDDEN rules
+
+### Removed
+
+- `CLAUDE.md` from version control (rules distributed to agents/skills)
+
 ## [0.0.10] - 2026-01-22
 
 ### Added

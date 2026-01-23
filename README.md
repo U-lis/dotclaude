@@ -16,7 +16,7 @@ This repository provides a structured workflow for software development using sp
 
 ```
 .
-├── CLAUDE.md                    # Global rules for all agents
+├── .gitignore                   # Excludes CLAUDE.md from tracking
 ├── .claude/
 │   ├── settings.json            # Hooks configuration
 │   ├── agents/                  # Agent definitions
@@ -170,7 +170,7 @@ In your project's Claude Code session, say:
 
 ```
 dotclaude repo (https://github.com/U-lis/dotclaude) 를 clone 해서
-.claude/ 폴더와 CLAUDE.md 를 이 프로젝트에 복사해줘.
+.claude/ 폴더를 이 프로젝트에 복사해줘.
 ```
 
 Or manually:
@@ -178,9 +178,10 @@ Or manually:
 ```bash
 git clone https://github.com/{username}/dotclaude /tmp/dotclaude
 cp -r /tmp/dotclaude/.claude .
-cp /tmp/dotclaude/CLAUDE.md .
 rm -rf /tmp/dotclaude
 ```
+
+Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now embedded directly in their respective files.
 
 ### Start New Work
 
