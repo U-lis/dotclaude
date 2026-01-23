@@ -50,6 +50,14 @@ This document defines common rules that ALL Coder agents MUST follow.
 - Update `.env.example` for new environment variables
 - Notify user about required `.env` changes in completion report
 
+### 8. Documentation Consultation
+- When checking tool usage or configuration, ALWAYS consult `man` pages and official documentation first
+- NEVER infer from patterns learned from other tools or outdated versions
+
+### 9. Git Safety
+- `git reset --hard` is **ABSOLUTELY FORBIDDEN** under any circumstances
+- This command destroys uncommitted work and is irreversible
+
 ## Input Documents
 
 - `PHASE_{k}_PLAN_{keyword}.md` - Implementation instructions

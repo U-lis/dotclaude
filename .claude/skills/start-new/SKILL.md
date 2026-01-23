@@ -307,6 +307,13 @@ NEVER do any of the following:
 | SPEC revision loop | 3 iterations |
 | Codebase search | 10 file reads |
 
+### Response Quality Rules
+
+**CRITICAL**: These rules ensure response quality.
+
+- **Evidence-Based Responses**: Never agree or praise without verification. Always provide evidence-based responses.
+- **Completion Reporting**: Report summary upon completion and wait for user review/additional commands.
+
 ---
 
 ## Subagent Call Patterns

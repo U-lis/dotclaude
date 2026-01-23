@@ -162,6 +162,13 @@ After completing analysis, create SPEC.md with:
 
 ---
 
+## Communication Rules
+
+- **DDD Context**: Request domain knowledge based on DDD (Domain-Driven Design) when context is needed.
+- **Clarification Required**: If there are unclear parts or decisions needed, report them and wait for user confirmation.
+
+---
+
 ## Output
 
 1. Feature branch `feature/{keyword}` created and checked out

@@ -185,6 +185,13 @@ Create SPEC.md with refactor-specific format:
 
 ---
 
+## Communication Rules
+
+- **DDD Context**: Request domain knowledge based on DDD (Domain-Driven Design) when context is needed.
+- **Clarification Required**: If there are unclear parts or decisions needed, report them and wait for user confirmation.
+
+---
+
 ## Output
 
 1. Refactor branch `refactor/{keyword}` created and checked out

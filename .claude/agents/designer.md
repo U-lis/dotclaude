@@ -29,6 +29,11 @@ Structured design results to be passed to TechnicalWriter:
 - Per-phase checklists
 - Parallel phase identification (if applicable)
 
+## Design Principles
+
+- **YAGNI + Occam's Razor**: Follow Occam's Razor + YAGNI principles. Avoid the "Maserati Problem" (over-engineering). Choose the simplest solution that meets requirements.
+- **Clarification Required**: If there are unclear parts or decisions needed, report them and wait for user confirmation before proceeding to design.
+
 ## Instructions
 
 ### 1. Requirements Analysis
