@@ -37,7 +37,8 @@ This repository provides a structured workflow for software development using sp
 │   │   │   ├── _analysis.md     # Common analysis phases
 │   │   │   ├── init-feature.md  # Feature init instructions
 │   │   │   ├── init-bugfix.md   # Bugfix init instructions
-│   │   │   └── init-refactor.md # Refactor init instructions
+│   │   │   ├── init-refactor.md # Refactor init instructions
+│   │   │   └── init-github-issue.md  # GitHub issue-based init
 │   │   ├── design/SKILL.md           # /dc:design
 │   │   ├── validate-spec/SKILL.md    # /dc:validate-spec
 │   │   ├── code/SKILL.md             # /dc:code [phase]
@@ -190,9 +191,10 @@ Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now em
 /dc:start-new
 
 # Orchestrator takes over:
-# 1. Asks work type (Feature/Bugfix/Refactor)
+# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
 # 2. Gathers requirements via step-by-step questions
-# 3. Asks target version
+#    - If GitHub Issue: parses issue URL, auto-detects type, pre-populates fields
+# 3. Asks target version (auto-filled from milestone if GitHub Issue)
 # 4. Creates and reviews SPEC with user
 # 5. Asks execution scope
 # 6. Executes selected scope (Design/Code/Docs/Merge)
