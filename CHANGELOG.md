@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-01-23
+
+### Added
+
+- Plugin marketplace support for simplified installation ([#1](https://github.com/U-lis/dotclaude/issues/1), [#6](https://github.com/U-lis/dotclaude/issues/6)):
+  - `.claude-plugin/marketplace.json`: Registry metadata for Claude Code marketplace
+  - `.claude-plugin/plugin.json`: Plugin configuration with skills path
+  - `hooks/hooks.json`: Hook configuration using `${CLAUDE_PLUGIN_ROOT}` for portable paths
+  - Installation via `/plugin marketplace add` and `/plugin install dotclaude` commands
+  - Dual installation support: Plugin marketplace (recommended) or manual (`cp -r`)
+  - Updated `/dotclaude:update` skill to detect plugin installation mode
+  - Installation guide in README with Plugin vs Manual options
+
 ## [0.0.12] - 2026-01-23
 
 ### Added
