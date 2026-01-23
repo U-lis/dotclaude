@@ -42,6 +42,7 @@ Call AskUserQuestion tool with these exact parameters:
   - { label: "기능 추가/수정", description: "새로운 기능 개발 또는 기존 기능 개선" }
   - { label: "버그 수정", description: "발견된 버그나 오류 수정" }
   - { label: "리팩토링", description: "기능 변경 없이 코드 구조 개선" }
+  - { label: "GitHub Issue", description: "GitHub 이슈 URL로 자동 초기화" }
 - multiSelect: false
 
 **Step 2: Load Init Instructions**
@@ -53,6 +54,7 @@ Based on Step 1 response, read and follow the corresponding init file from this 
 | 기능 추가/수정 | Read `init-feature.md` from this skill directory |
 | 버그 수정 | Read `init-bugfix.md` from this skill directory |
 | 리팩토링 | Read `init-refactor.md` from this skill directory |
+| GitHub Issue | Read `init-github-issue.md` from this skill directory |
 
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
