@@ -120,31 +120,31 @@ Add new files to `managed_files` and update version.
 ## Checklist
 
 ### README.md Updates
-- [ ] Add "Installation" section with two options
-- [ ] Option 1: Plugin marketplace commands (`/plugin marketplace add`, `/plugin install`)
-- [ ] Option 2: Manual installation (existing `git clone` + `cp` commands)
-- [ ] Add note explaining difference between plugin and manual update methods
-- [ ] Remove duplicate/outdated installation instructions if any
+- [x] Add "Installation" section with two options
+- [x] Option 1: Plugin marketplace commands (`/plugin marketplace add`, `/plugin install`)
+- [x] Option 2: Manual installation (existing `git clone` + `cp` commands)
+- [x] Add note explaining difference between plugin and manual update methods
+- [x] Remove duplicate/outdated installation instructions if any
 
 ### SKILL.md Updates
-- [ ] Add Step 0: Check Installation Type
-- [ ] Add `CLAUDE_PLUGIN_ROOT` environment check
-- [ ] Add user-friendly message explaining plugin update path
-- [ ] Ensure existing workflow (Steps 1-12) unchanged for manual installations
+- [x] Add Step 0: Check Installation Type
+- [x] Add `CLAUDE_PLUGIN_ROOT` environment check
+- [x] Add user-friendly message explaining plugin update path
+- [x] Ensure existing workflow (Steps 1-12) unchanged for manual installations
 
 ### Manifest Updates
-- [ ] Update version from "0.0.10" to "0.1.0"
-- [ ] Add `.claude-plugin/marketplace.json` to managed_files
-- [ ] Add `.claude-plugin/plugin.json` to managed_files
-- [ ] Add `hooks/hooks.json` to managed_files
-- [ ] Preserve all existing entries in managed_files
-- [ ] Preserve merge_files array unchanged
+- [x] Update version from "0.0.10" to "0.1.0"
+- [x] Add `.claude-plugin/marketplace.json` to managed_files
+- [x] Add `.claude-plugin/plugin.json` to managed_files
+- [x] Add `hooks/hooks.json` to managed_files
+- [x] Preserve all existing entries in managed_files
+- [x] Preserve merge_files array unchanged
 
 ### Verification
-- [ ] README installation instructions are clear and complete
-- [ ] SKILL.md gracefully handles both installation types
-- [ ] Manifest JSON is valid
-- [ ] All new Phase 1 files are in manifest
+- [x] README installation instructions are clear and complete
+- [x] SKILL.md gracefully handles both installation types
+- [x] Manifest JSON is valid
+- [x] All new Phase 1 files are in manifest
 
 ---
 

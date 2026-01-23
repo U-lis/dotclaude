@@ -1,6 +1,9 @@
 {
-  "version": "0.0.10",
+  "version": "0.1.0",
   "managed_files": [
+    ".claude-plugin/marketplace.json",
+    ".claude-plugin/plugin.json",
+    "hooks/hooks.json",
     ".claude/agents/code-validator.md",
     ".claude/agents/coders/_base.md",
     ".claude/agents/coders/javascript.md",

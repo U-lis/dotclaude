@@ -33,6 +33,38 @@ Update dotclaude framework to latest or specified version while preserving user 
 
 ## Execution Steps
 
+### Step 0: Check Installation Type
+
+Detect if running in plugin-installed environment:
+
+```bash
+# Check if CLAUDE_PLUGIN_ROOT environment variable is set
+if [ -n "$CLAUDE_PLUGIN_ROOT" ]; then
+  # Plugin installation detected
+  echo "Plugin installation detected."
+fi
+```
+
+**If plugin installation detected:**
+
+Display message and stop:
+
+```markdown
+## Plugin Installation Detected
+
+dotclaude is installed via the plugin marketplace.
+
+To update, use the plugin marketplace commands:
+
+```
+/plugin update dotclaude
+```
+
+The `/dotclaude:update` skill is only for manual installations.
+```
+
+**If manual installation:** Proceed with Step 1 onwards.
+
 ### Step 1: Check Prerequisites
 
 Verify requirements before proceeding:

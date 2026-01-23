@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "dotclaude",
+  "description": "Structured development workflow orchestration with phased implementation and validation",
+  "owner": {
+    "name": "U-lis",
+    "email": "TBD"
+  },
+  "plugins": [
+    {
+      "name": "dotclaude",
+      "description": "Structured development workflow with SPEC-driven design, phased implementation, and mandatory validation. Includes Designer, TechnicalWriter, and Coder agent orchestration.",
+      "version": "0.1.0",
+      "author": {
+        "name": "U-lis",
+        "email": "TBD"
+      },
+      "source": "./",
+      "category": "productivity",
+      "homepage": "https://github.com/U-lis/dotclaude",
+      "tags": ["workflow", "orchestration", "spec-driven", "phased-development", "validation"]
+    }
+  ]
+}

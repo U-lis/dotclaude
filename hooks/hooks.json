@@ -1,0 +1,15 @@
+{
+  "description": "dotclaude validation hooks - ensure phase checklists are completed before stopping",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/.claude/hooks/check-validation-complete.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

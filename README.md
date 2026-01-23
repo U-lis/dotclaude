@@ -163,26 +163,33 @@ claude_works/{subject}/
 | Parallel | `PHASE_{k}{A\|B\|C}` | PHASE_3A, PHASE_3B |
 | Merge | `PHASE_{k}.5` | PHASE_3.5 |
 
-## Usage
+## Installation
 
-### Install to Your Project
+### Option 1: Plugin Marketplace (Recommended)
 
-In your project's Claude Code session, say:
-
-```
-dotclaude repo (https://github.com/U-lis/dotclaude) 를 clone 해서
-.claude/ 폴더를 이 프로젝트에 복사해줘.
-```
-
-Or manually:
+Install dotclaude via Claude Code's plugin marketplace:
 
 ```bash
-git clone https://github.com/{username}/dotclaude /tmp/dotclaude
-cp -r /tmp/dotclaude/.claude .
-rm -rf /tmp/dotclaude
+# Add the marketplace repository (first time only)
+/plugin marketplace add https://github.com/U-lis/dotclaude
+
+# Install the plugin
+/plugin install dotclaude
 ```
 
-Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now embedded directly in their respective files.
+### Option 2: Manual Installation
+
+For direct control or customization, clone and copy manually:
+
+```bash
+git clone https://github.com/U-lis/dotclaude.git
+cp -r dotclaude/.claude your-project/
+cp dotclaude/.dotclaude-manifest.json your-project/
+```
+
+**Note**: Manual installation requires the `/dotclaude:update` skill for updates. Plugin installation uses the marketplace update mechanism (`/plugin update dotclaude`).
+
+## Usage
 
 ### Start New Work
 
@@ -205,6 +212,15 @@ Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now em
 ```
 
 ### Update dotclaude
+
+**Plugin Installation:**
+
+```bash
+# Update via marketplace
+/plugin update dotclaude
+```
+
+**Manual Installation:**
 
 Check for updates and apply them:
 
