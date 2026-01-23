@@ -46,8 +46,7 @@ This repository provides a structured workflow for software development using sp
 │   │   ├── tagging/SKILL.md          # /dc:tagging
 │   │   ├── update-docs/SKILL.md      # /dc:update-docs
 │   │   └── dotclaude/                # Framework management
-│   │       ├── version/SKILL.md      # /dotclaude:version
-│   │       └── update/SKILL.md       # /dotclaude:update
+│   │       └── version/SKILL.md      # /dotclaude:version
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -116,8 +115,7 @@ All dotclaude skills use the `dc:` prefix for namespace identification:
 | `/dc:merge-main` | Merge feature branch to main |
 | `/dc:tagging` | Create version tag based on CHANGELOG |
 | `/dc:update-docs` | Update documentation (CHANGELOG, README) |
-| `/dotclaude:version` | Display installed vs latest dotclaude version |
-| `/dotclaude:update` | Update dotclaude framework to latest version |
+| `/dotclaude:version` | Display installed dotclaude version |
 
 ## Agents
 
@@ -187,7 +185,7 @@ cp -r dotclaude/.claude your-project/
 cp dotclaude/.dotclaude-manifest.json your-project/
 ```
 
-**Note**: Manual installation requires the `/dotclaude:update` skill for updates. Plugin installation uses the marketplace update mechanism (`/plugin update dotclaude`).
+**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
 
 ## Usage
 
@@ -213,34 +211,12 @@ cp dotclaude/.dotclaude-manifest.json your-project/
 
 ### Update dotclaude
 
-**Plugin Installation:**
-
 ```bash
-# Update via marketplace
+# Update via plugin marketplace
 /plugin update dotclaude
 ```
 
-**Manual Installation:**
-
-Check for updates and apply them:
-
-```bash
-# Check current and latest version
-/dotclaude:version
-
-# Update to latest version
-/dotclaude:update
-
-# Update to specific version
-/dotclaude:update v0.1.0
-```
-
-The update process:
-- Tracks managed files via `.dotclaude-manifest.json`
-- Only updates dotclaude-managed files (preserves your customizations)
-- Smart merges `settings.json` (adds new keys, keeps your values)
-- Backs up before update, rolls back on failure
-- Requires confirmation before making changes
+Note: Restart Claude Code after updating to apply changes.
 
 ### Manual Execution (Bypass Orchestrator)
 
@@ -255,7 +231,6 @@ Individual skills can be invoked directly for debugging or partial work:
 /dc:merge-main       # Merge to main
 /dc:tagging          # Create version tag
 /dotclaude:version   # Check installed version
-/dotclaude:update    # Update to latest version
 ```
 
 ## License
