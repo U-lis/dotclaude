@@ -1,2 +1,5 @@
+# Local claude settings
+.claude/
+
 # User-specific configuration
 CLAUDE.md
