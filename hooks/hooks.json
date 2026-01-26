@@ -1,0 +1,26 @@
+{
+  "description": "dotclaude hooks - update check and validation enforcement",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/.claude/hooks/check-update.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/.claude/hooks/check-validation-complete.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

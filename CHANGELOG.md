@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.0] - 2026-01-23
+
+### Added
+
+- Plugin marketplace support for simplified installation ([#1](https://github.com/U-lis/dotclaude/issues/1), [#6](https://github.com/U-lis/dotclaude/issues/6)):
+  - `.claude-plugin/marketplace.json`: Registry metadata for Claude Code marketplace
+  - `.claude-plugin/plugin.json`: Plugin configuration with skills path
+  - `hooks/hooks.json`: Hook configuration using `${CLAUDE_PLUGIN_ROOT}` for portable paths
+  - Installation via `/plugin marketplace add` and `/plugin install dotclaude` commands
+  - Dual installation support: Plugin marketplace (recommended) or manual (`cp -r`)
+  - Installation guide in README with Plugin vs Manual options
+- SessionStart hook (`check-update.sh`): Automatically checks for updates on session start and notifies if newer version available
+
+### Removed
+
+- `/dotclaude:update` skill: Use `/plugin update dotclaude` instead
+- `/dotclaude:version` skill: Use `claude plugin list` instead
+
+## [0.0.12] - 2026-01-23
+
+### Added
+
+- GitHub Issue integration for `/dc:start-new` workflow:
+  - "GitHub Issue" option in Step 1 work type selection
+  - `init-github-issue.md`: New init file for GitHub issue-based workflow
+  - Issue parsing via `gh` CLI (title, body, labels, milestone)
+  - Label-based work type auto-detection (`bug` → bugfix, `enhancement` → feature, `refactor` → refactor)
+  - Body keyword analysis fallback when labels are missing or ambiguous
+  - Milestone → target_version auto-mapping
+  - Context pre-population for downstream init workflows
+  - Graceful error handling with fallback to manual workflow
+
 ## [0.0.11] - 2026-01-23
 
 ### Added

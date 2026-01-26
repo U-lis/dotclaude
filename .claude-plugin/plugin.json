@@ -1,0 +1,6 @@
+{
+  "name": "dotclaude",
+  "version": "0.1.0",
+  "description": "Structured development workflow orchestration for Claude Code",
+  "skills": ".claude/skills/"
+}

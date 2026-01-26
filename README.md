@@ -37,16 +37,14 @@ This repository provides a structured workflow for software development using sp
 │   │   │   ├── _analysis.md     # Common analysis phases
 │   │   │   ├── init-feature.md  # Feature init instructions
 │   │   │   ├── init-bugfix.md   # Bugfix init instructions
-│   │   │   └── init-refactor.md # Refactor init instructions
+│   │   │   ├── init-refactor.md # Refactor init instructions
+│   │   │   └── init-github-issue.md  # GitHub issue-based init
 │   │   ├── design/SKILL.md           # /dc:design
 │   │   ├── validate-spec/SKILL.md    # /dc:validate-spec
 │   │   ├── code/SKILL.md             # /dc:code [phase]
 │   │   ├── merge-main/SKILL.md       # /dc:merge-main
 │   │   ├── tagging/SKILL.md          # /dc:tagging
 │   │   ├── update-docs/SKILL.md      # /dc:update-docs
-│   │   └── dotclaude/                # Framework management
-│   │       ├── version/SKILL.md      # /dotclaude:version
-│   │       └── update/SKILL.md       # /dotclaude:update
 │   └── templates/               # Document templates
 │       ├── SPEC.md
 │       ├── GLOBAL.md
@@ -115,8 +113,6 @@ All dotclaude skills use the `dc:` prefix for namespace identification:
 | `/dc:merge-main` | Merge feature branch to main |
 | `/dc:tagging` | Create version tag based on CHANGELOG |
 | `/dc:update-docs` | Update documentation (CHANGELOG, README) |
-| `/dotclaude:version` | Display installed vs latest dotclaude version |
-| `/dotclaude:update` | Update dotclaude framework to latest version |
 
 ## Agents
 
@@ -162,26 +158,33 @@ claude_works/{subject}/
 | Parallel | `PHASE_{k}{A\|B\|C}` | PHASE_3A, PHASE_3B |
 | Merge | `PHASE_{k}.5` | PHASE_3.5 |
 
-## Usage
+## Installation
 
-### Install to Your Project
+### Option 1: Plugin Marketplace (Recommended)
 
-In your project's Claude Code session, say:
-
-```
-dotclaude repo (https://github.com/U-lis/dotclaude) 를 clone 해서
-.claude/ 폴더를 이 프로젝트에 복사해줘.
-```
-
-Or manually:
+Install dotclaude via Claude Code's plugin marketplace:
 
 ```bash
-git clone https://github.com/{username}/dotclaude /tmp/dotclaude
-cp -r /tmp/dotclaude/.claude .
-rm -rf /tmp/dotclaude
+# Add the marketplace repository (first time only)
+/plugin marketplace add https://github.com/U-lis/dotclaude
+
+# Install the plugin
+/plugin install dotclaude
 ```
 
-Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now embedded directly in their respective files.
+### Option 2: Manual Installation
+
+For direct control or customization, clone and copy manually:
+
+```bash
+git clone https://github.com/U-lis/dotclaude.git
+cp -r dotclaude/.claude your-project/
+cp dotclaude/.dotclaude-manifest.json your-project/
+```
+
+**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
+
+## Usage
 
 ### Start New Work
 
@@ -190,9 +193,10 @@ Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now em
 /dc:start-new
 
 # Orchestrator takes over:
-# 1. Asks work type (Feature/Bugfix/Refactor)
+# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
 # 2. Gathers requirements via step-by-step questions
-# 3. Asks target version
+#    - If GitHub Issue: parses issue URL, auto-detects type, pre-populates fields
+# 3. Asks target version (auto-filled from milestone if GitHub Issue)
 # 4. Creates and reviews SPEC with user
 # 5. Asks execution scope
 # 6. Executes selected scope (Design/Code/Docs/Merge)
@@ -204,25 +208,12 @@ Note: CLAUDE.md is excluded from tracking. Agent/skill-specific rules are now em
 
 ### Update dotclaude
 
-Check for updates and apply them:
-
 ```bash
-# Check current and latest version
-/dotclaude:version
-
-# Update to latest version
-/dotclaude:update
-
-# Update to specific version
-/dotclaude:update v0.1.0
+# Update via plugin marketplace
+/plugin update dotclaude
 ```
 
-The update process:
-- Tracks managed files via `.dotclaude-manifest.json`
-- Only updates dotclaude-managed files (preserves your customizations)
-- Smart merges `settings.json` (adds new keys, keeps your values)
-- Backs up before update, rolls back on failure
-- Requires confirmation before making changes
+Note: Restart Claude Code after updating to apply changes.
 
 ### Manual Execution (Bypass Orchestrator)
 
@@ -236,8 +227,6 @@ Individual skills can be invoked directly for debugging or partial work:
 /dc:update-docs      # Update documentation
 /dc:merge-main       # Merge to main
 /dc:tagging          # Create version tag
-/dotclaude:version   # Check installed version
-/dotclaude:update    # Update to latest version
 ```
 
 ## License
