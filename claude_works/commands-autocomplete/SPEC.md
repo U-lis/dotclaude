@@ -1,6 +1,6 @@
 # SPEC: commands/ 디렉토리 추가로 Autocomplete 지원
 
-**Target Version**: 0.1.2
+**Target Version**: 0.1.1
 **Work Type**: bugfix
 **Branch**: bugfix/commands-autocomplete
 
