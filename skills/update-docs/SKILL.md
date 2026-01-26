@@ -47,7 +47,7 @@ Update project documentation (README, CHANGELOG) after code implementation is co
 Task tool:
   subagent_type: "general-purpose"
   prompt: |
-    You are TechnicalWriter in DOCS_UPDATE role. Read .claude/agents/technical-writer.md.
+    You are TechnicalWriter in DOCS_UPDATE role. Read agents/technical-writer.md.
 
     ## Task: Update Project Documentation
 

@@ -325,7 +325,7 @@ NEVER do any of the following:
 Task tool:
   subagent_type: "general-purpose"
   prompt: |
-    You are TechnicalWriter. Read .claude/agents/technical-writer.md for your role.
+    You are TechnicalWriter. Read agents/technical-writer.md for your role.
 
     Create {document_type} document:
     - Input: {content_data}
@@ -339,7 +339,7 @@ Task tool:
 Task tool:
   subagent_type: "general-purpose"
   prompt: |
-    You are Designer. Read .claude/agents/designer.md for your role.
+    You are Designer. Read agents/designer.md for your role.
 
     Analyze SPEC and create design:
     - SPEC path: {spec_path}
@@ -353,7 +353,7 @@ Task tool:
 Task tool:
   subagent_type: "general-purpose"
   prompt: |
-    You are Coder. Read .claude/agents/coders/{language}.md for your role.
+    You are Coder. Read agents/coders/{language}.md for your role.
 
     Implement phase:
     - Phase: {phase_id}
@@ -368,7 +368,7 @@ Task tool:
 Task tool:
   subagent_type: "general-purpose"
   prompt: |
-    You are code-validator. Read .claude/agents/code-validator.md for your role.
+    You are code-validator. Read agents/code-validator.md for your role.
 
     Validate phase implementation:
     - Phase: {phase_id}

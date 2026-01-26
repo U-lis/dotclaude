@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": ".claude/hooks/check-validation-complete.sh"
+            "command": "hooks/check-validation-complete.sh"
           }
         ]
       }
