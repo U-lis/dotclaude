@@ -40,3 +40,25 @@ dotclaude/
 - `skills/*/SKILL.md` - Full implementation details
 
 When invoked via `/dc:*`, Claude reads the command file which directs to the corresponding SKILL.md.
+
+## Version Tagging Checklist
+
+**BEFORE creating a git tag**, verify version consistency across all files:
+
+```bash
+# Check all three files have matching versions
+grep '"version"' .claude-plugin/plugin.json
+grep '"version"' .claude-plugin/marketplace.json
+head -20 CHANGELOG.md | grep '## \['
+```
+
+All three must show the same version:
+- `.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+- `.claude-plugin/marketplace.json` → `"version": "X.Y.Z"`
+- `CHANGELOG.md` → `## [X.Y.Z] - YYYY-MM-DD`
+
+Only after verification, create the tag:
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
