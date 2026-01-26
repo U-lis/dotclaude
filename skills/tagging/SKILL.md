@@ -1,5 +1,5 @@
 ---
-name: dc:tagging
+name: tagging
 description: Create version tag based on CHANGELOG
 user-invocable: true
 ---

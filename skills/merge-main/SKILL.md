@@ -1,5 +1,5 @@
 ---
-name: dc:merge-main
+name: merge-main
 description: Merge feature branch to main with conflict resolution and branch cleanup
 user-invocable: true
 ---
