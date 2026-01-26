@@ -18,39 +18,45 @@ This repository provides a structured workflow for software development using sp
 .
 ├── .gitignore                   # Excludes CLAUDE.md from tracking
 ├── .claude/
-│   ├── settings.json            # Hooks configuration
-│   ├── agents/                  # Agent definitions
-│   │   ├── designer.md          # Architecture and planning
-│   │   ├── technical-writer.md  # Documentation
-│   │   ├── spec-validator.md    # Specification validation
-│   │   ├── code-validator.md    # Code quality validation
-│   │   └── coders/              # Language-specific coders
-│   │       ├── _base.md         # Common coder rules
-│   │       ├── python.md        # Python specialist
-│   │       ├── javascript.md    # JS/TS specialist
-│   │       ├── svelte.md        # Svelte specialist
-│   │       ├── rust.md          # Rust specialist
-│   │       └── sql.md           # SQL/DB specialist
-│   ├── skills/                  # Workflow commands (dc: prefix)
-│   │   ├── start-new/           # /dc:start-new (entry point + orchestrator)
-│   │   │   ├── SKILL.md         # 13-step orchestrator workflow
-│   │   │   ├── _analysis.md     # Common analysis phases
-│   │   │   ├── init-feature.md  # Feature init instructions
-│   │   │   ├── init-bugfix.md   # Bugfix init instructions
-│   │   │   ├── init-refactor.md # Refactor init instructions
-│   │   │   └── init-github-issue.md  # GitHub issue-based init
-│   │   ├── design/SKILL.md           # /dc:design
-│   │   ├── validate-spec/SKILL.md    # /dc:validate-spec
-│   │   ├── code/SKILL.md             # /dc:code [phase]
-│   │   ├── merge-main/SKILL.md       # /dc:merge-main
-│   │   ├── tagging/SKILL.md          # /dc:tagging
-│   │   ├── update-docs/SKILL.md      # /dc:update-docs
-│   └── templates/               # Document templates
-│       ├── SPEC.md
-│       ├── GLOBAL.md
-│       ├── PHASE_PLAN.md
-│       ├── PHASE_TEST.md
-│       └── PHASE_MERGE.md
+│   └── settings.json            # Hooks configuration
+├── .claude-plugin/              # Plugin marketplace metadata
+│   ├── marketplace.json         # Registry metadata
+│   └── plugin.json              # Plugin configuration
+├── agents/                      # Agent definitions
+│   ├── designer.md              # Architecture and planning
+│   ├── technical-writer.md      # Documentation
+│   ├── spec-validator.md        # Specification validation
+│   ├── code-validator.md        # Code quality validation
+│   └── coders/                  # Language-specific coders
+│       ├── _base.md             # Common coder rules
+│       ├── python.md            # Python specialist
+│       ├── javascript.md        # JS/TS specialist
+│       ├── svelte.md            # Svelte specialist
+│       ├── rust.md              # Rust specialist
+│       └── sql.md               # SQL/DB specialist
+├── skills/                      # Workflow commands (dc: prefix)
+│   ├── start-new/               # /dc:start-new (entry point + orchestrator)
+│   │   ├── SKILL.md             # 13-step orchestrator workflow
+│   │   ├── _analysis.md         # Common analysis phases
+│   │   ├── init-feature.md      # Feature init instructions
+│   │   ├── init-bugfix.md       # Bugfix init instructions
+│   │   ├── init-refactor.md     # Refactor init instructions
+│   │   └── init-github-issue.md # GitHub issue-based init
+│   ├── design/SKILL.md          # /dc:design
+│   ├── validate-spec/SKILL.md   # /dc:validate-spec
+│   ├── code/SKILL.md            # /dc:code [phase]
+│   ├── merge-main/SKILL.md      # /dc:merge-main
+│   ├── tagging/SKILL.md         # /dc:tagging
+│   └── update-docs/SKILL.md     # /dc:update-docs
+├── templates/                   # Document templates
+│   ├── SPEC.md
+│   ├── GLOBAL.md
+│   ├── PHASE_PLAN.md
+│   ├── PHASE_TEST.md
+│   └── PHASE_MERGE.md
+├── hooks/                       # Hook scripts
+│   ├── hooks.json               # Hook configuration
+│   └── check-update.sh          # SessionStart update checker
 └── claude_works/                # Working documents (per project)
 ```
 
