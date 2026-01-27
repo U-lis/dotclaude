@@ -6,86 +6,86 @@ Instructions for initializing new feature work through requirements gathering an
 
 Use AskUserQuestion tool for each step sequentially:
 
-### Step 1: 목표
+### Step 1: Goal
 ```
-Question: "이 기능의 주요 목표는 무엇인가요?"
-Header: "목표"
+Question: "What is the main goal of this feature?"
+Header: "Goal"
 → Free text response
 ```
 
-### Step 2: 문제
+### Step 2: Problem
 ```
-Question: "어떤 문제를 해결하려고 하나요?"
-Header: "문제"
+Question: "What problem are you trying to solve?"
+Header: "Problem"
 → Free text response
 ```
 
-### Step 3: 핵심 기능
+### Step 3: Core Features
 ```
-Question: "반드시 있어야 하는 핵심 기능은 무엇인가요?"
-Header: "핵심 기능"
+Question: "What core features are required?"
+Header: "Core Features"
 → Free text (can list multiple)
 ```
 
-### Step 4: 부가 기능
+### Step 4: Additional Features
 ```
-Question: "있으면 좋지만 필수는 아닌 기능이 있나요?"
-Header: "부가 기능"
+Question: "Are there any nice-to-have but not required features?"
+Header: "Additional Features"
 Options:
-  - label: "없음"
-    description: "필수 기능만 구현"
+  - label: "None"
+    description: "Implement required features only"
 → Or free text via "Other"
 ```
 
-### Step 5: 기술 제약
+### Step 5: Technical Constraints
 ```
-Question: "기술적 제약이 있나요?"
-Header: "기술 제약"
+Question: "Are there any technical constraints?"
+Header: "Technical Constraints"
 Options:
-  - label: "언어/프레임워크 지정"
-    description: "특정 기술 스택 사용 필요"
-  - label: "기존 패턴 따르기"
-    description: "코드베이스의 기존 패턴 준수"
-  - label: "제약 없음"
-    description: "자유롭게 구현 가능"
+  - label: "Specific language/framework required"
+    description: "Specific tech stack required"
+  - label: "Follow existing patterns"
+    description: "Follow existing codebase patterns"
+  - label: "No constraints"
+    description: "Free to implement"
 multiSelect: false
 ```
 
-### Step 6: 성능 요구
+### Step 6: Performance Requirements
 ```
-Question: "성능 요구사항이 있나요?"
-Header: "성능"
+Question: "Are there any performance requirements?"
+Header: "Performance"
 Options:
-  - label: "있음"
-    description: "상세 내용을 입력해주세요"
-  - label: "없음"
-    description: "특별한 성능 요구사항 없음"
+  - label: "Yes"
+    description: "Please enter details"
+  - label: "None"
+    description: "No specific performance requirements"
 multiSelect: false
 ```
 
-### Step 7: 보안 고려
+### Step 7: Security Considerations
 ```
-Question: "보안 고려사항이 있나요?"
-Header: "보안"
+Question: "Are there any security considerations?"
+Header: "Security"
 Options:
-  - label: "인증/인가 필요"
-    description: "사용자 인증 또는 권한 검증 필요"
-  - label: "데이터 암호화"
-    description: "민감 데이터 암호화 필요"
-  - label: "입력 검증"
-    description: "사용자 입력 검증 필요"
-  - label: "없음"
-    description: "특별한 보안 요구사항 없음"
+  - label: "Authentication/authorization required"
+    description: "User authentication or permission verification required"
+  - label: "Data encryption"
+    description: "Sensitive data encryption required"
+  - label: "Input validation"
+    description: "User input validation required"
+  - label: "None"
+    description: "No specific security requirements"
 multiSelect: true
 ```
 
-### Step 8: 범위 제외
+### Step 8: Out of Scope
 ```
-Question: "명시적으로 범위에서 제외할 것은?"
-Header: "범위 제외"
+Question: "What should be explicitly excluded from scope?"
+Header: "Out of Scope"
 Options:
-  - label: "없음"
-    description: "제외할 항목 없음"
+  - label: "None"
+    description: "No items to exclude"
 → Or free text via "Other"
 ```
 

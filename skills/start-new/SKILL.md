@@ -36,13 +36,13 @@ Central workflow controller for the full 13-step development process from init t
 **Step 1: Work Type Selection**
 
 Call AskUserQuestion tool with these exact parameters:
-- question: "어떤 작업을 시작하려고 하나요?"
-- header: "작업 유형"
+- question: "What type of work do you want to start?"
+- header: "Work Type"
 - options:
-  - { label: "기능 추가/수정", description: "새로운 기능 개발 또는 기존 기능 개선" }
-  - { label: "버그 수정", description: "발견된 버그나 오류 수정" }
-  - { label: "리팩토링", description: "기능 변경 없이 코드 구조 개선" }
-  - { label: "GitHub Issue", description: "GitHub 이슈 URL로 자동 초기화" }
+  - { label: "Add/Modify Feature", description: "New feature development or improve existing feature" }
+  - { label: "Bug Fix", description: "Fix discovered bugs or errors" }
+  - { label: "Refactoring", description: "Improve code structure without changing functionality" }
+  - { label: "GitHub Issue", description: "Auto-initialize from GitHub issue URL" }
 - multiSelect: false
 
 **Step 2: Load Init Instructions**
@@ -51,9 +51,9 @@ Based on Step 1 response, read and follow the corresponding init file from this 
 
 | User Selection | Init File to Read |
 |----------------|-------------------|
-| 기능 추가/수정 | Read `init-feature.md` from this skill directory |
-| 버그 수정 | Read `init-bugfix.md` from this skill directory |
-| 리팩토링 | Read `init-refactor.md` from this skill directory |
+| Add/Modify Feature | Read `init-feature.md` from this skill directory |
+| Bug Fix | Read `init-bugfix.md` from this skill directory |
+| Refactoring | Read `init-refactor.md` from this skill directory |
 | GitHub Issue | Read `init-github-issue.md` from this skill directory |
 
 Execute ALL steps defined in the loaded init file:
@@ -78,9 +78,9 @@ After analysis, before drafting SPEC.md:
 
 2. **Present version history** to user before asking:
    ```markdown
-   ## 최근 버전 히스토리
+   ## Recent Version History
 
-   | 버전 | 날짜 | 주요 변경사항 |
+   | Version | Date | Key Changes |
    |------|------|--------------|
    | 0.0.9 | 2026-01-21 | dc: prefix 추가, target version 질문 추가 |
    | 0.0.8 | 2026-01-19 | Orchestrator 추가, 16단계 워크플로우 |
@@ -88,18 +88,18 @@ After analysis, before drafting SPEC.md:
    ```
 
 3. **Call AskUserQuestion** with context-aware options:
-   - question: "이 작업의 목표 버전은 무엇인가요?"
-   - header: "목표 버전"
+   - question: "What is the target version for this work?"
+   - header: "Target Version"
    - options (dynamically generated based on current version):
-     - { label: "{current}.{+1} (패치)", description: "버그 수정, 작은 변경" }
-     - { label: "{current+minor}.0 (마이너)", description: "새 기능 추가, 하위 호환" }
-     - { label: "{current+major}.0.0 (메이저)", description: "Breaking changes 포함" }
+     - { label: "{current}.{+1} (Patch)", description: "Bug fixes, small changes" }
+     - { label: "{current+minor}.0 (Minor)", description: "New features, backward compatible" }
+     - { label: "{current+major}.0.0 (Major)", description: "Includes breaking changes" }
    - multiSelect: false
 
    Example if current is 0.0.9:
-   - { label: "0.0.10 (패치)", description: "버그 수정, 작은 변경" }
-   - { label: "0.1.0 (마이너)", description: "새 기능 추가, 하위 호환" }
-   - { label: "1.0.0 (메이저)", description: "Breaking changes 포함" }
+   - { label: "0.0.10 (Patch)", description: "Bug fixes, small changes" }
+   - { label: "0.1.0 (Minor)", description: "New features, backward compatible" }
+   - { label: "1.0.0 (Major)", description: "Includes breaking changes" }
 
 User can also enter specific version via "Other" option.
 
@@ -110,11 +110,11 @@ Store the target_version for:
 **Step 3: SPEC Review**
 
 Present SPEC.md summary to user, then call AskUserQuestion tool:
-- question: "SPEC.md를 검토해주세요. 수정이 필요하면 말씀해주세요."
-- header: "SPEC 검토"
+- question: "Please review SPEC.md. Let me know if revisions are needed."
+- header: "SPEC Review"
 - options:
-  - { label: "승인", description: "SPEC.md 내용이 정확합니다" }
-  - { label: "수정 필요", description: "수정이 필요합니다 (상세 내용 입력)" }
+  - { label: "Approve", description: "SPEC.md content is correct" }
+  - { label: "Needs Revision", description: "Revisions needed (enter details)" }
 - multiSelect: false
 
 If revision needed: iterate with TechnicalWriter via Task tool
@@ -128,13 +128,13 @@ git commit -m "docs: add SPEC.md for {subject}"
 **Step 5: Scope Selection**
 
 Call AskUserQuestion tool:
-- question: "어디까지 진행할까요?"
-- header: "진행 범위"
+- question: "How far should we proceed?"
+- header: "Execution Scope"
 - options:
-  - { label: "Design", description: "설계 문서만 작성" }
-  - { label: "Design → Code", description: "설계 + 코드 구현" }
-  - { label: "Design → Code → Docs", description: "설계 + 코드 + 문서 업데이트" }
-  - { label: "Design → Code → Docs → Merge", description: "전체 워크플로우 실행" }
+  - { label: "Design", description: "Create design documents only" }
+  - { label: "Design → Code", description: "Design + Code implementation" }
+  - { label: "Design → Code → Docs", description: "Design + Code + Documentation update" }
+  - { label: "Design → Code → Docs → Merge", description: "Execute full workflow" }
 - multiSelect: false
 
 ---

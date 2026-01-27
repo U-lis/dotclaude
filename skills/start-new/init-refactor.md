@@ -6,71 +6,71 @@ Instructions for initializing refactoring work through target analysis and depen
 
 Use AskUserQuestion tool for each step sequentially:
 
-### Step 1: 대상
+### Step 1: Target
 ```
-Question: "리팩토링 대상은 무엇인가요?"
-Header: "리팩토링 대상"
-→ Free text (파일, 모듈, 클래스, 함수 등)
+Question: "What is the refactoring target?"
+Header: "Refactoring Target"
+→ Free text (file, module, class, function, etc.)
 ```
 
-### Step 2: 문제점
+### Step 2: Problems
 ```
-Question: "현재 어떤 문제가 있나요?"
-Header: "문제점"
+Question: "What problems exist in the current code?"
+Header: "Problems"
 Options:
-  - label: "중복 코드 (DRY 위반)"
-    description: "같은 로직이 여러 곳에 반복됨"
-  - label: "긴 메서드/클래스 (SRP 위반)"
-    description: "하나의 단위가 너무 많은 책임을 가짐"
-  - label: "복잡한 조건문"
-    description: "if/switch 문이 복잡하게 중첩됨"
-  - label: "강한 결합도"
-    description: "모듈간 의존성이 높음"
-  - label: "테스트 어려움"
-    description: "유닛 테스트 작성이 어려움"
+  - label: "Duplicate code (DRY violation)"
+    description: "Same logic repeated in multiple places"
+  - label: "Long method/class (SRP violation)"
+    description: "One unit has too many responsibilities"
+  - label: "Complex conditionals"
+    description: "if/switch statements are deeply nested"
+  - label: "High coupling"
+    description: "Dependencies between modules are too high"
+  - label: "Testing difficulty"
+    description: "Difficult to write unit tests"
 multiSelect: true
 ```
 
-### Step 3: 목표 상태
+### Step 3: Goal State
 ```
-Question: "리팩토링 후 기대하는 상태는?"
-Header: "목표"
-→ Free text (목표 아키텍처, 패턴 등)
+Question: "What is the expected state after refactoring?"
+Header: "Goal"
+→ Free text (target architecture, patterns, etc.)
 ```
 
-### Step 4: 동작 변경
+### Step 4: Behavior Change
 ```
-Question: "기존 동작이 변경되어도 괜찮나요?"
-Header: "동작 변경"
+Question: "Is it okay if the existing behavior changes?"
+Header: "Behavior Change"
 Options:
-  - label: "동작 유지 필수"
-    description: "순수 리팩토링, 기능 변경 없음"
-  - label: "일부 변경 가능"
-    description: "개선을 위해 동작 변경 허용"
+  - label: "Preserve behavior (required)"
+    description: "Pure refactoring, no functional changes"
+  - label: "Some changes allowed"
+    description: "Allow behavior changes for improvement"
 multiSelect: false
 ```
 
-### Step 5: 테스트 현황
+### Step 5: Test Status
 ```
-Question: "관련된 테스트가 있나요?"
-Header: "테스트"
+Question: "Are there related tests?"
+Header: "Tests"
 Options:
-  - label: "있음"
-    description: "테스트 커버리지 확보됨"
-  - label: "일부 있음"
-    description: "부분적으로 테스트 존재"
-  - label: "없음"
-    description: "테스트 먼저 작성 필요"
+  - label: "Yes"
+    description: "Test coverage is secured"
+  - label: "Partial"
+    description: "Tests exist partially"
+  - label: "No"
+    description: "Tests need to be written first"
 multiSelect: false
 ```
 
-### Step 6: 의존 모듈
+### Step 6: Dependencies
 ```
-Question: "이 코드를 사용하는 다른 모듈이 있나요?"
-Header: "의존성"
+Question: "Are there other modules that use this code?"
+Header: "Dependencies"
 Options:
-  - label: "없음/모름"
-    description: "다른 모듈에서 사용 안함 또는 파악 필요"
+  - label: "None/Unknown"
+    description: "Not used by other modules or needs investigation"
 → Or free text via "Other"
 ```
 
@@ -117,7 +117,7 @@ For refactoring, detect conflicts between:
    - Are there external dependencies (other packages, APIs)?
 
 2. **Refactoring vs Behavior Preservation**
-   - If "동작 유지 필수" selected: verify behavior can be preserved
+   - If "Preserve behavior (required)" selected: verify behavior can be preserved
    - Identify behavioral changes that would require user approval
 
 3. **Refactoring vs Parallel Work**
