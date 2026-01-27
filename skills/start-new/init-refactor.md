@@ -2,6 +2,18 @@
 
 Instructions for initializing refactoring work through target analysis and dependency mapping.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
@@ -195,5 +207,5 @@ Create SPEC.md with refactor-specific format:
 ## Output
 
 1. Refactor branch `refactor/{keyword}` created and checked out
-2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` created with all sections above
+2. Directory `{working_directory}/{subject}/` created
+3. `{working_directory}/{subject}/SPEC.md` created with all sections above

@@ -120,9 +120,9 @@ skills/validate-spec/SKILL.md           # Replace claude_works/ with {working_di
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Configuration Infrastructure | 🔴 Not Started | - |
-| 2 | Skill Migration | 🔴 Not Started | Phase 1 |
-| 3 | Documentation | 🔴 Not Started | Phase 2 |
+| 1 | Configuration Infrastructure | 🟢 Complete | - |
+| 2 | Skill Migration | 🟢 Complete | Phase 1 |
+| 3 | Documentation | 🟢 Complete | Phase 2 |
 
 **Status Legend**:
 - 🔴 Not Started
@@ -173,21 +173,23 @@ All phases are sequential:
 ## Completion Criteria
 
 Overall feature is complete when:
-- [ ] All phases marked 🟢 Complete
-- [ ] `/dotclaude:configure` command works for global and local scopes
-- [ ] All five settings are configurable
-- [ ] Local config correctly overrides global config
-- [ ] SessionStart hook creates default global config
-- [ ] All skills use `{working_directory}` from config instead of hard-coded `claude_works/`
-- [ ] Working directory migration prompts user when changing with existing files
-- [ ] Invalid JSON config falls back to defaults without breaking skills
-- [ ] README.md includes configuration section
-- [ ] CHANGELOG.md includes v0.2.0 entry
+- [x] All phases marked 🟢 Complete
+- [x] `/dotclaude:configure` command works for global and local scopes
+- [x] All five settings are configurable
+- [x] Local config correctly overrides global config
+- [x] SessionStart hook creates default global config
+- [x] All skills use `{working_directory}` from config instead of hard-coded `claude_works/`
+- [x] Working directory migration prompts user when changing with existing files
+- [x] Invalid JSON config falls back to defaults without breaking skills
+- [x] README.md includes configuration section
+- [x] CHANGELOG.md includes v0.2.0 entry
 
 ---
 
 ## Next Steps
 
-1. ⏳ Phase 1: Create configuration infrastructure
-2. Phase 2: Update existing skills to use configuration
-3. Phase 3: Update documentation
+1. ✅ Phase 1: Create configuration infrastructure (Complete)
+2. ✅ Phase 2: Update existing skills to use configuration (Complete)
+3. ✅ Phase 3: Update documentation (Complete)
+
+All phases complete. Ready for commit and merge.

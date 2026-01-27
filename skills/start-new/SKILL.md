@@ -8,6 +8,18 @@ user-invocable: true
 
 Central workflow controller for the full 13-step development process from init to merge.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Role
 
 - **Central workflow controller**: Manage all 13 steps from init to merge
@@ -60,7 +72,7 @@ Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
 2. Auto-generate branch keyword
 3. Create work branch: `git checkout -b {type}/{keyword}`
-4. Create project directory: `mkdir -p claude_works/{subject}`
+4. Create project directory: `mkdir -p {working_directory}/{subject}`
 5. Analysis phase (read `_analysis.md` for details)
 6. **Target Version Question** (see below)
 7. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
@@ -121,7 +133,7 @@ If revision needed: iterate with TechnicalWriter via Task tool
 
 **Step 4: Commit SPEC.md**
 ```bash
-git add claude_works/{subject}/SPEC.md
+git add {working_directory}/{subject}/SPEC.md
 git commit -m "docs: add SPEC.md for {subject}"
 ```
 
@@ -149,12 +161,12 @@ Call AskUserQuestion tool:
    - If on main: HALT and report "Work branch not created. Create branch before proceeding."
 
 2. **SPEC.md Check**:
-   - File `claude_works/{subject}/SPEC.md` must exist
+   - File `{working_directory}/{subject}/SPEC.md` must exist
    - If missing: HALT and report "SPEC.md not found. Create SPEC.md before design phase."
 
 3. **SPEC.md Committed Check**:
    - SPEC.md must be committed (not just staged)
-   - Run: `git log --oneline -1 -- claude_works/{subject}/SPEC.md`
+   - Run: `git log --oneline -1 -- {working_directory}/{subject}/SPEC.md`
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
 If any check fails: halt workflow and report error to user.
@@ -167,7 +179,7 @@ If any check fails: halt workflow and report error to user.
 ```
 Task tool → Designer
   Input:
-    spec_path: "claude_works/{subject}/SPEC.md"
+    spec_path: "{working_directory}/{subject}/SPEC.md"
   Output: architecture decisions, phase breakdown
 ```
 
@@ -177,13 +189,13 @@ Task tool → TechnicalWriter
   Input:
     document_type: "DESIGN"
     designer_output: {Designer results}
-    target_dir: "claude_works/{subject}/"
+    target_dir: "{working_directory}/{subject}/"
   Output: GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md
 ```
 
 **Step 8: Commit Design Documents**
 ```bash
-git add claude_works/{subject}/*.md
+git add {working_directory}/{subject}/*.md
 git commit -m "docs: add design documents for {subject}"
 ```
 
@@ -203,7 +215,7 @@ For sequential phase:
 Task tool → Coder
   Input:
     phase_id: "{k}"
-    plan_path: "claude_works/{subject}/PHASE_{k}_PLAN_*.md"
+    plan_path: "{working_directory}/{subject}/PHASE_{k}_PLAN_*.md"
   Output: implementation, files changed
 
 Task tool → code-validator
@@ -523,11 +535,11 @@ subject: "{keyword}"
 branch: "{type}/{keyword}"
 scope_executed: "Design → Code → Docs → Merge"
 init:
-  spec_path: "claude_works/{subject}/SPEC.md"
+  spec_path: "{working_directory}/{subject}/SPEC.md"
   spec_approved: true
   target_version: "X.Y.Z"
 design:
-  global_path: "claude_works/{subject}/GLOBAL.md"
+  global_path: "{working_directory}/{subject}/GLOBAL.md"
   phases: ["1", "2", "3A", "3B", "3C", "3.5", "4"]
 code:
   phases:
@@ -571,7 +583,7 @@ After all steps in the chain complete, display summary:
 | 4 | Merge | SUCCESS |
 
 ## Files Changed
-- claude_works/{subject}/*.md
+- {working_directory}/{subject}/*.md
 - [implementation files...]
 - CHANGELOG.md
 

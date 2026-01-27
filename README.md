@@ -23,6 +23,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── marketplace.json         # Registry metadata
 │   └── plugin.json              # Plugin configuration
 ├── commands/                    # Autocomplete entry points
+│   ├── configure.md
 │   ├── start-new.md
 │   ├── design.md
 │   ├── code.md
@@ -64,6 +65,7 @@ This repository provides a structured workflow for software development using sp
 │   └── PHASE_MERGE.md
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
+│   ├── init-config.sh           # SessionStart config initializer
 │   └── check-update.sh          # SessionStart update checker
 └── claude_works/                # Working documents (per project)
 ```
@@ -119,6 +121,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 
 | Command | Description |
 |---------|-------------|
+| `/dotclaude:configure` | Interactive configuration management |
 | `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow |
 | `/dotclaude:design` | Transform SPEC into implementation plan |
 | `/dotclaude:validate-spec` | Validate document consistency (optional) |
@@ -171,6 +174,66 @@ claude_works/{subject}/
 | Sequential | `PHASE_{k}` | PHASE_1, PHASE_2 |
 | Parallel | `PHASE_{k}{A\|B\|C}` | PHASE_3A, PHASE_3B |
 | Merge | `PHASE_{k}.5` | PHASE_3.5 |
+
+## Configuration
+
+dotclaude supports both global and per-project configuration.
+
+### Configuration Files
+
+| Scope | Location | Description |
+|-------|----------|-------------|
+| Global | `~/.claude/dotclaude-config.json` | Applies to all projects |
+| Local | `<project_root>/.claude/dotclaude-config.json` | Project-specific overrides |
+
+Configuration merge order: **Defaults < Global < Local**
+
+### Configuration Command
+
+```bash
+/dotclaude:configure
+```
+
+Interactive workflow to edit settings at global or local scope. Changes take effect immediately.
+
+### Available Settings
+
+| Setting | Type | Default | Description |
+|---------|------|---------|-------------|
+| `language` | string | `en_US` | Language for conversations and documents |
+| `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
+| `check_version` | boolean | `true` | Check for plugin updates on session start |
+| `auto_update` | boolean | `false` | Auto-update when update available |
+| `base_branch` | string | `main` | Default base branch for git operations |
+
+### Configuration File Format
+
+```json
+{
+  "language": "en_US",
+  "working_directory": ".dc_workspace",
+  "check_version": true,
+  "auto_update": false,
+  "base_branch": "main"
+}
+```
+
+### Common Use Cases
+
+**Change working directory globally:**
+```bash
+/dotclaude:configure → Global → Set working_directory to "docs"
+```
+
+**Per-project working directory:**
+```bash
+/dotclaude:configure → Local → Set working_directory to "project_docs"
+```
+
+**Different base branch:**
+```bash
+/dotclaude:configure → Set base_branch to "develop"
+```
 
 ## Installation
 

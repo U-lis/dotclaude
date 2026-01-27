@@ -10,14 +10,14 @@ Add a `/dotclaude:configure` command to enable interactive management of dotclau
 ## Functional Requirements
 
 ### FR-1: Configuration Command Entry Point
-- [ ] Create `/dotclaude:configure` command file in `commands/` directory
-- [ ] Command invokes corresponding skill in `skills/configure/SKILL.md`
-- [ ] Skill uses interactive workflow with AskUserQuestion pattern
+- [x] Create `/dotclaude:configure` command file in `commands/` directory
+- [x] Command invokes corresponding skill in `skills/configure/SKILL.md`
+- [x] Skill uses interactive workflow with AskUserQuestion pattern
 
 ### FR-2: Configuration Scope Selection
-- [ ] First interaction asks: "Which configuration to edit? (1) Local (this project) or (2) Global (all projects)"
-- [ ] Display explanation: "Local settings override global settings"
-- [ ] User selects scope before proceeding to settings management
+- [x] First interaction asks: "Which configuration to edit? (1) Local (this project) or (2) Global (all projects)"
+- [x] Display explanation: "Local settings override global settings"
+- [x] User selects scope before proceeding to settings management
 
 ### FR-3: Configurable Settings
 
@@ -33,11 +33,11 @@ All settings must be manageable through the configure command:
 
 ### FR-4: Configuration File Storage
 
-- [ ] **Global configuration**: `~/.claude/dotclaude-config.json`
+- [x] **Global configuration**: `~/.claude/dotclaude-config.json`
   - Applies to all projects
   - Created automatically on first session start if not exists
 
-- [ ] **Local configuration**: `<project_root>/.claude/dotclaude-config.json`
+- [x] **Local configuration**: `<project_root>/.claude/dotclaude-config.json`
   - Applies only to current project
   - Created manually via `/dotclaude:configure` when user selects local scope
   - Local settings override global settings (merge strategy: local wins on conflict)
@@ -69,9 +69,9 @@ When user changes `working_directory` setting:
 
 ### FR-7: Initial Configuration Creation
 
-- [ ] Add SessionStart hook that creates default global config if `~/.claude/dotclaude-config.json` does not exist
-- [ ] Hook runs automatically on session start
-- [ ] Does NOT create local config automatically (only via `/dotclaude:configure`)
+- [x] Add SessionStart hook that creates default global config if `~/.claude/dotclaude-config.json` does not exist
+- [x] Hook runs automatically on session start
+- [x] Does NOT create local config automatically (only via `/dotclaude:configure`)
 
 ### FR-8: Configuration Loading
 
@@ -86,33 +86,33 @@ All skills must load configuration in this order:
 
 Update skills that currently use hard-coded paths:
 
-- [ ] `skills/start-new/SKILL.md` - Replace `claude_works/` with config value
-- [ ] `skills/design/SKILL.md` - Replace `claude_works/` with config value
-- [ ] `skills/code/SKILL.md` - Replace `claude_works/` with config value
-- [ ] `skills/update-docs/SKILL.md` - Replace `claude_works/` with config value
-- [ ] Any other skills referencing `claude_works/` directory
+- [x] `skills/start-new/SKILL.md` - Replace `claude_works/` with config value
+- [x] `skills/design/SKILL.md` - Replace `claude_works/` with config value
+- [x] `skills/code/SKILL.md` - Replace `claude_works/` with config value
+- [x] `skills/update-docs/SKILL.md` - Replace `claude_works/` with config value
+- [x] Any other skills referencing `claude_works/` directory
 
 ## Non-Functional Requirements
 
 ### NFR-1: User Experience
-- [ ] Interactive prompts are clear and concise
-- [ ] Default values are shown when asking for input
-- [ ] Invalid inputs receive helpful error messages
-- [ ] Configuration changes take effect immediately (no session restart required)
+- [x] Interactive prompts are clear and concise
+- [x] Default values are shown when asking for input
+- [x] Invalid inputs receive helpful error messages
+- [x] Configuration changes take effect immediately (no session restart required)
 
 ### NFR-2: Code Quality
-- [ ] Follow existing skill structure (YAML frontmatter + markdown workflow)
-- [ ] Use AskUserQuestion for all user interactions
-- [ ] Error handling for invalid JSON, missing files, permission issues
+- [x] Follow existing skill structure (YAML frontmatter + markdown workflow)
+- [x] Use AskUserQuestion for all user interactions
+- [x] Error handling for invalid JSON, missing files, permission issues
 
 ### NFR-3: Documentation
-- [ ] Update README.md with configuration section
-- [ ] Add configuration examples to documentation
-- [ ] Document migration path from hard-coded `claude_works/` to configurable directory
+- [x] Update README.md with configuration section
+- [x] Add configuration examples to documentation
+- [x] Document migration path from hard-coded `claude_works/` to configurable directory
 
 ### NFR-4: Backward Compatibility
-- [ ] Existing projects without configuration files continue to work with defaults
-- [ ] Gradual migration: no breaking changes to existing workflows
+- [x] Existing projects without configuration files continue to work with defaults
+- [x] Gradual migration: no breaking changes to existing workflows
 
 ## Constraints
 
@@ -184,12 +184,12 @@ None. Default behavior matches current hard-coded behavior.
 
 ## Acceptance Criteria
 
-- [ ] User can run `/dotclaude:configure` and select global or local scope
-- [ ] User can view and edit all five settings interactively
-- [ ] Configuration is persisted to correct JSON file based on scope
-- [ ] Local config overrides global config when both exist
-- [ ] Working directory migration prompts user when files exist
-- [ ] SessionStart hook creates default global config if missing
-- [ ] All skills use configured working directory instead of `claude_works/`
-- [ ] Invalid JSON config does not crash, falls back to defaults
-- [ ] Documentation updated with configuration examples
+- [x] User can run `/dotclaude:configure` and select global or local scope
+- [x] User can view and edit all five settings interactively
+- [x] Configuration is persisted to correct JSON file based on scope
+- [x] Local config overrides global config when both exist
+- [x] Working directory migration prompts user when files exist
+- [x] SessionStart hook creates default global config if missing
+- [x] All skills use configured working directory instead of `claude_works/`
+- [x] Invalid JSON config does not crash, falls back to defaults
+- [x] Documentation updated with configuration examples

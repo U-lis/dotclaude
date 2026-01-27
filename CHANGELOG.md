@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.0] - 2026-01-27
+
+### Added
+
+- `/dotclaude:configure` command for interactive configuration management
+- Global configuration support (`~/.claude/dotclaude-config.json`)
+- Local configuration support (`<project_root>/.claude/dotclaude-config.json`)
+- Configuration settings: `language`, `working_directory`, `check_version`, `auto_update`, `base_branch`
+- Working directory migration workflow when changing `working_directory` setting
+- SessionStart hook (`init-config.sh`) for automatic default configuration initialization
+- Configuration loading with merge strategy (local overrides global)
+- Configuration section in README.md with examples and use cases
+
+### Changed
+
+- All skills now use configurable `{working_directory}` instead of hard-coded `claude_works/`
+- Working directory is now customizable per-project or globally (default: `.dc_workspace`)
+- Base branch for git operations is now configurable (default: `main`)
+
+### Technical
+
+- Configuration files use JSON format
+- Configuration loading includes graceful error handling
+- Invalid JSON falls back to default values without breaking skills
+- Path validation prevents security issues (absolute paths, parent traversal rejected)
+
 ## [0.1.2] - 2026-01-27
 
 ### Fixed
