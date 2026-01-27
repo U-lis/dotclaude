@@ -193,7 +193,6 @@ For direct control or customization, clone and copy manually:
 ```bash
 git clone https://github.com/U-lis/dotclaude.git
 cp -r dotclaude/.claude your-project/
-cp dotclaude/.dotclaude-manifest.json your-project/
 ```
 
 **Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
