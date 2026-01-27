@@ -4,7 +4,7 @@
   "description": "Structured development workflow orchestration with phased implementation and validation",
   "owner": {
     "name": "U-lis",
-    "email": "TBD"
+    "email": "ulismoon@gmail.com"
   },
   "plugins": [
     {
@@ -13,7 +13,7 @@
       "version": "0.1.1",
       "author": {
         "name": "U-lis",
-        "email": "TBD"
+        "email": "ulismoon@gmail.com"
       },
       "source": "./",
       "category": "productivity",
