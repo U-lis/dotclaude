@@ -1,5 +1,5 @@
 ---
-name: dc:start-new
+name: start-new
 description: Entry point for starting new work. Executes full 13-step orchestrator workflow with AskUserQuestion support.
 user-invocable: true
 ---

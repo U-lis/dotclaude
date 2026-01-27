@@ -1,5 +1,5 @@
 ---
-name: dc:validate-spec
+name: validate-spec
 description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /dc:validate-spec.
 user-invocable: true
 ---

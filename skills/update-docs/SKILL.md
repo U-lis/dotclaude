@@ -1,5 +1,5 @@
 ---
-name: dc:update-docs
+name: update-docs
 description: Update project documentation (README, CHANGELOG) after code implementation is complete.
 user-invocable: true
 ---

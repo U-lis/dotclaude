@@ -16,12 +16,20 @@ This repository provides a structured workflow for software development using sp
 
 ```
 .
-├── .gitignore                   # Excludes CLAUDE.md from tracking
+├── CLAUDE.md                    # Development guidelines
 ├── .claude/
 │   └── settings.json            # Hooks configuration
 ├── .claude-plugin/              # Plugin marketplace metadata
 │   ├── marketplace.json         # Registry metadata
 │   └── plugin.json              # Plugin configuration
+├── commands/                    # Autocomplete entry points (dc:*)
+│   ├── dc:start-new.md
+│   ├── dc:design.md
+│   ├── dc:code.md
+│   ├── dc:merge-main.md
+│   ├── dc:tagging.md
+│   ├── dc:update-docs.md
+│   └── dc:validate-spec.md
 ├── agents/                      # Agent definitions
 │   ├── designer.md              # Architecture and planning
 │   ├── technical-writer.md      # Documentation

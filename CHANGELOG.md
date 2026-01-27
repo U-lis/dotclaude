@@ -7,12 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.1] - 2026-01-26
 
+### Added
+
+- `commands/` directory for autocomplete support
+  - Skills now appear in `/` autocomplete menu (dc:start-new, dc:design, etc.)
+  - Command files are thin wrappers that reference corresponding SKILL.md
+- `CLAUDE.md` development guidelines
+  - Clarifies distinction between source files and installed plugin cache
+  - Prevents accidental modification of installed plugin files
+
 ### Fixed
 
 - Plugin marketplace installation error: "skills: Invalid input"
   - Migrated to standard plugin directory structure (skills/, agents/, templates/ at root)
   - Removed invalid `skills` field from plugin.json
   - Updated all internal path references
+- Skills not appearing in autocomplete when typing `/`
+  - Added `commands/` directory following claude-hud pattern
+
+### Changed
+
+- SKILL.md `name` field no longer includes `dc:` prefix
+  - `dc:` prefix now only in command filenames (commands/dc:*.md)
+  - Prevents duplication in display
 
 ## [0.1.0] - 2026-01-23
 
