@@ -22,14 +22,14 @@ This repository provides a structured workflow for software development using sp
 ├── .claude-plugin/              # Plugin marketplace metadata
 │   ├── marketplace.json         # Registry metadata
 │   └── plugin.json              # Plugin configuration
-├── commands/                    # Autocomplete entry points (dc:*)
-│   ├── dc:start-new.md
-│   ├── dc:design.md
-│   ├── dc:code.md
-│   ├── dc:merge-main.md
-│   ├── dc:tagging.md
-│   ├── dc:update-docs.md
-│   └── dc:validate-spec.md
+├── commands/                    # Autocomplete entry points
+│   ├── start-new.md
+│   ├── design.md
+│   ├── code.md
+│   ├── merge-main.md
+│   ├── tagging.md
+│   ├── update-docs.md
+│   └── validate-spec.md
 ├── agents/                      # Agent definitions
 │   ├── designer.md              # Architecture and planning
 │   ├── technical-writer.md      # Documentation
@@ -115,18 +115,18 @@ The orchestrator workflow is integrated into `/dc:start-new` skill (`skills/star
 
 ## Skills (Commands)
 
-All dotclaude skills use the `dc:` prefix for namespace identification:
+All dotclaude skills are prefixed with `dotclaude:` namespace:
 
 | Command | Description |
 |---------|-------------|
-| `/dc:start-new` | Entry point - calls orchestrator for full workflow |
-| `/dc:design` | Transform SPEC into implementation plan |
-| `/dc:validate-spec` | Validate document consistency (optional) |
-| `/dc:code [phase]` | Execute coding for specified phase |
-| `/dc:code all` | Execute all phases automatically |
-| `/dc:merge-main` | Merge feature branch to main |
-| `/dc:tagging` | Create version tag based on CHANGELOG |
-| `/dc:update-docs` | Update documentation (CHANGELOG, README) |
+| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow |
+| `/dotclaude:design` | Transform SPEC into implementation plan |
+| `/dotclaude:validate-spec` | Validate document consistency (optional) |
+| `/dotclaude:code [phase]` | Execute coding for specified phase |
+| `/dotclaude:code all` | Execute all phases automatically |
+| `/dotclaude:merge-main` | Merge feature branch to main |
+| `/dotclaude:tagging` | Create version tag based on CHANGELOG |
+| `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 
 ## Agents
 
@@ -204,7 +204,7 @@ cp dotclaude/.dotclaude-manifest.json your-project/
 
 ```bash
 # In Claude Code session
-/dc:start-new
+/dotclaude:start-new
 
 # Orchestrator takes over:
 # 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
@@ -217,7 +217,7 @@ cp dotclaude/.dotclaude-manifest.json your-project/
 # 7. Returns final summary
 
 # After merge, optionally create version tag:
-/dc:tagging
+/dotclaude:tagging
 ```
 
 ### Update dotclaude
@@ -234,13 +234,13 @@ Note: Restart Claude Code after updating to apply changes.
 Individual skills can be invoked directly for debugging or partial work:
 
 ```bash
-/dc:design           # Create implementation plan
-/dc:validate-spec    # Validate document consistency
-/dc:code 1           # Implement Phase 1
-/dc:code all         # Implement all phases
-/dc:update-docs      # Update documentation
-/dc:merge-main       # Merge to main
-/dc:tagging          # Create version tag
+/dotclaude:design           # Create implementation plan
+/dotclaude:validate-spec    # Validate document consistency
+/dotclaude:code 1           # Implement Phase 1
+/dotclaude:code all         # Implement all phases
+/dotclaude:update-docs      # Update documentation
+/dotclaude:merge-main       # Merge to main
+/dotclaude:tagging          # Create version tag
 ```
 
 ## License
