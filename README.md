@@ -67,7 +67,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── hooks.json               # Hook configuration
 │   ├── init-config.sh           # SessionStart config initializer
 │   └── check-update.sh          # SessionStart update checker
-└── claude_works/                # Working documents (per project)
+└── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```
 
 ## Workflow
@@ -147,12 +147,12 @@ Note: Orchestrator workflow is now integrated into `/dc:start-new` skill.
 
 ### Simple Tasks (1-2 phases)
 ```
-claude_works/{SUBJECT}.md
+{working_directory}/{SUBJECT}.md
 ```
 
 ### Complex Tasks (3+ phases)
 ```
-claude_works/{subject}/
+{working_directory}/{subject}/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan

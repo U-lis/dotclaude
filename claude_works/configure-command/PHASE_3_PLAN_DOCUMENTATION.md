@@ -246,7 +246,9 @@ Follow Keep a Changelog conventions:
 - [x] CHANGELOG entry follows Keep a Changelog format
 - [x] CHANGELOG entry uses correct date format
 - [x] README.md Features section updated
-- [x] No hard-coded `claude_works/` references in documentation
+- [x] No hard-coded `claude_works/` references in README.md
+- [x] No hard-coded `claude_works/` references in CLAUDE.md
+- [x] Directory structure examples use `{working_directory}` placeholder
 - [x] All documentation is consistent and accurate
 - [x] Examples use valid JSON format
 - [x] File paths are correct

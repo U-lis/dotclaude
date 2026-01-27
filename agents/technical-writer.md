@@ -26,7 +26,7 @@ SPEC.md defines the authoritative requirements. When writing SPEC.md:
 ## Output Documents
 
 ### Simple Tasks (1-2 phases)
-- `claude_works/{SUBJECT}.md` - Single document with all content
+- `{working_directory}/{SUBJECT}.md` - Single document with all content
 
 ### Complex Tasks (3+ phases)
 

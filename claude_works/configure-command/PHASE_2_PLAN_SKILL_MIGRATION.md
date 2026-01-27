@@ -230,7 +230,10 @@ All configuration loading must be fault-tolerant:
 - [x] All literal `claude_works/` strings replaced in skills/code/SKILL.md
 - [x] All literal `claude_works/` strings replaced in skills/update-docs/SKILL.md
 - [x] All literal `claude_works/` strings replaced in skills/validate-spec/SKILL.md
-- [x] Final search confirms no remaining hard-coded `claude_works/` references
+- [x] All literal `claude_works/` strings replaced in agents/designer.md
+- [x] All literal `claude_works/` strings replaced in agents/spec-validator.md
+- [x] All literal `claude_works/` strings replaced in agents/technical-writer.md
+- [x] Final search confirms no remaining hard-coded `claude_works/` references in skills/ and agents/
 - [x] All skills use consistent configuration loading pattern
 - [x] All skills use same variable name `WORKING_DIR`
 - [x] All bash code properly quotes variables
