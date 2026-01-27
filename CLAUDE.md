@@ -36,10 +36,32 @@ dotclaude/
 
 ## Skill vs Command
 
-- `commands/dc:*.md` - Thin wrappers for autocomplete
+- `commands/*.md` - Thin wrappers for autocomplete
 - `skills/*/SKILL.md` - Full implementation details
 
-When invoked via `/dc:*`, Claude reads the command file which directs to the corresponding SKILL.md.
+When invoked via `/dotclaude:*`, Claude reads the command file which directs to the corresponding SKILL.md.
+
+## Version Management
+
+### Version Files
+
+These files contain version information and must stay in sync:
+- `.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
+- `.claude-plugin/marketplace.json` → `"version": "X.Y.Z"`
+- `CHANGELOG.md` → `## [X.Y.Z] - YYYY-MM-DD`
+
+### Version Update Rules
+
+**CRITICAL**: Do NOT modify version numbers in `plugin.json` or `marketplace.json` during:
+- `/dotclaude:code` phase (implementation)
+- `/dotclaude:update-docs` phase (documentation)
+
+Version updates should ONLY happen at release time (tagging phase).
+
+### Workflow
+
+1. **During development**: Keep version files unchanged
+2. **At release**: Update all three files to the new version, then tag
 
 ## Version Tagging Checklist
 
