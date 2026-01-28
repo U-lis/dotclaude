@@ -24,6 +24,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Working directory is now customizable per-project or globally (default: `.dc_workspace`)
 - Base branch for git operations is now configurable (default: `main`)
 
+### Fixed
+
+- Subagent delegation in `/dotclaude:start-new` workflow ([#5](https://github.com/U-lis/dotclaude/issues/5))
+  - Orchestrator now properly delegates work to subagents via Task tool instead of reading agent definition files and executing inline
+  - Added Delegation Enforcement section with explicit MUST/FORBIDDEN rules
+  - Converted all pseudo-code patterns to imperative Task tool invocations for TechnicalWriter, Designer, Coder, and code-validator agents
+  - Ensures consistent agent separation principle across all workflow phases
+
 ### Technical
 
 - Configuration files use JSON format
