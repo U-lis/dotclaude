@@ -22,8 +22,10 @@ Create git tag based on CHANGELOG.md version.
    → If match: "Already tagged"
    → If mismatch: proceed
 4. Confirm with user
-5. git tag -a vX.Y.Z -m "Release X.Y.Z"
-6. Report summary
+5. git tag -a vX.Y.Z -m "{Version Summary 1}" -m "{Version Summary 2}" ...
+6. git push (push commits to remote)
+7. git push --tags (push tags to remote)
+8. Report summary
 ```
 
 ## Version Parsing
@@ -46,17 +48,16 @@ If CHANGELOG version != latest tag:
 ## Output
 
 ```
-# Tag Created
+# Tag Created & Pushed
 
 - Version: v1.2.0
 - Based on: CHANGELOG.md
 - Previous tag: v1.1.0
-
-Next: git push origin v1.2.0
+- Pushed to: origin
 ```
 
 ## Safety
 
 - Only create tags, never delete
 - Require user confirmation
-- No auto-push
+- Auto-push after user confirms tag creation

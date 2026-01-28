@@ -2,6 +2,18 @@
 
 Instructions for initializing new feature work through requirements gathering and SPEC creation.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
@@ -172,5 +184,5 @@ After completing analysis, create SPEC.md with:
 ## Output
 
 1. Feature branch `feature/{keyword}` created and checked out
-2. Directory `claude_works/{subject}/` created
-3. `claude_works/{subject}/SPEC.md` created with all sections above
+2. Directory `{working_directory}/{subject}/` created
+3. `{working_directory}/{subject}/SPEC.md` created with all sections above

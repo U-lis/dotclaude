@@ -8,6 +8,18 @@ user-invocable: true
 
 Central workflow controller for the full 13-step development process from init to merge.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Role
 
 - **Central workflow controller**: Manage all 13 steps from init to merge
@@ -60,7 +72,7 @@ Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
 2. Auto-generate branch keyword
 3. Create work branch: `git checkout -b {type}/{keyword}`
-4. Create project directory: `mkdir -p claude_works/{subject}`
+4. Create project directory: `mkdir -p {working_directory}/{subject}`
 5. Analysis phase (read `_analysis.md` for details)
 6. **Target Version Question** (see below)
 7. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
@@ -121,7 +133,7 @@ If revision needed: iterate with TechnicalWriter via Task tool
 
 **Step 4: Commit SPEC.md**
 ```bash
-git add claude_works/{subject}/SPEC.md
+git add {working_directory}/{subject}/SPEC.md
 git commit -m "docs: add SPEC.md for {subject}"
 ```
 
@@ -149,12 +161,12 @@ Call AskUserQuestion tool:
    - If on main: HALT and report "Work branch not created. Create branch before proceeding."
 
 2. **SPEC.md Check**:
-   - File `claude_works/{subject}/SPEC.md` must exist
+   - File `{working_directory}/{subject}/SPEC.md` must exist
    - If missing: HALT and report "SPEC.md not found. Create SPEC.md before design phase."
 
 3. **SPEC.md Committed Check**:
    - SPEC.md must be committed (not just staged)
-   - Run: `git log --oneline -1 -- claude_works/{subject}/SPEC.md`
+   - Run: `git log --oneline -1 -- {working_directory}/{subject}/SPEC.md`
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
 If any check fails: halt workflow and report error to user.
@@ -167,7 +179,7 @@ If any check fails: halt workflow and report error to user.
 ```
 Task tool → Designer
   Input:
-    spec_path: "claude_works/{subject}/SPEC.md"
+    spec_path: "{working_directory}/{subject}/SPEC.md"
   Output: architecture decisions, phase breakdown
 ```
 
@@ -177,13 +189,13 @@ Task tool → TechnicalWriter
   Input:
     document_type: "DESIGN"
     designer_output: {Designer results}
-    target_dir: "claude_works/{subject}/"
+    target_dir: "{working_directory}/{subject}/"
   Output: GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md
 ```
 
 **Step 8: Commit Design Documents**
 ```bash
-git add claude_works/{subject}/*.md
+git add {working_directory}/{subject}/*.md
 git commit -m "docs: add design documents for {subject}"
 ```
 
@@ -203,7 +215,7 @@ For sequential phase:
 Task tool → Coder
   Input:
     phase_id: "{k}"
-    plan_path: "claude_works/{subject}/PHASE_{k}_PLAN_*.md"
+    plan_path: "{working_directory}/{subject}/PHASE_{k}_PLAN_*.md"
   Output: implementation, files changed
 
 Task tool → code-validator
@@ -318,63 +330,387 @@ NEVER do any of the following:
 
 ---
 
+## Delegation Enforcement
+
+### Critical Rule: Never Execute Agent Work Directly
+
+**MANDATORY PROTOCOL**: When any agent-specific work is required (writing specs, designing architecture, implementing code, validating code), you MUST delegate to the appropriate subagent via the Task tool.
+
+### MUST DO
+
+The orchestrator MUST:
+- ✓ Use Task tool with `subagent_type: "general-purpose"` for all agent invocations
+- ✓ Pass agent role explicitly in prompt: "You are {AgentName}. Read agents/{agent-file}.md for your role."
+- ✓ Wait for subagent completion before proceeding to next step
+- ✓ Collect subagent results and use them for workflow decisions
+
+### FORBIDDEN ACTIONS
+
+The orchestrator is FORBIDDEN from:
+- ✗ Reading agent definition files (agents/*.md) to execute work inline
+- ✗ Implementing agent-specific logic directly in orchestrator context
+- ✗ Bypassing Task tool invocation "for convenience" or "because it's simple"
+- ✗ Writing SPEC.md, design documents, or code directly without subagent delegation
+
+### Warning: Protocol Violation Consequences
+
+Direct execution without proper delegation causes:
+- **Inconsistent behavior**: Agent-specific optimizations and quality checks are skipped
+- **Loss of specialization**: Domain expertise encoded in agent definitions is not applied
+- **Maintenance difficulty**: Inline execution scattered across orchestrator makes updates harder
+- **Audit trail loss**: Task tool invocations provide clear delegation logs; inline work does not
+
+### Verification
+
+After executing any workflow step involving TechnicalWriter, Designer, Coder, or code-validator, verify logs show:
+
+**Correct Pattern** (Task tool invocation visible):
+```
+● Invoke Task tool (subagent_type: general-purpose, prompt: "You are TechnicalWriter...")
+  ⎿ Subagent completed successfully
+● Output created: claude_works/{subject}/SPEC.md
+```
+
+**Incorrect Pattern** (direct file operations):
+```
+● Read(agents/technical-writer.md)
+● Write(claude_works/{subject}/SPEC.md)
+```
+
+If you see the incorrect pattern, STOP and revise your approach to use Task tool delegation.
+
+---
+
 ## Subagent Call Patterns
 
-### TechnicalWriter
+### TechnicalWriter Invocation
+
+**When to Use**: SPEC.md creation (Step 2), design document writing (Step 7), documentation updates (Step 11)
+
+**Mandatory Task Tool Invocation Pattern**:
+
+When invoking TechnicalWriter, you MUST call the Task tool with exactly this structure:
+
 ```
-Task tool:
-  subagent_type: "general-purpose"
-  prompt: |
-    You are TechnicalWriter. Read agents/technical-writer.md for your role.
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are TechnicalWriter. Read agents/technical-writer.md for your role.
 
-    Create {document_type} document:
-    - Input: {content_data}
-    - Output path: {target_path}
+{Specific task instructions based on context - see examples below}
 
-    Follow the template structure from your agent definition.
-```
-
-### Designer
-```
-Task tool:
-  subagent_type: "general-purpose"
-  prompt: |
-    You are Designer. Read agents/designer.md for your role.
-
-    Analyze SPEC and create design:
-    - SPEC path: {spec_path}
-    - Output: architecture decisions, phase breakdown
-
-    Follow the instructions in your agent definition.
+Follow the template structure from your agent definition.
+"""
+)
 ```
 
-### Coder
+**Example 1: SPEC.md Creation (Step 2)**
+
 ```
-Task tool:
-  subagent_type: "general-purpose"
-  prompt: |
-    You are Coder. Read agents/coders/{language}.md for your role.
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are TechnicalWriter. Read agents/technical-writer.md for your role.
 
-    Implement phase:
-    - Phase: {phase_id}
-    - PLAN path: {plan_path}
-    - Worktree: {worktree_path} (if parallel)
+Create SPEC.md document at: claude_works/{subject}/SPEC.md
 
-    Follow TDD and complete all checklist items.
+Include these sections:
+- Overview: {Brief description from user requirements}
+- Functional Requirements: {List of FR items from interview}
+- Non-Functional Requirements: {List of NFR items}
+- Constraints: {Technical and business constraints}
+- Out of Scope: {Explicitly excluded items}
+
+Target Version: {version from Step 2.6}
+
+Use the template structure from templates/SPEC.md as reference.
+"""
+)
 ```
 
-### code-validator
+**Example 2: Design Document Writing (Step 7)**
+
 ```
-Task tool:
-  subagent_type: "general-purpose"
-  prompt: |
-    You are code-validator. Read agents/code-validator.md for your role.
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are TechnicalWriter. Read agents/technical-writer.md for your role.
 
-    Validate phase implementation:
-    - Phase: {phase_id}
-    - Checklist: {items}
+Create design documents based on Designer output:
 
-    Run quality checks and report results.
+Designer Output Summary:
+{paste Designer's architecture decisions and phase breakdown}
+
+Target Directory: claude_works/{subject}/
+
+Create documents according to complexity:
+- Simple tasks (1-2 phases): Single combined DESIGN.md
+- Complex tasks (3+ phases): GLOBAL.md + PHASE_*_PLAN.md + PHASE_*_TEST.md
+
+Follow the document templates from your agent definition.
+"""
+)
+```
+
+**Example 3: Documentation Update (Step 11)**
+
+```
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are TechnicalWriter. Read agents/technical-writer.md for your role.
+
+## Task: Update Documentation (DOCS_UPDATE Role)
+
+### Context
+Target Version: {version from init phase}
+Commits to document: {output from git log since last tag}
+
+### Your Tasks
+1. Update CHANGELOG.md:
+   - Add new version entry at top
+   - Classify changes by Keep a Changelog categories
+   - Use semver format, date YYYY-MM-DD
+
+2. Update README.md:
+   - Review if implementation affects feature list, usage examples, or configuration
+   - Only update sections with visible changes
+
+Follow the DOCS_UPDATE role instructions from your agent definition.
+"""
+)
+```
+
+### Designer Invocation
+
+**When to Use**: Design phase (Step 6), after SPEC.md is approved and committed
+
+**Prerequisites Verification** (Step 6 Checkpoint):
+- Current branch is NOT main/master
+- SPEC.md exists at claude_works/{subject}/SPEC.md
+- SPEC.md is committed (not just staged)
+
+If any prerequisite fails, HALT and report error. Do NOT proceed to Designer invocation.
+
+**Mandatory Task Tool Invocation Pattern**:
+
+```
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are Designer. Read agents/designer.md for your role.
+
+## Task: Analyze SPEC and Create Design
+
+### Input
+SPEC path: claude_works/{subject}/SPEC.md
+
+### Your Tasks
+1. Read and analyze the SPEC.md
+2. Determine task complexity (SIMPLE vs COMPLEX)
+3. Create architecture decisions with rationale
+4. Break work into phases with dependencies
+5. Output structured design results
+
+### Output Format
+Provide:
+- Complexity assessment (SIMPLE/COMPLEX)
+- Architecture decisions (list with rationale)
+- Phase breakdown (sequential, parallel, merge phases)
+- File structure (files to create/modify)
+- Technology choices (if applicable)
+
+Follow the analysis framework from your agent definition.
+"""
+)
+```
+
+**After Designer Completes**:
+
+Collect Designer output and pass it to TechnicalWriter for document creation (Step 7). See TechnicalWriter Example 2 above.
+
+### Coder Invocation
+
+**When to Use**: Code implementation phase (Step 10), for each phase in execution order
+
+**Context**: After design documents are created and committed, parse GLOBAL.md Phase Overview to get phase execution order.
+
+**Mandatory Task Tool Invocation Pattern**:
+
+**For Sequential Phases**:
+
+```
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are Coder. Read agents/coders/{detected_language}.md for your role.
+
+## Task: Implement Phase {phase_id}
+
+### Input
+Phase ID: {phase_id}
+PLAN path: claude_works/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+
+### Your Tasks
+1. Read the PLAN document completely
+2. Identify all files to create or modify
+3. Implement changes following TDD approach
+4. Complete all checklist items in the PLAN
+5. Verify implementation works (build passes, no errors)
+
+### Output
+- Report files changed
+- Confirm all checklist items completed
+- Report any issues or blockers
+
+Follow TDD principles from your agent definition.
+"""
+)
+```
+
+**For Parallel Phases** (e.g., 3A, 3B, 3C):
+
+Setup worktrees first:
+```bash
+git worktree add ../{subject}-3A -b feature/{subject}-3A
+git worktree add ../{subject}-3B -b feature/{subject}-3B
+git worktree add ../{subject}-3C -b feature/{subject}-3C
+```
+
+Then invoke multiple Coder agents in a SINGLE message (parallel execution):
+
+```
+# Call 1
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are Coder. Read agents/coders/{detected_language}.md for your role.
+
+## Task: Implement Phase 3A (Parallel Branch)
+
+### Working Directory
+CRITICAL: Execute all operations in worktree: ../{subject}-3A
+
+### Input
+Phase ID: 3A
+PLAN path: claude_works/{subject}/PHASE_3A_PLAN_{keyword}.md
+
+### Your Tasks
+[Same as sequential, but all operations in worktree path]
+"""
+)
+
+# Call 2
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are Coder. Read agents/coders/{detected_language}.md for your role.
+
+## Task: Implement Phase 3B (Parallel Branch)
+
+### Working Directory
+CRITICAL: Execute all operations in worktree: ../{subject}-3B
+
+[... similar structure ...]
+"""
+)
+
+# Call 3 (and so on for each parallel phase)
+```
+
+**After All Parallel Coders Complete**:
+
+Execute merge phase as defined in PHASE_{k}.5_PLAN_MERGE.md, then clean up worktrees:
+```bash
+git merge feature/{subject}-3A --no-edit
+git merge feature/{subject}-3B --no-edit
+git merge feature/{subject}-3C --no-edit
+git worktree remove ../{subject}-3A
+git worktree remove ../{subject}-3B
+git worktree remove ../{subject}-3C
+```
+
+### code-validator Invocation
+
+**When to Use**: After each Coder completes a phase (Step 10), before committing changes
+
+**Purpose**: Validate that phase implementation meets quality criteria and all checklist items are complete.
+
+**Mandatory Task Tool Invocation Pattern**:
+
+```
+Task(
+  subagent_type="general-purpose",
+  prompt="""
+You are code-validator. Read agents/code-validator.md for your role.
+
+## Task: Validate Phase {phase_id} Implementation
+
+### Input
+Phase ID: {phase_id}
+PLAN path: claude_works/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+(Read this file to extract the completion checklist)
+
+### Your Tasks
+1. Extract completion checklist from PLAN document
+2. Verify each checklist item:
+   - Files created/modified as specified
+   - Functionality implemented correctly
+   - Code follows project conventions
+3. Run quality checks:
+   - Build passes (if applicable)
+   - No linting errors
+   - No type errors (TypeScript projects)
+4. Report validation result: PASS or FAIL with details
+
+### Output Format
+```yaml
+status: "PASS" | "FAIL"
+phase_id: "{phase_id}"
+checklist_results:
+  - item: "Checklist item description"
+    status: "COMPLETE" | "INCOMPLETE"
+    notes: "Details if incomplete"
+quality_checks:
+  build: "PASS" | "FAIL" | "N/A"
+  lint: "PASS" | "FAIL" | "N/A"
+  types: "PASS" | "FAIL" | "N/A"
+issues:
+  - "Description of any issues found"
+recommendation: "COMMIT" | "RETRY" | "SKIP"
+```
+
+Follow validation procedures from your agent definition.
+"""
+)
+```
+
+**After code-validator Completes**:
+
+Based on validation result:
+- **PASS**: Commit the phase
+  ```bash
+  git add {changed_files}
+  git commit -m "feat/fix: implement phase {phase_id} - {brief_description}"
+  ```
+- **FAIL + retry_count < 3**: Call Coder again with feedback from validator
+- **FAIL + retry_count >= 3**: Mark phase as SKIPPED, record error, continue to next phase
+
+**Retry Loop Pattern**:
+```
+attempt = 0
+while attempt < 3:
+  coder_result = invoke_coder(phase_id)
+  validator_result = invoke_code_validator(phase_id)
+  if validator_result.status == "PASS":
+    commit_phase()
+    break
+  attempt += 1
+
+if validator_result.status != "PASS":
+  mark_phase_skipped()
+  record_error(validator_result.issues)
+  # Continue to next phase
 ```
 
 ---
@@ -523,11 +859,11 @@ subject: "{keyword}"
 branch: "{type}/{keyword}"
 scope_executed: "Design → Code → Docs → Merge"
 init:
-  spec_path: "claude_works/{subject}/SPEC.md"
+  spec_path: "{working_directory}/{subject}/SPEC.md"
   spec_approved: true
   target_version: "X.Y.Z"
 design:
-  global_path: "claude_works/{subject}/GLOBAL.md"
+  global_path: "{working_directory}/{subject}/GLOBAL.md"
   phases: ["1", "2", "3A", "3B", "3C", "3.5", "4"]
 code:
   phases:
@@ -571,7 +907,7 @@ After all steps in the chain complete, display summary:
 | 4 | Merge | SUCCESS |
 
 ## Files Changed
-- claude_works/{subject}/*.md
+- {working_directory}/{subject}/*.md
 - [implementation files...]
 - CHANGELOG.md
 

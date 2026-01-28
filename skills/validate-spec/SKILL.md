@@ -8,14 +8,26 @@ user-invocable: true
 
 Validate consistency across all planning documents using spec-validator agent.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Trigger
 
 User invokes `/dc:validate-spec` after design documents are created.
 
 ## Prerequisites
 
-- `claude_works/{subject}/SPEC.md` exists
-- `claude_works/{subject}/GLOBAL.md` exists
+- `{working_directory}/{subject}/SPEC.md` exists
+- `{working_directory}/{subject}/GLOBAL.md` exists
 - At least one `PHASE_{k}_PLAN_{keyword}.md` exists
 - Corresponding `PHASE_{k}_TEST.md` files exist
 

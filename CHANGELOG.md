@@ -7,8 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.0] - 2026-01-27
 
+### Added
+
+- `/dotclaude:configure` command for interactive configuration management
+- Global configuration support (`~/.claude/dotclaude-config.json`)
+- Local configuration support (`<project_root>/.claude/dotclaude-config.json`)
+- Configuration settings: `language`, `working_directory`, `check_version`, `auto_update`, `base_branch`
+- Working directory migration workflow when changing `working_directory` setting
+- SessionStart hook (`init-config.sh`) for automatic default configuration initialization
+- Configuration loading with merge strategy (local overrides global)
+- Configuration section in README.md with examples and use cases
+
 ### Changed
 
+- All skills now use configurable `{working_directory}` instead of hard-coded `claude_works/`
+- Working directory is now customizable per-project or globally (default: `.dc_workspace`)
+- Base branch for git operations is now configurable (default: `main`)
 - Translated all Korean text to English in skill documentation ([#10](https://github.com/U-lis/dotclaude/issues/10)):
   - `skills/start-new/SKILL.md`: Orchestrator workflow instructions
   - `skills/start-new/init-feature.md`: Feature initialization workflow
@@ -17,6 +31,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `skills/start-new/init-github-issue.md`: GitHub issue-based initialization
   - `skills/start-new/_analysis.md`: Common analysis phases
   - All user-facing prompts, questions, options, and error messages now in English
+
+### Fixed
+
+- Subagent delegation in `/dotclaude:start-new` workflow ([#5](https://github.com/U-lis/dotclaude/issues/5))
+  - Orchestrator now properly delegates work to subagents via Task tool instead of reading agent definition files and executing inline
+  - Added Delegation Enforcement section with explicit MUST/FORBIDDEN rules
+  - Converted all pseudo-code patterns to imperative Task tool invocations for TechnicalWriter, Designer, Coder, and code-validator agents
+  - Ensures consistent agent separation principle across all workflow phases
+
+### Technical
+
+- Configuration files use JSON format
+- Configuration loading includes graceful error handling
+- Invalid JSON falls back to default values without breaking skills
+- Path validation prevents security issues (absolute paths, parent traversal rejected)
 
 ## [0.1.2] - 2026-01-27
 

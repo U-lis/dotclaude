@@ -30,7 +30,7 @@ dotclaude/
 ├── commands/           # Autocomplete entry points
 ├── skills/             # Full skill logic
 ├── agents/             # Agent definitions
-├── claude_works/       # Work-in-progress documentation
+├── {working_directory}/ # Working documents (configurable, default: .dc_workspace)
 └── .claude-plugin/     # Plugin configuration
 ```
 

@@ -8,13 +8,25 @@ user-invocable: true
 
 Transform SPEC into detailed implementation plan using Designer agent.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Trigger
 
 User invokes `/dc:design` after SPEC.md is ready.
 
 ## Prerequisites
 
-- `claude_works/{subject}/SPEC.md` exists and is approved
+- `{working_directory}/{subject}/SPEC.md` exists and is approved
 
 ## Workflow
 
@@ -37,7 +49,7 @@ User invokes `/dc:design` after SPEC.md is ready.
 │    - Create PHASE_{k}.5_PLAN_MERGE.md if parallel phases│
 ├─────────────────────────────────────────────────────────┤
 │ 4. Commit Documents                                     │
-│    - git add claude_works/{subject}/*.md                │
+│    - git add {working_directory}/{subject}/*.md                │
 │    - git commit -m "docs: add design documents"         │
 ├─────────────────────────────────────────────────────────┤
 │ 5. Review with User                                     │
@@ -69,12 +81,12 @@ When phases can run independently:
 
 ### Simple Tasks (1-2 phases)
 ```
-claude_works/{SUBJECT}.md
+{working_directory}/{SUBJECT}.md
 ```
 
 ### Complex Tasks (3+ phases)
 ```
-claude_works/{subject}/
+{working_directory}/{subject}/
 ├── SPEC.md                         (already exists)
 ├── GLOBAL.md                       (new)
 ├── PHASE_1_PLAN_{keyword}.md       (new)
