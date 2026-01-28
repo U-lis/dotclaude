@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - All skills now use configurable `{working_directory}` instead of hard-coded `claude_works/`
 - Working directory is now customizable per-project or globally (default: `.dc_workspace`)
 - Base branch for git operations is now configurable (default: `main`)
+- Translated all Korean text to English in skill documentation ([#10](https://github.com/U-lis/dotclaude/issues/10)):
+  - `skills/start-new/SKILL.md`: Orchestrator workflow instructions
+  - `skills/start-new/init-feature.md`: Feature initialization workflow
+  - `skills/start-new/init-bugfix.md`: Bug fix initialization workflow
+  - `skills/start-new/init-refactor.md`: Refactoring initialization workflow
+  - `skills/start-new/init-github-issue.md`: GitHub issue-based initialization
+  - `skills/start-new/_analysis.md`: Common analysis phases
+  - All user-facing prompts, questions, options, and error messages now in English
 
 ### Fixed
 

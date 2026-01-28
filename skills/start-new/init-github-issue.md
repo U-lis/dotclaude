@@ -10,13 +10,13 @@ Instructions for initializing work from GitHub issue URL or number.
 
 Use AskUserQuestion tool:
 ```
-Question: "GitHub 이슈 URL 또는 번호를 입력해주세요"
+Question: "Please enter GitHub issue URL or number"
 Header: "GitHub Issue"
 Options:
-  - label: "URL 형식"
+  - label: "URL format"
     description: "https://github.com/owner/repo/issues/123"
-  - label: "번호 형식"
-    description: "#123 (현재 저장소 기준)"
+  - label: "Number format"
+    description: "#123 (Based on current repository)"
 → Free text via "Other"
 ```
 
@@ -41,11 +41,11 @@ gh issue view {number} --json title,body,labels,milestone
 
 | Error | Detection | Message |
 |-------|-----------|---------|
-| gh not installed | `command not found` | "gh CLI가 설치되어 있지 않습니다. https://cli.github.com/ 에서 설치해주세요" |
-| Not authenticated | `gh auth` error | "gh auth login 명령으로 인증해주세요" |
-| Issue not found | GraphQL error / 404 | "이슈 #{number}를 찾을 수 없습니다" |
-| No access | 403 / permission error | "이슈에 접근 권한이 없습니다" |
-| Invalid URL | Regex mismatch | "유효한 GitHub 이슈 URL이 아닙니다" |
+| gh not installed | `command not found` | "gh CLI is not installed. Please install from https://cli.github.com/" |
+| Not authenticated | `gh auth` error | "Please authenticate with gh auth login command" |
+| Issue not found | GraphQL error / 404 | "Issue #{number} not found" |
+| No access | 403 / permission error | "No access permission to issue" |
+| Invalid URL | Regex mismatch | "Not a valid GitHub issue URL" |
 
 **On Error**: Return to Step 1 of /dc:start-new (work type selection)
 
@@ -70,25 +70,25 @@ gh issue view {number} --json title,body,labels,milestone
 
 | Keywords | Work Type |
 |----------|-----------|
-| fix, bug, error, broken, crash, issue, problem, 수정, 버그, 오류 | bugfix |
-| add, new, feature, implement, support, enable, 추가, 기능, 구현 | feature |
-| refactor, clean, improve code, restructure, reorganize, 리팩, 정리, 개선 | refactor |
+| fix, bug, error, broken, crash, issue, problem | bugfix |
+| add, new, feature, implement, support, enable | feature |
+| refactor, clean, improve code, restructure, reorganize | refactor |
 
 4. If still ambiguous (multiple matches or no match), ask user via AskUserQuestion:
 ```
-Question: "이슈 분석 결과, 작업 유형을 확인해주세요: {issue_title}"
-Header: "작업 유형 확인"
+Question: "Based on issue analysis, please confirm work type: {issue_title}"
+Header: "Work Type Confirmation"
 Options:
-  - { label: "기능 추가/수정", description: "새로운 기능 개발 또는 기존 기능 개선" }
-  - { label: "버그 수정", description: "발견된 버그나 오류 수정" }
-  - { label: "리팩토링", description: "기능 변경 없이 코드 구조 개선" }
+  - { label: "Add/Modify Feature", description: "New feature development or improve existing feature" }
+  - { label: "Bug Fix", description: "Fix discovered bugs or errors" }
+  - { label: "Refactoring", description: "Improve code structure without changing functionality" }
 multiSelect: false
 ```
 
 **Work Type Mapping from User Confirmation**:
-- "기능 추가/수정" → feature
-- "버그 수정" → bugfix
-- "리팩토링" → refactor
+- "Add/Modify Feature" → feature
+- "Bug Fix" → bugfix
+- "Refactoring" → refactor
 
 ---
 
@@ -151,7 +151,7 @@ pre_filled:
    - Create: `git checkout -b {work_type}/{branch_keyword}`
 
 2. **Questions**: Show pre-filled values as defaults
-   - Format: "[GitHub Issue에서 추출됨] {value}"
+   - Format: "[Extracted from GitHub Issue] {value}"
    - User can modify if needed
 
 3. **Target Version**: If `target_version` is set

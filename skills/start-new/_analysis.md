@@ -33,15 +33,15 @@ Analyze collected user answers for completeness and clarity.
 4. Use AskUserQuestion:
 
 ```
-Question: "다음 내용을 명확히 해주세요: {issue_description}"
-Header: "추가 정보 필요"
+Question: "Please clarify the following: {issue_description}"
+Header: "Additional Information Required"
 Options:
   - label: "{specific_option_1}"
     description: "{description_1}"
   - label: "{specific_option_2}"
     description: "{description_2}"
-  - label: "기타"
-    description: "직접 입력"
+  - label: "Other"
+    description: "Enter manually"
 ```
 
 ---
@@ -95,15 +95,15 @@ For each potential conflict:
 3. Present to user via AskUserQuestion:
 
 ```
-Question: "기존 동작과 충돌이 발견되었습니다. 어떻게 처리할까요?"
-Header: "충돌 해결"
+Question: "A conflict with existing behavior was found. How should we handle this?"
+Header: "Conflict Resolution"
 Options:
-  - label: "새 동작 우선"
-    description: "기존: {existing}. 새로운 요구사항대로 변경"
-  - label: "기존 유지"
-    description: "기존 동작을 유지하고 요구사항 수정"
-  - label: "둘 다 지원"
-    description: "호환성을 위해 두 동작 모두 지원"
+  - label: "Prioritize new behavior"
+    description: "Existing: {existing}. Change to new requirement"
+  - label: "Preserve existing"
+    description: "Keep existing behavior and modify requirement"
+  - label: "Support both"
+    description: "Support both behaviors for compatibility"
 ```
 
 ### Output Format
@@ -136,13 +136,13 @@ Generate boundary conditions and error scenarios.
 2. Present to user via AskUserQuestion:
 
 ```
-Question: "다음 엣지 케이스들을 검토해주세요."
-Header: "엣지 케이스 확인"
+Question: "Please review the following edge cases."
+Header: "Edge Case Review"
 Options:
-  - label: "모두 승인"
-    description: "나열된 모든 케이스 포함"
-  - label: "추가 필요"
-    description: "케이스 추가 또는 수정 필요 (상세 입력)"
+  - label: "Approve All"
+    description: "Include all listed cases"
+  - label: "Need Additions"
+    description: "Need to add or modify cases (enter details)"
 ```
 
 ### Output Format
@@ -177,15 +177,15 @@ while iteration < 3:
     present_summary()
 
     AskUserQuestion:
-      question: "추가하거나 수정할 내용이 있나요?"
-      header: "최종 확인"
+      question: "Is there anything to add or modify?"
+      header: "Final Confirmation"
       options:
-        - label: "없음 - SPEC 생성 진행"
-          description: "분석 내용이 완전합니다"
-        - label: "있음 - 수정 필요"
-          description: "수정사항을 입력해주세요"
+        - label: "None - Proceed with SPEC generation"
+          description: "Analysis is complete"
+        - label: "Yes - Needs revision"
+          description: "Please enter your revisions"
 
-    if user_selects("없음"):
+    if user_selects("None"):
         break
     else:
         collect_feedback()
