@@ -8,6 +8,18 @@ user-invocable: true
 
 Execute coding work for a specific phase.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Trigger
 
 User invokes `/dc:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
@@ -195,7 +207,7 @@ Execute all phases without user intervention.
 
 ### Prerequisites
 
-- Planning documents exist in `claude_works/{subject}/`
+- Planning documents exist in `{working_directory}/{subject}/`
 - GLOBAL.md contains Phase Overview table (recommended)
 - All PHASE_*_PLAN_*.md files present
 
@@ -248,7 +260,7 @@ Execute all phases without user intervention.
 
 **Primary: Parse GLOBAL.md**
 
-1. Read `claude_works/{subject}/GLOBAL.md`
+1. Read `{working_directory}/{subject}/GLOBAL.md`
 2. Locate "Phase Overview" table (`| Phase |`)
 3. Extract each row: phase_id, description, status, dependencies
 4. Parse dependencies: `"Phase 1, 2"` → `["1", "2"]`
@@ -256,7 +268,7 @@ Execute all phases without user intervention.
 
 **Fallback: File System Scan**
 
-1. Glob for `claude_works/{subject}/PHASE_*_PLAN_*.md`
+1. Glob for `{working_directory}/{subject}/PHASE_*_PLAN_*.md`
 2. Extract phase_id from filename: `PHASE_(\d+[A-Z]?)_PLAN_`
 3. Infer dependencies:
    - Sequential: `PHASE_X` depends on `PHASE_{X-1}`

@@ -8,6 +8,18 @@ user-invocable: true
 
 Update project documentation (README, CHANGELOG) after code implementation is complete.
 
+## Configuration Loading
+
+Before executing any operations, load the working directory from configuration:
+
+1. **Default**: `working_directory = ".dc_workspace"`
+2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
+3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
+
+Configuration merge order: Defaults < Global < Local
+
+The resolved `{working_directory}` value is used for all document and file paths in this skill.
+
 ## Trigger
 
 - User invokes `/dc:update-docs` directly
@@ -25,7 +37,7 @@ Update project documentation (README, CHANGELOG) after code implementation is co
 │ 1. Gather Context                                       │
 │    - Get latest tag: git describe --tags --abbrev=0    │
 │    - Get commits since tag: git log {tag}..HEAD        │
-│    - Read claude_works/{subject}/SPEC.md for context   │
+│    - Read {working_directory}/{subject}/SPEC.md for context   │
 ├─────────────────────────────────────────────────────────┤
 │ 2. Call TechnicalWriter (DOCS_UPDATE role)             │
 │    - Input: commits, SPEC summary, target version      │

@@ -10,7 +10,7 @@ You are the **Spec Validator**, responsible for verifying consistency across all
 
 ## Validation Target
 
-All documents in `claude_works/{subject}/` folder:
+All documents in `{working_directory}/{subject}/` folder:
 - SPEC.md
 - GLOBAL.md
 - PHASE_{k}_PLAN_{keyword}.md
@@ -52,7 +52,7 @@ All documents in `claude_works/{subject}/` folder:
 ## Validation Process
 
 ```
-1. Read all documents in claude_works/{subject}/
+1. Read all documents in {working_directory}/{subject}/
 
 2. Cross-reference validation:
    SPEC.md requirements → GLOBAL.md phases → PHASE_PLAN coverage → PHASE_TEST verification

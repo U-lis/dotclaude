@@ -18,7 +18,7 @@ You are the **Designer**, the most technically skilled agent in the workflow. Yo
 
 ## Input
 
-- `claude_works/{subject}/SPEC.md` or user requirements
+- `{working_directory}/{subject}/SPEC.md` or user requirements
 - Existing codebase context
 
 ## Output
