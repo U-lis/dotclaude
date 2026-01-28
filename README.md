@@ -18,7 +18,7 @@ This repository provides a structured workflow for software development using sp
 .
 ├── CLAUDE.md                    # Development guidelines
 ├── .claude/
-│   └── settings.json            # Hooks configuration
+│   └── dotclaude-config.json    # Plugin configuration
 ├── .claude-plugin/              # Plugin marketplace metadata
 │   ├── marketplace.json         # Registry metadata
 │   └── plugin.json              # Plugin configuration
@@ -43,20 +43,21 @@ This repository provides a structured workflow for software development using sp
 │       ├── svelte.md            # Svelte specialist
 │       ├── rust.md              # Rust specialist
 │       └── sql.md               # SQL/DB specialist
-├── skills/                      # Workflow commands (dc: prefix)
-│   ├── start-new/               # /dc:start-new (entry point + orchestrator)
+├── skills/                      # Workflow commands (dotclaude: prefix)
+│   ├── start-new/               # /dotclaude:start-new (entry point + orchestrator)
 │   │   ├── SKILL.md             # 13-step orchestrator workflow
 │   │   ├── _analysis.md         # Common analysis phases
 │   │   ├── init-feature.md      # Feature init instructions
 │   │   ├── init-bugfix.md       # Bugfix init instructions
 │   │   ├── init-refactor.md     # Refactor init instructions
 │   │   └── init-github-issue.md # GitHub issue-based init
-│   ├── design/SKILL.md          # /dc:design
-│   ├── validate-spec/SKILL.md   # /dc:validate-spec
-│   ├── code/SKILL.md            # /dc:code [phase]
-│   ├── merge-main/SKILL.md      # /dc:merge-main
-│   ├── tagging/SKILL.md         # /dc:tagging
-│   └── update-docs/SKILL.md     # /dc:update-docs
+│   ├── configure/SKILL.md       # /dotclaude:configure
+│   ├── design/SKILL.md          # /dotclaude:design
+│   ├── validate-spec/SKILL.md   # /dotclaude:validate-spec
+│   ├── code/SKILL.md            # /dotclaude:code [phase]
+│   ├── merge-main/SKILL.md      # /dotclaude:merge-main
+│   ├── tagging/SKILL.md         # /dotclaude:tagging
+│   └── update-docs/SKILL.md     # /dotclaude:update-docs
 ├── templates/                   # Document templates
 │   ├── SPEC.md
 │   ├── GLOBAL.md
@@ -66,14 +67,15 @@ This repository provides a structured workflow for software development using sp
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
 │   ├── init-config.sh           # SessionStart config initializer
-│   └── check-update.sh          # SessionStart update checker
+│   ├── check-update.sh          # SessionStart update checker
+│   └── check-validation-complete.sh  # Validation completion checker
 └── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```
 
 ## Workflow
 
 ```
-User → /dc:start-new → Orchestrator Agent
+User → /dotclaude:start-new → Orchestrator Agent
                           ↓
               ┌───────────────────────┐
               │ Orchestrator manages: │
@@ -90,7 +92,7 @@ User → /dc:start-new → Orchestrator Agent
 
 ## Orchestrator
 
-The orchestrator workflow is integrated into `/dc:start-new` skill (`skills/start-new/SKILL.md`):
+The orchestrator workflow is integrated into `/dotclaude:start-new` skill (`skills/start-new/SKILL.md`):
 
 - **Manages entire workflow** from init to merge
 - **Coordinates subagents** via Task tool
@@ -141,7 +143,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | code-validator | Code quality + plan verification |
 | Coders | Language-specific implementation |
 
-Note: Orchestrator workflow is now integrated into `/dc:start-new` skill.
+Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` skill.
 
 ## Document Types
 
