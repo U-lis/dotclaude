@@ -119,6 +119,47 @@ From parsed issue, extract:
 - Handle formats: "v0.0.12", "0.0.12", "Release 0.0.12"
 - If no milestone: `target_version = null` (will ask later)
 
+**Deep Body Analysis**:
+
+Beyond extracting `goal` and `problem`, analyze the full `issue_body` text to extract structured data for ALL init-xxx question fields applicable to the detected work type. This enables the downstream init file to auto-skip questions where confident extractions are available, reducing redundant user interaction.
+
+General extraction rule: For each field below, scan the issue body for the described patterns. If a confident extraction is found, include the field in `pre_filled`. If not found or ambiguous, OMIT the field entirely (do not set to empty string).
+
+**Feature heuristic table**:
+
+| Pre-filled Key | Maps to Step | Extraction Heuristic |
+|----------------|--------------|----------------------|
+| `goal` | Step 1: Goal | Issue title |
+| `problem` | Step 2: Problem | First paragraph of issue body |
+| `core_features` | Step 3: Core Features | Bulleted lists, "requirements", "must have", "core" sections |
+| `additional_features` | Step 4: Additional Features | "Nice to have", "optional", "bonus" sections |
+| `technical_constraints` | Step 5: Technical Constraints | "Constraints", "must use", "required stack" mentions |
+| `performance` | Step 6: Performance | "Performance", "latency", "throughput", "SLA" mentions |
+| `security` | Step 7: Security | "Security", "auth", "encryption", "validation" mentions |
+| `out_of_scope` | Step 8: Out of Scope | "Out of scope", "not included", "excluded" sections |
+
+**Bugfix heuristic table**:
+
+| Pre-filled Key | Maps to Step | Extraction Heuristic |
+|----------------|--------------|----------------------|
+| `symptoms` | Step 1: Symptoms | Issue title + first paragraph of body |
+| `reproduction_steps` | Step 2: Reproduction Steps | "Steps to reproduce", numbered lists, "how to reproduce" sections |
+| `expected_cause` | Step 3: Expected Cause | "Cause", "root cause", "suspect", "because" mentions |
+| `severity` | Step 4: Severity | "Critical", "major", "minor", "trivial" keywords; label-based severity |
+| `related_files` | Step 5: Related Files | File paths (e.g., `src/...`, `*.ts`), code blocks with filenames |
+| `impact_scope` | Step 6: Impact Scope | "Affects", "impact", "related features" mentions |
+
+**Refactor heuristic table**:
+
+| Pre-filled Key | Maps to Step | Extraction Heuristic |
+|----------------|--------------|----------------------|
+| `target` | Step 1: Target | Issue title, "target", "refactor" subject |
+| `problems` | Step 2: Problems | "Problem", "issue", "code smell", DRY/SRP/coupling mentions |
+| `goal_state` | Step 3: Goal State | "Goal", "expected result", "after refactoring" sections |
+| `behavior_change` | Step 4: Behavior Change | "Breaking change", "preserve behavior", "no functional change" mentions |
+| `test_status` | Step 5: Test Status | "Test", "coverage", "tested", "untested" mentions |
+| `dependencies` | Step 6: Dependencies | "Depends on", "used by", "dependency", module references |
+
 ---
 
 ### Step 5: Route to Init File
@@ -133,8 +174,9 @@ Based on detected work_type, route to:
 
 **Pre-populated Context**:
 
-Pass the following to the init file:
+Pass the following to the init file. The `pre_filled` block varies by detected work type. Fields set to `null` are omitted from the actual context passed to the init file.
 
+**Feature** (`init-feature.md`):
 ```yaml
 github_issue:
   url: "{issue_url}"
@@ -143,8 +185,52 @@ github_issue:
   body: "{issue_body}"
 
 pre_filled:
-  goal: "{issue_title}"
-  problem: "{first paragraph of issue_body}"
+  goal: "{extracted or null}"
+  problem: "{extracted or null}"
+  core_features: "{extracted or null}"
+  additional_features: "{extracted or null}"
+  technical_constraints: "{extracted or null}"
+  performance: "{extracted or null}"
+  security: "{extracted or null}"
+  out_of_scope: "{extracted or null}"
+  branch_keyword: "{extracted_keyword}"
+  target_version: "{milestone_title or null}"
+```
+
+**Bugfix** (`init-bugfix.md`):
+```yaml
+github_issue:
+  url: "{issue_url}"
+  number: {issue_number}
+  title: "{issue_title}"
+  body: "{issue_body}"
+
+pre_filled:
+  symptoms: "{extracted or null}"
+  reproduction_steps: "{extracted or null}"
+  expected_cause: "{extracted or null}"
+  severity: "{extracted or null}"
+  related_files: "{extracted or null}"
+  impact_scope: "{extracted or null}"
+  branch_keyword: "{extracted_keyword}"
+  target_version: "{milestone_title or null}"
+```
+
+**Refactor** (`init-refactor.md`):
+```yaml
+github_issue:
+  url: "{issue_url}"
+  number: {issue_number}
+  title: "{issue_title}"
+  body: "{issue_body}"
+
+pre_filled:
+  target: "{extracted or null}"
+  problems: "{extracted or null}"
+  goal_state: "{extracted or null}"
+  behavior_change: "{extracted or null}"
+  test_status: "{extracted or null}"
+  dependencies: "{extracted or null}"
   branch_keyword: "{extracted_keyword}"
   target_version: "{milestone_title or null}"
 ```
@@ -155,9 +241,10 @@ pre_filled:
    - Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
    - Create: `git worktree add ../{project_name}-{work_type}-{branch_keyword} -b {work_type}/{branch_keyword} {base_branch}`
 
-2. **Questions**: Show pre-filled values as defaults
-   - Format: "[Extracted from GitHub Issue] {value}"
-   - User can modify if needed
+2. **Questions**: SKIP questions where `pre_filled` data is available
+   - If a `pre_filled` key exists and is non-empty for a question, that question is auto-skipped
+   - The pre-filled value is used directly without user confirmation
+   - SPEC.md review (Step 3 of start-new.md) serves as the validation checkpoint
 
 3. **Target Version**: If `target_version` is set
    - Skip Step 2.6 (version question)
@@ -165,6 +252,45 @@ pre_filled:
 
 4. **SPEC.md**: Include issue reference
    - Add `**Source Issue**: {issue_url}` in header
+
+**Field Mapping per Work Type**:
+
+The following tables define which `pre_filled` keys map to which step in each init file.
+
+**Feature** (`init-feature.md`):
+
+| Pre-filled Key | Init File Step |
+|----------------|----------------|
+| `goal` | Step 1 |
+| `problem` | Step 2 |
+| `core_features` | Step 3 |
+| `additional_features` | Step 4 |
+| `technical_constraints` | Step 5 |
+| `performance` | Step 6 |
+| `security` | Step 7 |
+| `out_of_scope` | Step 8 |
+
+**Bugfix** (`init-bugfix.md`):
+
+| Pre-filled Key | Init File Step |
+|----------------|----------------|
+| `symptoms` | Step 1 |
+| `reproduction_steps` | Step 2 |
+| `expected_cause` | Step 3 |
+| `severity` | Step 4 |
+| `related_files` | Step 5 |
+| `impact_scope` | Step 6 |
+
+**Refactor** (`init-refactor.md`):
+
+| Pre-filled Key | Init File Step |
+|----------------|----------------|
+| `target` | Step 1 |
+| `problems` | Step 2 |
+| `goal_state` | Step 3 |
+| `behavior_change` | Step 4 |
+| `test_status` | Step 5 |
+| `dependencies` | Step 6 |
 
 ---
 
