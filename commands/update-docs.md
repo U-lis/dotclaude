@@ -6,17 +6,10 @@ description: Update project documentation (README, CHANGELOG) after code impleme
 
 Update project documentation (README, CHANGELOG) after code implementation is complete.
 
-## Configuration Loading
+## Configuration
 
-Before executing any operations, load the working directory from configuration:
-
-1. **Default**: `working_directory = ".dc_workspace"`
-2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
-3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
-
-Configuration merge order: Defaults < Global < Local
-
-The resolved `{working_directory}` value is used for all document and file paths in this skill.
+The `{working_directory}` value is read from SPEC.md metadata (written by `/dotclaude:start-new`).
+If SPEC.md is not found, fall back to default: `.dc_workspace`.
 
 ## Trigger
 

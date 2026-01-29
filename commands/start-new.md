@@ -7,15 +7,29 @@ Central workflow controller for the full 13-step development process from init t
 
 ## Configuration Loading
 
-Before executing any operations, load the working directory from configuration:
+Before executing any operations, load configuration:
 
-1. **Default**: `working_directory = ".dc_workspace"`
+1. **Default**: `working_directory = ".dc_workspace"`, `base_branch = "main"`, `language = "en_US"`
 2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
 3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
 
 Configuration merge order: Defaults < Global < Local
 
-The resolved `{working_directory}` value is used for all document and file paths in this skill.
+The resolved config values are used throughout this workflow and **must be written into SPEC.md as metadata** so that downstream commands (`/dotclaude:design`, `/dotclaude:code`, etc.) can read them without re-loading config files.
+
+### SPEC.md Configuration Metadata
+
+When creating SPEC.md (Step 2.7), include a metadata block at the very top of the file, before the title:
+
+```html
+<!-- dotclaude-config
+working_directory: {resolved_value}
+base_branch: {resolved_value}
+language: {resolved_value}
+-->
+```
+
+Downstream commands read this metadata to resolve `{working_directory}` and other config values. If they cannot find SPEC.md, they fall back to default values.
 
 ## Role
 
