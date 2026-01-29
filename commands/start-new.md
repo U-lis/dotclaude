@@ -26,10 +26,11 @@ When creating SPEC.md (Step 2.7), include a metadata block at the very top of th
 working_directory: {resolved_value}
 base_branch: {resolved_value}
 language: {resolved_value}
+worktree_path: ../{subject}
 -->
 ```
 
-Downstream commands read this metadata to resolve `{working_directory}` and other config values. If they cannot find SPEC.md, they fall back to default values.
+Downstream commands read this metadata to resolve `{working_directory}`, `{worktree_path}`, and other config values. If they cannot find SPEC.md, they fall back to default values (`worktree_path` defaults to `.`).
 
 ## Language
 
@@ -89,9 +90,9 @@ Based on Step 1 response, follow the corresponding init command (Claude auto-loa
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
 2. Auto-generate branch keyword
-3. Checkout and update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
-4. Create work branch: `git checkout -b {type}/{keyword}`
-5. Create project directory: `mkdir -p {working_directory}/{subject}`
+3. Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
+4. Create work branch via worktree: `git worktree add ../{subject} -b {type}/{keyword} {base_branch}`
+5. Create project directory: `mkdir -p ../{subject}/{working_directory}/{subject}`
 6. Analysis phase (follow the `_analysis` command for details)
 7. **Target Version Question** (see below)
 8. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
@@ -188,6 +189,11 @@ Call AskUserQuestion tool:
    - Run: `git log --oneline -1 -- {working_directory}/{subject}/SPEC.md`
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
+4. **Worktree Check**:
+   - Directory `../{subject}` must exist as a valid git worktree
+   - Run: `git worktree list | grep {subject}`
+   - If not found: HALT and report "Worktree not found. Create worktree before design phase."
+
 If any check fails: halt workflow and report error to user.
 
 ---
@@ -249,10 +255,10 @@ If failed: retry (max 3), then skip
 
 For parallel phases (e.g., 3A, 3B, 3C):
 ```bash
-# Setup worktrees
-git worktree add ../{subject}-3A -b feature/{subject}-3A
-git worktree add ../{subject}-3B -b feature/{subject}-3B
-git worktree add ../{subject}-3C -b feature/{subject}-3C
+# Setup worktrees (branching from feature branch, not main)
+git worktree add ../{subject}-3A -b feature/{subject}-3A feature/{keyword}
+git worktree add ../{subject}-3B -b feature/{subject}-3B feature/{keyword}
+git worktree add ../{subject}-3C -b feature/{subject}-3C feature/{keyword}
 
 # Single message with multiple Task tool calls (parallel execution)
 Task tool -> Coder (phase=3A, worktree=../{subject}-3A)
@@ -292,6 +298,7 @@ git checkout {base_branch}
 git pull origin {base_branch}
 git merge {branch} --no-edit
 git branch -d {branch}
+git worktree remove ../{subject}
 ```
 
 **Step 13: Return Summary**
@@ -577,11 +584,11 @@ Follow TDD principles from your agent definition.
 
 **For Parallel Phases** (e.g., 3A, 3B, 3C):
 
-Setup worktrees first:
+Setup worktrees first (branching from feature branch, not main):
 ```bash
-git worktree add ../{subject}-3A -b feature/{subject}-3A
-git worktree add ../{subject}-3B -b feature/{subject}-3B
-git worktree add ../{subject}-3C -b feature/{subject}-3C
+git worktree add ../{subject}-3A -b feature/{subject}-3A feature/{keyword}
+git worktree add ../{subject}-3B -b feature/{subject}-3B feature/{keyword}
+git worktree add ../{subject}-3C -b feature/{subject}-3C feature/{keyword}
 ```
 
 Then invoke multiple Coder agents in a SINGLE message (parallel execution):
