@@ -8,8 +8,8 @@ Execute coding work for a specific phase.
 
 ## Configuration
 
-The `{working_directory}` value is read from SPEC.md metadata (written by `/dotclaude:start-new`).
-If SPEC.md is not found, fall back to default: `.dc_workspace`.
+The `{working_directory}` and `{worktree_path}` values are read from SPEC.md metadata (written by `/dotclaude:start-new`).
+If SPEC.md is not found, fall back to defaults: `{working_directory}` = `.dc_workspace`, `{worktree_path}` = `.` (current directory).
 
 ## Trigger
 
@@ -112,9 +112,8 @@ Before `git add` and `git commit`:
 
 ### Setup Worktree
 ```bash
-# For PHASE_3A
-git checkout feature/subject
-git worktree add ../subject-3A -b feature/subject-3A
+# For PHASE_3A (branching from feature branch, not main)
+git worktree add ../subject-3A -b feature/subject-3A feature/keyword
 
 # Coder works in ../subject-3A/
 cd ../subject-3A
@@ -189,6 +188,8 @@ After phase completion:
 1. If more phases: `/dotclaude:code [next-phase]`
 2. If parallel phases done: `/dotclaude:code {k}.5` for merge
 3. If all phases done: `/dotclaude:merge-main` → `/dotclaude:tagging`
+
+**Note**: The feature worktree (`../{subject}`) is cleaned up during Step 12 (Merge to Main) of the `/dotclaude:start-new` workflow.
 
 ---
 
@@ -281,10 +282,10 @@ Layer 4: Execute PHASE_4
 ### Parallel Phase Execution
 
 ```bash
-# Setup worktrees
-git worktree add ../subject-3A -b feature/subject-3A
-git worktree add ../subject-3B -b feature/subject-3B
-git worktree add ../subject-3C -b feature/subject-3C
+# Setup worktrees (branching from feature branch, not main)
+git worktree add ../subject-3A -b feature/subject-3A feature/keyword
+git worktree add ../subject-3B -b feature/subject-3B feature/keyword
+git worktree add ../subject-3C -b feature/subject-3C feature/keyword
 
 # Execute each phase in its worktree (sequentially)
 cd ../subject-3A && [execute PHASE_3A]

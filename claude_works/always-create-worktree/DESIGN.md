@@ -54,7 +54,7 @@
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Central Orchestrator and Metadata Changes | Pending | None |
+| 1 | Central Orchestrator and Metadata Changes | Complete | None |
 | 2 | Init Command Files Alignment | Pending | Phase 1 |
 
 ---
@@ -190,15 +190,15 @@ In the "Next Steps" section (around lines 187-191), add a note that the feature 
 
 ### Completion Checklist
 
-- [ ] `worktree_path` field added to SPEC.md metadata template in `start-new.md`
-- [ ] `git checkout -b` replaced with `git worktree add` in `start-new.md` Step 2 item 3
-- [ ] Step 2 item 4 (project directory) updated for worktree context in `start-new.md`
-- [ ] Parallel phase worktree commands updated with feature branch base in `start-new.md` Step 10
-- [ ] `git worktree remove ../{subject}` added to `start-new.md` Step 12
-- [ ] Worktree existence check added to `start-new.md` Step 6 Checkpoint
-- [ ] `worktree_path` metadata reading added to `code.md` Configuration section
-- [ ] Parallel phase paths updated in `code.md` to be relative to feature worktree
-- [ ] Worktree cleanup note added to `code.md` Next Steps section
+- [x] `worktree_path` field added to SPEC.md metadata template in `start-new.md` (line 29)
+- [x] `git checkout -b` replaced with `git worktree add` in `start-new.md` Step 2 item 3 (line 86)
+- [x] Step 2 item 4 (project directory) updated for worktree context in `start-new.md` (line 87)
+- [x] Parallel phase worktree commands updated with feature branch base in `start-new.md` Step 10 (lines 251-253, 581-583)
+- [x] `git worktree remove ../{subject}` added to `start-new.md` Step 12 (line 293)
+- [x] Worktree existence check added to `start-new.md` Step 6 Checkpoint (lines 184-188)
+- [x] `worktree_path` metadata reading added to `code.md` Configuration section (lines 11-12)
+- [x] Parallel phase paths updated in `code.md` to be relative to feature worktree (lines 115-116, 286-288)
+- [x] Worktree cleanup note added to `code.md` Next Steps section (line 192)
 
 ### Notes
 
