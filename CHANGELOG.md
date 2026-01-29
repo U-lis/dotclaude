@@ -38,6 +38,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Tag messages now use multiple `-m` flags extracted from CHANGELOG sections, producing structured annotated tags with section-level detail
+- Enforce branching strategy: new work branches now always derive from the configured `base_branch` with latest changes ([#22](https://github.com/U-lis/dotclaude/issues/22))
+  - `start-new.md`: Added `git checkout {base_branch} && git pull origin {base_branch}` step before work branch creation (Step 2.3), renumbered subsequent steps (2.3-2.8 to 2.4-2.9)
+  - `init-github-issue.md`: Added base branch checkout+pull before branch creation in pre-filled context flow
+  - `merge-main.md`: Replaced all hardcoded `main` references with configurable `{base_branch}` value (checkout, pull, merge target, push, safety rules, output summary)
+  - `start-new.md`: Updated Step 12 merge commands, output contract, next steps, and progress indicator to use `{base_branch}` instead of hardcoded `main`
 
 ## [0.2.1] - 2026-01-29
 
