@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Fixed
+
+- GitHub Issue workflow asking redundant questions when answers are already available in the issue body ([#27](https://github.com/U-lis/dotclaude/issues/27))
+  - `init-github-issue.md` Step 4 now performs deep body analysis to extract ALL possible init-xxx question fields (not just goal/problem)
+  - Questions with pre-filled data from the issue body are now skipped entirely instead of shown as defaults
+  - Added conditional skip logic to every step in `init-feature.md` (8 steps), `init-bugfix.md` (6 steps), and `init-refactor.md` (6 steps)
+
+### Changed
+
+- `init-github-issue.md` routing behavior from "show-as-default" to "auto-skip" for pre-filled fields
+- Expanded `pre_filled` data structure to support per-work-type field extraction (feature: 8 fields, bugfix: 6 fields, refactor: 6 fields)
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
