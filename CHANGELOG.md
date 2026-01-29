@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Fixed
+
+- `/dotclaude:tagging` command now enforces mandatory push after tag creation (`git push && git push --tags`), preventing local-only tags that fail to reach the remote ([#3](https://github.com/U-lis/dotclaude/issues/3))
+
+### Added
+
+- Version consistency check before tagging: `plugin.json`, `marketplace.json`, and `CHANGELOG.md` must all contain matching version strings before a tag is created
+- Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly
+- Error handling for push failures with local tag preservation so tags are not lost if the remote push fails
+- Per-step push result reporting in tagging output (commit push and tag push reported separately)
+
+### Changed
+
+- Tag messages now use multiple `-m` flags extracted from CHANGELOG sections, producing structured annotated tags with section-level detail
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
