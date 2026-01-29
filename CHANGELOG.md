@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `/dotclaude:tagging` command now enforces mandatory push after tag creation (`git push && git push --tags`), preventing local-only tags that fail to reach the remote ([#3](https://github.com/U-lis/dotclaude/issues/3))
+- Init workflow (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) used `git checkout -b` to create branches in the current working tree instead of creating an isolated git worktree ([#29](https://github.com/U-lis/dotclaude/issues/29))
+- Parallel phase worktrees (3A, 3B, 3C) now correctly branch from the feature branch instead of main, ensuring parallel work is based on the feature's latest state
 
 ### Added
 
@@ -49,6 +51,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `init-github-issue.md`: Added base branch checkout+pull before branch creation in pre-filled context flow
   - `merge-main.md`: Replaced all hardcoded `main` references with configurable `{base_branch}` value (checkout, pull, merge target, push, safety rules, output summary)
   - `start-new.md`: Updated Step 12 merge commands, output contract, next steps, and progress indicator to use `{base_branch}` instead of hardcoded `main`
+- Branch creation in all init commands replaced with `git worktree add ../{subject} -b {type}/{keyword} {base_branch}` for proper worktree isolation
+- SPEC.md metadata block now includes `worktree_path` field (e.g., `worktree_path: ../{subject}`) so downstream commands (`/dotclaude:code`, `/dotclaude:design`, etc.) resolve the correct working location
+- `/dotclaude:code` reads `worktree_path` from SPEC.md metadata (defaults to `.` for backward compatibility)
+- Merge step (Step 12) in `/dotclaude:start-new` now includes `git worktree remove` cleanup
+- Pre-design checkpoint (Step 5) now verifies worktree existence before proceeding
 - `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
 - `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
 
