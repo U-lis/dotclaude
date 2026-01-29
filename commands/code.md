@@ -113,10 +113,11 @@ Before `git add` and `git commit`:
 ### Setup Worktree
 ```bash
 # For PHASE_3A (branching from feature branch, not main)
-git worktree add ../subject-3A -b feature/subject-3A feature/keyword
+# Worktree naming: {project_name}-{type}-{keyword}-{phase}
+git worktree add ../{project_name}-{type}-{keyword}-3A -b feature/{keyword}-3A feature/{keyword}
 
-# Coder works in ../subject-3A/
-cd ../subject-3A
+# Coder works in ../{project_name}-{type}-{keyword}-3A/
+cd ../{project_name}-{type}-{keyword}-3A
 ```
 
 ### After Completion
@@ -189,7 +190,7 @@ After phase completion:
 2. If parallel phases done: `/dotclaude:code {k}.5` for merge
 3. If all phases done: `/dotclaude:merge-main` → `/dotclaude:tagging`
 
-**Note**: The feature worktree (`../{subject}`) is cleaned up during Step 12 (Merge to Main) of the `/dotclaude:start-new` workflow.
+**Note**: The feature worktree (`../{project_name}-{type}-{keyword}`) is cleaned up during Step 12 (Merge to Main) of the `/dotclaude:start-new` workflow.
 
 ---
 
@@ -283,23 +284,24 @@ Layer 4: Execute PHASE_4
 
 ```bash
 # Setup worktrees (branching from feature branch, not main)
-git worktree add ../subject-3A -b feature/subject-3A feature/keyword
-git worktree add ../subject-3B -b feature/subject-3B feature/keyword
-git worktree add ../subject-3C -b feature/subject-3C feature/keyword
+# Worktree naming: {project_name}-{type}-{keyword}-{phase}
+git worktree add ../{project_name}-{type}-{keyword}-3A -b feature/{keyword}-3A feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3B -b feature/{keyword}-3B feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3C -b feature/{keyword}-3C feature/{keyword}
 
 # Execute each phase in its worktree (sequentially)
-cd ../subject-3A && [execute PHASE_3A]
-cd ../subject-3B && [execute PHASE_3B]
-cd ../subject-3C && [execute PHASE_3C]
+cd ../{project_name}-{type}-{keyword}-3A && [execute PHASE_3A]
+cd ../{project_name}-{type}-{keyword}-3B && [execute PHASE_3B]
+cd ../{project_name}-{type}-{keyword}-3C && [execute PHASE_3C]
 
 # Return to main, merge, cleanup
 cd ../project
-git merge feature/subject-3A --no-edit
-git merge feature/subject-3B --no-edit
-git merge feature/subject-3C --no-edit
-git worktree remove ../subject-3A
-git worktree remove ../subject-3B
-git worktree remove ../subject-3C
+git merge feature/{keyword}-3A --no-edit
+git merge feature/{keyword}-3B --no-edit
+git merge feature/{keyword}-3C --no-edit
+git worktree remove ../{project_name}-{type}-{keyword}-3A
+git worktree remove ../{project_name}-{type}-{keyword}-3B
+git worktree remove ../{project_name}-{type}-{keyword}-3C
 ```
 
 ### CLAUDE.md Rule Exceptions

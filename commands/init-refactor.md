@@ -198,7 +198,7 @@ Create SPEC.md with refactor-specific format:
 
 ## Output
 
-1. Refactor worktree created at `../{subject}` with branch `refactor/{keyword}`
+1. Refactor worktree created at `../{project_name}-refactor-{keyword}` with branch `refactor/{keyword}`
 2. Directory `{working_directory}/{subject}/` created
 3. `{working_directory}/{subject}/SPEC.md` created with all sections above
 
