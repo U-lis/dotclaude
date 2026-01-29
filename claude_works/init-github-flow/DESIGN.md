@@ -5,7 +5,7 @@
 | Phase | Description | Status | Dependencies | Files |
 |-------|-------------|--------|--------------|-------|
 | 1 | Enhance `init-github-issue.md` with deep body analysis and auto-skip routing | Complete | None | `commands/init-github-issue.md` |
-| 2 | Add pre-fill skip logic to `init-feature.md`, `init-bugfix.md`, `init-refactor.md` | Pending | Phase 1 (key name contract) | `commands/init-feature.md`, `commands/init-bugfix.md`, `commands/init-refactor.md` |
+| 2 | Add pre-fill skip logic to `init-feature.md`, `init-bugfix.md`, `init-refactor.md` | Complete | Phase 1 (key name contract) | `commands/init-feature.md`, `commands/init-bugfix.md`, `commands/init-refactor.md` |
 
 ---
 
@@ -313,15 +313,15 @@ Same pattern as 2.2. Per-step instructions:
 
 ### Completion Checklist
 
-- [ ] `init-feature.md` has "Pre-filled Data Handling" section with mapping table (8 rows) before "Step-by-Step Questions"
-- [ ] `init-feature.md` Steps 1-8 each have a "Pre-fill Check" block with correct key and skip description
-- [ ] `init-bugfix.md` has "Pre-filled Data Handling" section with mapping table (6 rows) before "Step-by-Step Questions"
-- [ ] `init-bugfix.md` Steps 1-6 each have a "Pre-fill Check" block with correct key and skip description
-- [ ] `init-refactor.md` has "Pre-filled Data Handling" section with mapping table (6 rows) before "Step-by-Step Questions"
-- [ ] `init-refactor.md` Steps 1-6 each have a "Pre-fill Check" block with correct key and skip description
-- [ ] All pre-fill keys match exactly the keys defined in Phase 1 `init-github-issue.md` heuristic tables
-- [ ] No existing content in any init file is removed or altered (only additions)
-- [ ] Analysis Phase, Branch Keyword, SPEC.md Content, Communication Rules, and Output sections are unchanged in all three files
+- [x] `init-feature.md` has "Pre-filled Data Handling" section with mapping table (8 rows) before "Step-by-Step Questions": Verified in `commands/init-feature.md`:9-24
+- [x] `init-feature.md` Steps 1-8 each have a "Pre-fill Check" block with correct key and skip description: Verified in `commands/init-feature.md`:32,42,52,62,75,92,107,126
+- [x] `init-bugfix.md` has "Pre-filled Data Handling" section with mapping table (6 rows) before "Step-by-Step Questions": Verified in `commands/init-bugfix.md`:9-22
+- [x] `init-bugfix.md` Steps 1-6 each have a "Pre-fill Check" block with correct key and skip description: Verified in `commands/init-bugfix.md`:30,40,50,69,88,101
+- [x] `init-refactor.md` has "Pre-filled Data Handling" section with mapping table (6 rows) before "Step-by-Step Questions": Verified in `commands/init-refactor.md`:9-22
+- [x] `init-refactor.md` Steps 1-6 each have a "Pre-fill Check" block with correct key and skip description: Verified in `commands/init-refactor.md`:30,40,61,71,86,103
+- [x] All pre-fill keys match exactly the keys defined in Phase 1 `init-github-issue.md` heuristic tables: Verified via cross-reference (feature: 8/8, bugfix: 6/6, refactor: 6/6)
+- [x] No existing content in any init file is removed or altered (only additions): Verified via git diff (all changes are additions only)
+- [x] Analysis Phase, Branch Keyword, SPEC.md Content, Communication Rules, and Output sections are unchanged in all three files: Verified via git diff and grep
 
 ### Notes
 

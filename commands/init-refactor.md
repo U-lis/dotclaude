@@ -6,11 +6,29 @@ user-invocable: false
 
 Instructions for initializing refactoring work through target analysis and dependency mapping.
 
+## Pre-filled Data Handling
+
+When invoked from `init-github-issue.md`, a `pre_filled` context may be provided containing data extracted from the GitHub issue. For each step below, check whether the corresponding `pre_filled` key exists and is non-empty. If it does, SKIP the step and use the pre-filled value. If it does not exist, or is an empty string, ask the question normally.
+
+When no `pre_filled` context is available (direct init without GitHub issue), all questions are asked normally.
+
+| Pre-filled Key | Step | Question |
+|----------------|------|----------|
+| `pre_filled.target` | Step 1 | Target |
+| `pre_filled.problems` | Step 2 | Problems |
+| `pre_filled.goal_state` | Step 3 | Goal State |
+| `pre_filled.behavior_change` | Step 4 | Behavior Change |
+| `pre_filled.test_status` | Step 5 | Test Status |
+| `pre_filled.dependencies` | Step 6 | Dependencies |
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
 
 ### Step 1: Target
+
+**Pre-fill Check**: IF `pre_filled.target` exists and is non-empty, SKIP this step and use the pre-filled value as the refactoring target. Otherwise, proceed with the question below.
+
 ```
 Question: "What is the refactoring target?"
 Header: "Refactoring Target"
@@ -18,6 +36,9 @@ Header: "Refactoring Target"
 ```
 
 ### Step 2: Problems
+
+**Pre-fill Check**: IF `pre_filled.problems` exists and is non-empty, SKIP this step and use the pre-filled value as the current problems. Otherwise, proceed with the question below.
+
 ```
 Question: "What problems exist in the current code?"
 Header: "Problems"
@@ -36,6 +57,9 @@ multiSelect: true
 ```
 
 ### Step 3: Goal State
+
+**Pre-fill Check**: IF `pre_filled.goal_state` exists and is non-empty, SKIP this step and use the pre-filled value as the goal state. Otherwise, proceed with the question below.
+
 ```
 Question: "What is the expected state after refactoring?"
 Header: "Goal"
@@ -43,6 +67,9 @@ Header: "Goal"
 ```
 
 ### Step 4: Behavior Change
+
+**Pre-fill Check**: IF `pre_filled.behavior_change` exists and is non-empty, SKIP this step and use the pre-filled value as the behavior change policy. Otherwise, proceed with the question below.
+
 ```
 Question: "Is it okay if the existing behavior changes?"
 Header: "Behavior Change"
@@ -55,6 +82,9 @@ multiSelect: false
 ```
 
 ### Step 5: Test Status
+
+**Pre-fill Check**: IF `pre_filled.test_status` exists and is non-empty, SKIP this step and use the pre-filled value as the test status. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there related tests?"
 Header: "Tests"
@@ -69,6 +99,9 @@ multiSelect: false
 ```
 
 ### Step 6: Dependencies
+
+**Pre-fill Check**: IF `pre_filled.dependencies` exists and is non-empty, SKIP this step and use the pre-filled value as the dependencies. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there other modules that use this code?"
 Header: "Dependencies"
