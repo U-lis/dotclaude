@@ -1,7 +1,7 @@
 ---
 description: Entry point for starting new work. Executes full 13-step orchestrator workflow with AskUserQuestion support.
 ---
-# /dc:start-new
+# /dotclaude:start-new
 
 Central workflow controller for the full 13-step development process from init to merge.
 
@@ -893,7 +893,7 @@ After all steps in the chain complete, display summary:
 ## Next Steps
 1. Review changes: `git log --oneline -10`
 2. Push to remote: `git push origin main`
-3. (Optional) Create tag: `/dc:tagging`
+3. (Optional) Create tag: `/dotclaude:tagging`
 ```
 
 This summary appears ONLY at the final STOP point, not between steps.

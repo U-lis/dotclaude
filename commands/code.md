@@ -1,8 +1,8 @@
 ---
-description: Execute coding work for a specific phase. Use when implementing a phase like /dc:code 1, /dc:code 2, /dc:code 3A, /dc:code 3.5 for merge phases, or /dc:code all for fully automatic execution of all phases.
+description: Execute coding work for a specific phase. Use when implementing a phase like /dotclaude:code 1, /dotclaude:code 2, /dotclaude:code 3A, /dotclaude:code 3.5 for merge phases, or /dotclaude:code all for fully automatic execution of all phases.
 ---
 
-# /dc:code [phase]
+# /dotclaude:code [phase]
 
 Execute coding work for a specific phase.
 
@@ -20,7 +20,7 @@ The resolved `{working_directory}` value is used for all document and file paths
 
 ## Trigger
 
-User invokes `/dc:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
+User invokes `/dotclaude:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`, etc.
 
 ## Prerequisites
 
@@ -193,13 +193,13 @@ git worktree remove ../subject-3C
 ## Next Steps
 
 After phase completion:
-1. If more phases: `/dc:code [next-phase]`
-2. If parallel phases done: `/dc:code {k}.5` for merge
-3. If all phases done: `/dc:merge-main` → `/dc:tagging`
+1. If more phases: `/dotclaude:code [next-phase]`
+2. If parallel phases done: `/dotclaude:code {k}.5` for merge
+3. If all phases done: `/dotclaude:merge-main` → `/dotclaude:tagging`
 
 ---
 
-## `/dc:code all` - Automatic Full Execution
+## `/dotclaude:code all` - Automatic Full Execution
 
 Execute all phases without user intervention.
 
@@ -310,18 +310,18 @@ git worktree remove ../subject-3C
 
 ### CLAUDE.md Rule Exceptions
 
-For `/dc:code all` mode, these CLAUDE.md rules are overridden:
+For `/dotclaude:code all` mode, these CLAUDE.md rules are overridden:
 
 - **"Do NOT git commit without explicit user instruction"**
-  → `/dc:code all` invocation IS the explicit instruction for auto-commit
+  → `/dotclaude:code all` invocation IS the explicit instruction for auto-commit
 
 - **"Do NOT proceed to next phase without user instruction"**
-  → `/dc:code all` invocation IS the explicit instruction to proceed automatically
+  → `/dotclaude:code all` invocation IS the explicit instruction to proceed automatically
 
 ### Output
 
 ```markdown
-# /dc:code all - Execution Complete
+# /dotclaude:code all - Execution Complete
 
 ## Summary
 - Total Phases: 6
@@ -349,6 +349,6 @@ For `/dc:code all` mode, these CLAUDE.md rules are overridden:
 ## Next Steps
 
 1. Manually resolve PHASE_3A issues
-2. Run `/dc:code 3A` to retry
-3. Run `/dc:merge-main` → `/dc:tagging`
+2. Run `/dotclaude:code 3A` to retry
+3. Run `/dotclaude:merge-main` → `/dotclaude:tagging`
 ```

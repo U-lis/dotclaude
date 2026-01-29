@@ -2,7 +2,7 @@
 description: Update project documentation (README, CHANGELOG) after code implementation is complete.
 ---
 
-# /dc:update-docs
+# /dotclaude:update-docs
 
 Update project documentation (README, CHANGELOG) after code implementation is complete.
 
@@ -20,7 +20,7 @@ The resolved `{working_directory}` value is used for all document and file paths
 
 ## Trigger
 
-- User invokes `/dc:update-docs` directly
+- User invokes `/dotclaude:update-docs` directly
 - Orchestrator calls after all phases complete (Step 11)
 
 ## Prerequisites
@@ -134,5 +134,5 @@ Task tool:
 
 | Context | Behavior |
 |---------|----------|
-| Direct (`/dc:update-docs`) | Complete docs update, return control to user |
+| Direct (`/dotclaude:update-docs`) | Complete docs update, return control to user |
 | Via orchestrator | Complete docs update, return to orchestrator for continued workflow |

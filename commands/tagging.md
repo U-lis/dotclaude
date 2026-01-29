@@ -2,7 +2,7 @@
 description: Create version tag based on CHANGELOG
 ---
 
-# /dc:tagging
+# /dotclaude:tagging
 
 Create git tag based on CHANGELOG.md version.
 

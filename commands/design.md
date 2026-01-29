@@ -1,8 +1,8 @@
 ---
-description: Transform SPEC into detailed implementation plan using Designer agent. Use after SPEC.md is approved or when user invokes /dc:design.
+description: Transform SPEC into detailed implementation plan using Designer agent. Use after SPEC.md is approved or when user invokes /dotclaude:design.
 ---
 
-# /dc:design
+# /dotclaude:design
 
 Transform SPEC into detailed implementation plan using Designer agent.
 
@@ -20,7 +20,7 @@ The resolved `{working_directory}` value is used for all document and file paths
 
 ## Trigger
 
-User invokes `/dc:design` after SPEC.md is ready.
+User invokes `/dotclaude:design` after SPEC.md is ready.
 
 ## Prerequisites
 
@@ -106,5 +106,5 @@ When phases can run independently:
 ## Next Steps
 
 After design is approved:
-1. Proceed to `/dc:validate-spec` to verify document consistency
-2. Then `/dc:code [phase]` to start implementation
+1. Proceed to `/dotclaude:validate-spec` to verify document consistency
+2. Then `/dotclaude:code [phase]` to start implementation

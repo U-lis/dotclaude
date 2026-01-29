@@ -51,7 +51,7 @@ gh issue view {number} --json title,body,labels,milestone
 | No access | 403 / permission error | "No access permission to issue" |
 | Invalid URL | Regex mismatch | "Not a valid GitHub issue URL" |
 
-**On Error**: Return to Step 1 of /dc:start-new (work type selection)
+**On Error**: Return to Step 1 of /dotclaude:start-new (work type selection)
 
 ---
 

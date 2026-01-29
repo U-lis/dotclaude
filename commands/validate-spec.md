@@ -1,8 +1,8 @@
 ---
-description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /dc:validate-spec.
+description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /dotclaude:validate-spec.
 ---
 
-# /dc:validate-spec
+# /dotclaude:validate-spec
 
 Validate consistency across all planning documents using spec-validator agent.
 
@@ -20,7 +20,7 @@ The resolved `{working_directory}` value is used for all document and file paths
 
 ## Trigger
 
-User invokes `/dc:validate-spec` after design documents are created.
+User invokes `/dotclaude:validate-spec` after design documents are created.
 
 ## Prerequisites
 
@@ -117,4 +117,4 @@ validate → issues found → TW fixes → re-validate → repeat until PASSED
 ## Next Steps
 
 After validation passes:
-1. Proceed to `/dc:code [phase]` to start implementation
+1. Proceed to `/dotclaude:code [phase]` to start implementation

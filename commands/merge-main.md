@@ -2,7 +2,7 @@
 description: Merge feature branch to main with conflict resolution and branch cleanup
 ---
 
-# /dc:merge-main [branch]
+# /dotclaude:merge-main [branch]
 
 Merge feature branch to main, resolve conflicts, cleanup.
 
