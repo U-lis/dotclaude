@@ -26,7 +26,7 @@ When creating SPEC.md (Step 2.7), include a metadata block at the very top of th
 working_directory: {resolved_value}
 base_branch: {resolved_value}
 language: {resolved_value}
-worktree_path: ../{subject}
+worktree_path: ../{project_name}-{type}-{keyword}
 -->
 ```
 
@@ -83,8 +83,10 @@ Based on Step 1 response, follow the corresponding init command (Claude auto-loa
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
 2. Auto-generate branch keyword
-3. Create work branch via worktree: `git worktree add ../{subject} -b {type}/{keyword} {base_branch}`
-4. Create project directory: `mkdir -p ../{subject}/{working_directory}/{subject}`
+3. Create work branch via worktree: `git worktree add ../{project_name}-{type}-{keyword} -b {type}/{keyword} {base_branch}`
+   - `{project_name}`: name of the current git repository root directory
+   - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-always-create-worktree`)
+4. Create project directory: `mkdir -p ../{project_name}-{type}-{keyword}/{working_directory}/{subject}`
 5. Analysis phase (follow the `_analysis` command for details)
 6. **Target Version Question** (see below)
 7. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
@@ -182,8 +184,8 @@ Call AskUserQuestion tool:
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
 4. **Worktree Check**:
-   - Directory `../{subject}` must exist as a valid git worktree
-   - Run: `git worktree list | grep {subject}`
+   - Directory `../{project_name}-{type}-{keyword}` must exist as a valid git worktree
+   - Run: `git worktree list | grep {project_name}-{type}-{keyword}`
    - If not found: HALT and report "Worktree not found. Create worktree before design phase."
 
 If any check fails: halt workflow and report error to user.
@@ -248,26 +250,27 @@ If failed: retry (max 3), then skip
 For parallel phases (e.g., 3A, 3B, 3C):
 ```bash
 # Setup worktrees (branching from feature branch, not main)
-git worktree add ../{subject}-3A -b feature/{subject}-3A feature/{keyword}
-git worktree add ../{subject}-3B -b feature/{subject}-3B feature/{keyword}
-git worktree add ../{subject}-3C -b feature/{subject}-3C feature/{keyword}
+# Worktree naming: {project_name}-{type}-{keyword}-{phase}
+git worktree add ../{project_name}-{type}-{keyword}-3A -b feature/{keyword}-3A feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3B -b feature/{keyword}-3B feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3C -b feature/{keyword}-3C feature/{keyword}
 
 # Single message with multiple Task tool calls (parallel execution)
-Task tool -> Coder (phase=3A, worktree=../{subject}-3A)
-Task tool -> Coder (phase=3B, worktree=../{subject}-3B)
-Task tool -> Coder (phase=3C, worktree=../{subject}-3C)
+Task tool -> Coder (phase=3A, worktree=../{project_name}-{type}-{keyword}-3A)
+Task tool -> Coder (phase=3B, worktree=../{project_name}-{type}-{keyword}-3B)
+Task tool -> Coder (phase=3C, worktree=../{project_name}-{type}-{keyword}-3C)
 
 # Wait for all results
 
 # Merge phase (3.5)
-git merge feature/{subject}-3A --no-edit
-git merge feature/{subject}-3B --no-edit
-git merge feature/{subject}-3C --no-edit
+git merge feature/{keyword}-3A --no-edit
+git merge feature/{keyword}-3B --no-edit
+git merge feature/{keyword}-3C --no-edit
 
 # Cleanup
-git worktree remove ../{subject}-3A
-git worktree remove ../{subject}-3B
-git worktree remove ../{subject}-3C
+git worktree remove ../{project_name}-{type}-{keyword}-3A
+git worktree remove ../{project_name}-{type}-{keyword}-3B
+git worktree remove ../{project_name}-{type}-{keyword}-3C
 ```
 
 **Step 11: Update Documentation**
@@ -290,7 +293,7 @@ git checkout main
 git pull origin main
 git merge {branch} --no-edit
 git branch -d {branch}
-git worktree remove ../{subject}
+git worktree remove ../{project_name}-{type}-{keyword}
 ```
 
 **Step 13: Return Summary**
@@ -578,9 +581,9 @@ Follow TDD principles from your agent definition.
 
 Setup worktrees first (branching from feature branch, not main):
 ```bash
-git worktree add ../{subject}-3A -b feature/{subject}-3A feature/{keyword}
-git worktree add ../{subject}-3B -b feature/{subject}-3B feature/{keyword}
-git worktree add ../{subject}-3C -b feature/{subject}-3C feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3A -b feature/{keyword}-3A feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3B -b feature/{keyword}-3B feature/{keyword}
+git worktree add ../{project_name}-{type}-{keyword}-3C -b feature/{keyword}-3C feature/{keyword}
 ```
 
 Then invoke multiple Coder agents in a SINGLE message (parallel execution):
@@ -593,7 +596,7 @@ Task(
 ## Task: Implement Phase 3A (Parallel Branch)
 
 ### Working Directory
-CRITICAL: Execute all operations in worktree: ../{subject}-3A
+CRITICAL: Execute all operations in worktree: ../{project_name}-{type}-{keyword}-3A
 
 ### Input
 Phase ID: 3A
@@ -611,7 +614,7 @@ Task(
 ## Task: Implement Phase 3B (Parallel Branch)
 
 ### Working Directory
-CRITICAL: Execute all operations in worktree: ../{subject}-3B
+CRITICAL: Execute all operations in worktree: ../{project_name}-{type}-{keyword}-3B
 
 [... similar structure ...]
 """
@@ -624,12 +627,12 @@ CRITICAL: Execute all operations in worktree: ../{subject}-3B
 
 Execute merge phase as defined in PHASE_{k}.5_PLAN_MERGE.md, then clean up worktrees:
 ```bash
-git merge feature/{subject}-3A --no-edit
-git merge feature/{subject}-3B --no-edit
-git merge feature/{subject}-3C --no-edit
-git worktree remove ../{subject}-3A
-git worktree remove ../{subject}-3B
-git worktree remove ../{subject}-3C
+git merge feature/{keyword}-3A --no-edit
+git merge feature/{keyword}-3B --no-edit
+git merge feature/{keyword}-3C --no-edit
+git worktree remove ../{project_name}-{type}-{keyword}-3A
+git worktree remove ../{project_name}-{type}-{keyword}-3B
+git worktree remove ../{project_name}-{type}-{keyword}-3C
 ```
 
 ### code-validator Invocation
@@ -775,12 +778,12 @@ Parse GLOBAL.md Phase Overview table:
 
 <Task tool call 1>
   subagent_type: "dotclaude:coder-{detected_language}"
-  prompt: "Execute PHASE_3A in worktree ../{subject}-3A"
+  prompt: "Execute PHASE_3A in worktree ../{project_name}-{type}-{keyword}-3A"
 </Task tool call 1>
 
 <Task tool call 2>
   subagent_type: "dotclaude:coder-{detected_language}"
-  prompt: "Execute PHASE_3B in worktree ../{subject}-3B"
+  prompt: "Execute PHASE_3B in worktree ../{project_name}-{type}-{keyword}-3B"
 </Task tool call 2>
 ```
 
