@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dotclaude:pr` command for creating GitHub Pull Requests from working branches ([#9](https://github.com/U-lis/dotclaude/issues/9))
   - Auto-generates PR title from branch name (strips prefix, humanizes)
   - Auto-generates PR body from commit log and file diff stats
+  - Auto-links GitHub issue via `Resolves #N` when SPEC.md contains `GitHub Issue Number`
+  - Auto-assigns milestone from SPEC.md `Target Version` (creates milestone if not found)
+  - Auto-assigns label by branch prefix: `feature/` → `enhancement`, `bugfix/` → `bug`, `refactor/` → `refactoring` (creates label if not found)
   - Prerequisite checks for `gh` CLI installation and authentication
   - Branch validation (rejects execution from main/master/base_branch)
   - Detects existing PRs to avoid duplicates
