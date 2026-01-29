@@ -6,11 +6,31 @@ user-invocable: false
 
 Instructions for initializing new feature work through requirements gathering and SPEC creation.
 
+## Pre-filled Data Handling
+
+When invoked from `init-github-issue.md`, a `pre_filled` context may be provided containing data extracted from the GitHub issue. For each step below, check whether the corresponding `pre_filled` key exists and is non-empty. If it does, SKIP the step and use the pre-filled value. If it does not exist, or is an empty string, ask the question normally.
+
+When no `pre_filled` context is available (direct init without GitHub issue), all questions are asked normally.
+
+| Pre-filled Key | Step | Question |
+|----------------|------|----------|
+| `pre_filled.goal` | Step 1 | Goal |
+| `pre_filled.problem` | Step 2 | Problem |
+| `pre_filled.core_features` | Step 3 | Core Features |
+| `pre_filled.additional_features` | Step 4 | Additional Features |
+| `pre_filled.technical_constraints` | Step 5 | Technical Constraints |
+| `pre_filled.performance` | Step 6 | Performance |
+| `pre_filled.security` | Step 7 | Security |
+| `pre_filled.out_of_scope` | Step 8 | Out of Scope |
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
 
 ### Step 1: Goal
+
+**Pre-fill Check**: IF `pre_filled.goal` exists and is non-empty, SKIP this step and use the pre-filled value as the goal. Otherwise, proceed with the question below.
+
 ```
 Question: "What is the main goal of this feature?"
 Header: "Goal"
@@ -18,6 +38,9 @@ Header: "Goal"
 ```
 
 ### Step 2: Problem
+
+**Pre-fill Check**: IF `pre_filled.problem` exists and is non-empty, SKIP this step and use the pre-filled value as the problem description. Otherwise, proceed with the question below.
+
 ```
 Question: "What problem are you trying to solve?"
 Header: "Problem"
@@ -25,6 +48,9 @@ Header: "Problem"
 ```
 
 ### Step 3: Core Features
+
+**Pre-fill Check**: IF `pre_filled.core_features` exists and is non-empty, SKIP this step and use the pre-filled value as the core features list. Otherwise, proceed with the question below.
+
 ```
 Question: "What core features are required?"
 Header: "Core Features"
@@ -32,6 +58,9 @@ Header: "Core Features"
 ```
 
 ### Step 4: Additional Features
+
+**Pre-fill Check**: IF `pre_filled.additional_features` exists and is non-empty, SKIP this step and use the pre-filled value as the additional features. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there any nice-to-have but not required features?"
 Header: "Additional Features"
@@ -42,6 +71,9 @@ Options:
 ```
 
 ### Step 5: Technical Constraints
+
+**Pre-fill Check**: IF `pre_filled.technical_constraints` exists and is non-empty, SKIP this step and use the pre-filled value as the technical constraints. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there any technical constraints?"
 Header: "Technical Constraints"
@@ -56,6 +88,9 @@ multiSelect: false
 ```
 
 ### Step 6: Performance Requirements
+
+**Pre-fill Check**: IF `pre_filled.performance` exists and is non-empty, SKIP this step and use the pre-filled value as the performance requirements. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there any performance requirements?"
 Header: "Performance"
@@ -68,6 +103,9 @@ multiSelect: false
 ```
 
 ### Step 7: Security Considerations
+
+**Pre-fill Check**: IF `pre_filled.security` exists and is non-empty, SKIP this step and use the pre-filled value as the security considerations. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there any security considerations?"
 Header: "Security"
@@ -84,6 +122,9 @@ multiSelect: true
 ```
 
 ### Step 8: Out of Scope
+
+**Pre-fill Check**: IF `pre_filled.out_of_scope` exists and is non-empty, SKIP this step and use the pre-filled value as the out-of-scope items. Otherwise, proceed with the question below.
+
 ```
 Question: "What should be explicitly excluded from scope?"
 Header: "Out of Scope"
