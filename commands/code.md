@@ -188,7 +188,7 @@ git worktree remove ../subject-3C
 After phase completion:
 1. If more phases: `/dotclaude:code [next-phase]`
 2. If parallel phases done: `/dotclaude:code {k}.5` for merge
-3. If all phases done: `/dotclaude:merge-main` → `/dotclaude:tagging`
+3. If all phases done: `/dotclaude:merge` → `/dotclaude:tagging`
 
 **Note**: The feature worktree (`../{project_name}-{type}-{keyword}`) is cleaned up during Step 12 (Merge to Main) of the `/dotclaude:start-new` workflow.
 
@@ -346,5 +346,5 @@ For `/dotclaude:code all` mode, these CLAUDE.md rules are overridden:
 
 1. Manually resolve PHASE_3A issues
 2. Run `/dotclaude:code 3A` to retry
-3. Run `/dotclaude:merge-main` → `/dotclaude:tagging`
+3. Run `/dotclaude:merge` → `/dotclaude:tagging`
 ```
