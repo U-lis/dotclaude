@@ -31,6 +31,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── tagging.md               # /dotclaude:tagging
 │   ├── update-docs.md           # /dotclaude:update-docs
 │   ├── validate-spec.md         # /dotclaude:validate-spec
+│   ├── purge.md                 # /dotclaude:purge
 │   ├── init-feature.md          # Internal: feature init (user-invocable: false)
 │   ├── init-bugfix.md           # Internal: bugfix init (user-invocable: false)
 │   ├── init-refactor.md         # Internal: refactor init (user-invocable: false)
@@ -122,6 +123,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:merge-main` | Merge feature branch to main |
 | `/dotclaude:tagging` | Create version tag based on CHANGELOG |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
+| `/dotclaude:purge` | Clean up merged branches and orphaned worktrees |
 
 ## Agents
 
@@ -297,6 +299,7 @@ Individual skills can be invoked directly for debugging or partial work:
 /dotclaude:update-docs      # Update documentation
 /dotclaude:merge-main       # Merge to main
 /dotclaude:tagging          # Create version tag
+/dotclaude:purge            # Clean up merged branches and worktrees
 ```
 
 ## License
