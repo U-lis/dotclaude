@@ -152,6 +152,7 @@ pre_filled:
 **Init File Behavior with Pre-filled Context**:
 
 1. **Branch Creation**: Use pre-filled `branch_keyword`
+   - Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
    - Create: `git checkout -b {work_type}/{branch_keyword}`
 
 2. **Questions**: Show pre-filled values as defaults
