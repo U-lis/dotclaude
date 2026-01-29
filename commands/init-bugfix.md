@@ -6,11 +6,29 @@ user-invocable: false
 
 Instructions for initializing bug fix work through bug detail gathering and root cause analysis.
 
+## Pre-filled Data Handling
+
+When invoked from `init-github-issue.md`, a `pre_filled` context may be provided containing data extracted from the GitHub issue. For each step below, check whether the corresponding `pre_filled` key exists and is non-empty. If it does, SKIP the step and use the pre-filled value. If it does not exist, or is an empty string, ask the question normally.
+
+When no `pre_filled` context is available (direct init without GitHub issue), all questions are asked normally.
+
+| Pre-filled Key | Step | Question |
+|----------------|------|----------|
+| `pre_filled.symptoms` | Step 1 | Symptoms |
+| `pre_filled.reproduction_steps` | Step 2 | Reproduction Steps |
+| `pre_filled.expected_cause` | Step 3 | Expected Cause |
+| `pre_filled.severity` | Step 4 | Severity |
+| `pre_filled.related_files` | Step 5 | Related Files |
+| `pre_filled.impact_scope` | Step 6 | Impact Scope |
+
 ## Step-by-Step Questions
 
 Use AskUserQuestion tool for each step sequentially:
 
 ### Step 1: Symptoms
+
+**Pre-fill Check**: IF `pre_filled.symptoms` exists and is non-empty, SKIP this step and use the pre-filled value as the bug symptom description. Otherwise, proceed with the question below.
+
 ```
 Question: "What bug/problem is occurring?"
 Header: "Bug Symptoms"
@@ -18,6 +36,9 @@ Header: "Bug Symptoms"
 ```
 
 ### Step 2: Reproduction Steps
+
+**Pre-fill Check**: IF `pre_filled.reproduction_steps` exists and is non-empty, SKIP this step and use the pre-filled value as the reproduction steps. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there conditions or steps to reproduce this bug?"
 Header: "Reproduction Steps"
@@ -25,6 +46,9 @@ Header: "Reproduction Steps"
 ```
 
 ### Step 3: Expected Cause
+
+**Pre-fill Check**: IF `pre_filled.expected_cause` exists and is non-empty, SKIP this step and use the pre-filled value as the expected cause. Otherwise, proceed with the question below.
+
 ```
 Question: "Do you have any expected causes?"
 Header: "Expected Cause"
@@ -41,6 +65,9 @@ multiSelect: false
 ```
 
 ### Step 4: Severity
+
+**Pre-fill Check**: IF `pre_filled.severity` exists and is non-empty, SKIP this step and use the pre-filled value as the severity level. Otherwise, proceed with the question below.
+
 ```
 Question: "How severe is this bug?"
 Header: "Severity"
@@ -57,6 +84,9 @@ multiSelect: false
 ```
 
 ### Step 5: Related Files
+
+**Pre-fill Check**: IF `pre_filled.related_files` exists and is non-empty, SKIP this step and use the pre-filled value as the related files. Otherwise, proceed with the question below.
+
 ```
 Question: "Do you know any related files or modules?"
 Header: "Related Files"
@@ -67,6 +97,9 @@ Options:
 ```
 
 ### Step 6: Impact Scope
+
+**Pre-fill Check**: IF `pre_filled.impact_scope` exists and is non-empty, SKIP this step and use the pre-filled value as the impact scope. Otherwise, proceed with the question below.
+
 ```
 Question: "Are there other features affected by this bug?"
 Header: "Impact Scope"
