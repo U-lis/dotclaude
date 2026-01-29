@@ -31,6 +31,13 @@ language: {resolved_value}
 
 Downstream commands read this metadata to resolve `{working_directory}` and other config values. If they cannot find SPEC.md, they fall back to default values.
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
+
 ## Role
 
 - **Central workflow controller**: Manage all 13 steps from init to merge

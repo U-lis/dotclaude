@@ -13,6 +13,14 @@ This document defines common rules that ALL Coder agents MUST follow.
 - Implement one phase at a time
 - Respond to code-validator feedback
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- **User-facing communication** (conversation, questions, status updates, AskUserQuestion labels): Use the configured language.
+- **AI-to-AI documents** (SPEC.md, GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md, and all documents in `{working_directory}/`): Always write in English regardless of the configured language. These documents are optimized for other AI agents to read.
+- If no language was provided at session start, default to English (en_US).
+
 ## Common Rules
 
 ### 1. TDD Development Cycle
