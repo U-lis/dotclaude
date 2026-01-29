@@ -232,26 +232,26 @@ Write an `## Output` section showing the result report template, similar to the 
 
 Map to Designer's 20-item checklist. The executor MUST verify all items after implementation.
 
-- [ ] 1. YAML frontmatter with `description` field present
-- [ ] 2. Title is `# /dotclaude:purge`
-- [ ] 3. Config resolution section documents `base_branch` 3-tier chain (SPEC.md metadata > config file > default `main`)
-- [ ] 4. Step 2: `git fetch --prune` with remote-unreachable fallback sets `REMOTE_REACHABLE=false`
-- [ ] 5. Step 3: Remote and local tag comparison with no-tags handling (`NO_TAGS=true`)
-- [ ] 6. Step 4: `git worktree list` with output parsing
-- [ ] 7. Step 5: Merged branch detection (local + remote), filtering protected branches
-- [ ] 8. Step 6: Tag deployment filter using `git merge-base --is-ancestor` per branch
-- [ ] 9. Step 7: Unmerged branch detection with last commit info (`git log -1`)
-- [ ] 10. Step 8: Worktree classification (merged-and-deployed or orphaned) with uncommitted change check
-- [ ] 11. Step 9: Preview report displays all categories
-- [ ] 12. Step 10: AskUserQuestion with 3 options ("Proceed with all", "Select individually", "Cancel")
-- [ ] 13. Step 10a: "Select individually" flow asks per-category yes/no
-- [ ] 14. Step 11: Execution with per-item failure handling (report and continue)
-- [ ] 15. Step 12: Result report with counts per category
-- [ ] 16. Safety section lists all 5 constraints from SPEC
-- [ ] 17. Edge cases EC-1 through EC-12 are all addressed in the document
-- [ ] 18. Remote-unreachable path correctly skips ALL remote operations (fetch, remote branch detection, remote branch deletion, remote tag query)
-- [ ] 19. Protected branches (`{current_branch}` and `{base_branch}`) excluded everywhere in the workflow
-- [ ] 20. Entire command file is written in English
+- [x] 1. YAML frontmatter with `description` field present -- Verified in `commands/purge.md` lines 1-3
+- [x] 2. Title is `# /dotclaude:purge` -- Verified in `commands/purge.md` line 5
+- [x] 3. Config resolution section documents `base_branch` 3-tier chain (SPEC.md metadata > config file > default `main`) -- Verified in `commands/purge.md` lines 9-22
+- [x] 4. Step 2: `git fetch --prune` with remote-unreachable fallback sets `REMOTE_REACHABLE=false` -- Verified in `commands/purge.md` lines 41-48
+- [x] 5. Step 3: Remote and local tag comparison with no-tags handling (`NO_TAGS=true`) -- Verified in `commands/purge.md` lines 50-61
+- [x] 6. Step 4: `git worktree list` with output parsing -- Verified in `commands/purge.md` lines 63-66
+- [x] 7. Step 5: Merged branch detection (local + remote), filtering protected branches -- Verified in `commands/purge.md` lines 68-76
+- [x] 8. Step 6: Tag deployment filter using `git merge-base --is-ancestor` per branch -- Verified in `commands/purge.md` lines 78-88
+- [x] 9. Step 7: Unmerged branch detection with last commit info (`git log -1`) -- Verified in `commands/purge.md` lines 90-94
+- [x] 10. Step 8: Worktree classification (merged-and-deployed or orphaned) with uncommitted change check -- Verified in `commands/purge.md` lines 96-104
+- [x] 11. Step 9: Preview report displays all categories -- Verified in `commands/purge.md` lines 106-129
+- [x] 12. Step 10: AskUserQuestion with 3 options ("Proceed with all", "Select individually", "Cancel") -- Verified in `commands/purge.md` lines 131-146
+- [x] 13. Step 10a: "Select individually" flow asks per-category yes/no -- Verified in `commands/purge.md` lines 148-167
+- [x] 14. Step 11: Execution with per-item failure handling (report and continue) -- Verified in `commands/purge.md` lines 169-180
+- [x] 15. Step 12: Result report with counts per category -- Verified in `commands/purge.md` lines 182-196
+- [x] 16. Safety section lists all 5 constraints from SPEC -- Verified in `commands/purge.md` lines 198-204
+- [x] 17. Edge cases EC-1 through EC-12 are all addressed in the document -- Verified in `commands/purge.md` lines 206-221
+- [x] 18. Remote-unreachable path correctly skips ALL remote operations (fetch, remote branch detection, remote branch deletion, remote tag query) -- Verified across Steps 2, 3, 5, 7, 10a, 11 and EC-3
+- [x] 19. Protected branches (`{current_branch}` and `{base_branch}`) excluded everywhere in the workflow -- Verified in Step 5 filter list, Safety section, and EC-9
+- [x] 20. Entire command file is written in English -- Verified by full file review (238 lines, all English)
 
 ---
 
