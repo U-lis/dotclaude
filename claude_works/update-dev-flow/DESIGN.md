@@ -71,7 +71,7 @@ Step 12 in `start-new.md` currently performs an unconditional merge to main. It 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
 | 1 | Rename and rewrite merge command + update references | Pending | None |
-| 2 | Update start-new.md scope selection and post-completion flow | Pending | Phase 1 |
+| 2 | Update start-new.md scope selection and post-completion flow | Complete | Phase 1 |
 
 ---
 
@@ -377,18 +377,18 @@ Also update the "Next Steps" in the summary to be conditional:
 
 ### Completion Checklist
 
-- [ ] Step 5: 4th option "Design -> Code -> Docs -> Merge" removed (3 options remain)
-- [ ] Routing table: "Design -> Code -> Docs -> Merge" row removed
-- [ ] Routing table: "Design -> Code" and "Design -> Code -> Docs" rows updated to include Step 12 (post-completion)
-- [ ] Step 12: Replaced with post-completion AskUserQuestion flow
-- [ ] Step 12: "Direct Merge" routes to `/dotclaude:merge` behavior
-- [ ] Step 12: "Create PR" routes to `/dotclaude:pr` behavior with fallback comment for Issue #9
-- [ ] Step 12: Skip condition for design-only scope documented
-- [ ] Output Contract: `merge` section replaced with `integration` section using `method: "merge" | "pr" | "none"`
-- [ ] Output Contract: `scope_executed` no longer includes "Merge" as fixed element
-- [ ] Progress Reporting: Chain progress example updated (no "Merge" step, post-completion shown separately)
-- [ ] Final Summary Report: Merge row replaced with conditional Integration row
-- [ ] Final Summary Report: Next Steps section is conditional based on integration method
+- [x] Step 5: 4th option "Design -> Code -> Docs -> Merge" removed (3 options remain) -- Verified in start-new.md:153-159
+- [x] Routing table: "Design -> Code -> Docs -> Merge" row removed -- Verified in start-new.md:727-731
+- [x] Routing table: "Design -> Code" and "Design -> Code -> Docs" rows updated to include Step 12 (post-completion) -- Verified in start-new.md:729-730
+- [x] Step 12: Replaced with post-completion AskUserQuestion flow -- Verified in start-new.md:280-299
+- [x] Step 12: "Direct Merge" routes to `/dotclaude:merge` behavior -- Verified in start-new.md:294-296
+- [x] Step 12: "Create PR" routes to `/dotclaude:pr` behavior with fallback comment for Issue #9 -- Verified in start-new.md:297
+- [x] Step 12: Skip condition for design-only scope documented -- Verified in start-new.md:282,299
+- [x] Output Contract: `merge` section replaced with `integration` section using `method: "merge" | "pr" | "none"` -- Verified in start-new.md:865-889
+- [x] Output Contract: `scope_executed` no longer includes "Merge" as fixed element -- Verified in start-new.md:864-865
+- [x] Progress Reporting: Chain progress example updated (no "Merge" step, post-completion shown separately) -- Verified in start-new.md:967-971
+- [x] Final Summary Report: Merge row replaced with conditional Integration row -- Verified in start-new.md:914
+- [x] Final Summary Report: Next Steps section is conditional based on integration method -- Verified in start-new.md:921-936
 
 ### Notes
 

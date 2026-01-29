@@ -1,9 +1,9 @@
 ---
-description: Entry point for starting new work. Executes full 13-step orchestrator workflow with AskUserQuestion support.
+description: Entry point for starting new work. Executes full orchestrator workflow with AskUserQuestion support and conditional post-completion integration.
 ---
 # /dotclaude:start-new
 
-Central workflow controller for the full 13-step development process from init to merge.
+Central workflow controller for the full development process from init to integration.
 
 ## Configuration Loading
 
@@ -33,7 +33,7 @@ Downstream commands read this metadata to resolve `{working_directory}` and othe
 
 ## Role
 
-- **Central workflow controller**: Manage all 13 steps from init to merge
+- **Central workflow controller**: Manage all steps from init to integration
 - **Direct user interaction**: Use AskUserQuestion for all user interactions (Steps 1, 3, 5)
 - **Subagent coordinator**: Call TechnicalWriter, Designer, Coder, code-validator via Task tool
 - **State manager**: Track workflow progress, enable resume from failure
@@ -157,7 +157,6 @@ Call AskUserQuestion tool:
   - { label: "Design", description: "Create design documents only" }
   - { label: "Design -> Code", description: "Design + Code implementation" }
   - { label: "Design -> Code -> Docs", description: "Design + Code + Documentation update" }
-  - { label: "Design -> Code -> Docs -> Merge", description: "Execute full workflow" }
 - multiSelect: false
 
 ---
@@ -278,13 +277,26 @@ Then commit:
   git commit -m "docs: update CHANGELOG and README for {version}"
 ```
 
-**Step 12: Merge to Main**
-```bash
-git checkout main
-git pull origin main
-git merge {branch} --no-edit
-git branch -d {branch}
-```
+**Step 12: Post-Completion Integration (Conditional)**
+
+This step executes ONLY when the selected scope includes Code or Docs (not design-only).
+
+Call AskUserQuestion tool:
+- question: "How would you like to integrate this work?"
+- header: "Integration Method"
+- options:
+  - { label: "Direct Merge", description: "Merge current branch to base branch" }
+  - { label: "Create PR", description: "Create a GitHub Pull Request (requires /dotclaude:pr)" }
+- multiSelect: false
+
+**Routing based on user selection:**
+
+| Selection | Action |
+|-----------|--------|
+| Direct Merge | Invoke `/dotclaude:merge` command behavior (merge current branch to base_branch, conflict resolution, branch cleanup) |
+| Create PR | Invoke `/dotclaude:pr` command behavior. NOTE: `/dotclaude:pr` is planned for Issue #9. If not yet available, inform user: "The /dotclaude:pr command is not yet implemented (see Issue #9: https://github.com/U-lis/dotclaude/issues/9). Please create the PR manually using `gh pr create`." |
+
+**Skip condition**: If scope is "Design" only, skip Step 12 entirely and proceed directly to Step 13 (Return Summary).
 
 **Step 13: Return Summary**
 Return structured output (see "Output Contract" section)
@@ -715,9 +727,8 @@ After user selects scope (Step 5), execute steps directly:
 | Selection | Execution |
 |-----------|-----------|
 | Design | Steps 6-8 (Designer + TechnicalWriter + commit) -> STOP |
-| Design -> Code | Steps 6-10 (Design + Code phases) -> STOP |
-| Design -> Code -> Docs | Steps 6-11 (Design + Code + TechnicalWriter DOCS_UPDATE) -> STOP |
-| Design -> Code -> Docs -> Merge | Steps 6-12 (Full workflow) -> STOP |
+| Design -> Code | Steps 6-10 (Design + Code phases) -> Step 12 (post-completion) -> STOP |
+| Design -> Code -> Docs | Steps 6-11 (Design + Code + TechnicalWriter DOCS_UPDATE) -> Step 12 (post-completion) -> STOP |
 
 **Execution Method**: All steps executed directly via Task tool (for agents) or Bash tool (for git operations).
 
@@ -850,7 +861,8 @@ status: "SUCCESS" | "PARTIAL" | "FAILED"
 work_type: "feature" | "bugfix" | "refactor"
 subject: "{keyword}"
 branch: "{type}/{keyword}"
-scope_executed: "Design -> Code -> Docs -> Merge"
+scope_executed: "Design -> Code -> Docs"
+integration_method: "merge" | "pr" | "none"
 init:
   spec_path: "{working_directory}/{subject}/SPEC.md"
   spec_approved: true
@@ -870,9 +882,11 @@ docs:
   updated:
     - "CHANGELOG.md"
     - "README.md"
-merge:
-  merged_to: "main"
-  branch_deleted: true
+integration:
+  method: "merge" | "pr" | "none"
+  merged_to: "{base_branch}"       # only when method is "merge"
+  branch_deleted: true | false      # only when method is "merge"
+  pr_url: "https://..."            # only when method is "pr"
 issues:
   - "Description of issue"
 next_steps:
@@ -897,17 +911,29 @@ After all steps in the chain complete, display summary:
 | 1 | Design | SUCCESS |
 | 2 | Code | SUCCESS |
 | 3 | Documentation | SUCCESS |
-| 4 | Merge | SUCCESS |
+| 4 | Integration | MERGE / PR / SKIPPED |
 
 ## Files Changed
 - {working_directory}/{subject}/*.md
 - [implementation files...]
 - CHANGELOG.md
 
-## Next Steps
+## Next Steps (conditional based on integration method)
+
+**If integration was "merge":**
 1. Review changes: `git log --oneline -10`
-2. Push to remote: `git push origin main`
+2. Push to remote: `git push origin {base_branch}`
 3. (Optional) Create tag: `/dotclaude:tagging`
+
+**If integration was "pr":**
+1. Review PR: {pr_url}
+2. Request reviews from teammates
+3. Merge PR after approval
+
+**If integration was "none" (design-only):**
+1. Review design documents in `{working_directory}/{subject}/`
+2. When ready to implement: re-run `/dotclaude:start-new` with broader scope
+3. Or manually proceed: `/dotclaude:code`, `/dotclaude:merge`
 ```
 
 This summary appears ONLY at the final STOP point, not between steps.
@@ -938,8 +964,8 @@ Current: Executing {step name}
 ===============================================================
 ```
 
-Example for "Design -> Code -> Docs -> Merge":
-- [Step 1/4] Design phase - Creating architecture
-- [Step 2/4] Code implementation - Executing phases
-- [Step 3/4] Documentation update - Updating CHANGELOG
-- [Step 4/4] Merge to main - Completing workflow
+Example for "Design -> Code -> Docs":
+- [Step 1/3] Design phase - Creating architecture
+- [Step 2/3] Code implementation - Executing phases
+- [Step 3/3] Documentation update - Updating CHANGELOG
+- [Post] Integration - Asking user for merge/PR preference
