@@ -1,3 +1,7 @@
+---
+description: Initialize new feature work through requirements gathering and SPEC creation.
+user-invocable: false
+---
 # init-feature Instructions
 
 Instructions for initializing new feature work through requirements gathering and SPEC creation.
@@ -22,21 +26,21 @@ Use AskUserQuestion tool for each step sequentially:
 ```
 Question: "What is the main goal of this feature?"
 Header: "Goal"
-→ Free text response
+> Free text response
 ```
 
 ### Step 2: Problem
 ```
 Question: "What problem are you trying to solve?"
 Header: "Problem"
-→ Free text response
+> Free text response
 ```
 
 ### Step 3: Core Features
 ```
 Question: "What core features are required?"
 Header: "Core Features"
-→ Free text (can list multiple)
+> Free text (can list multiple)
 ```
 
 ### Step 4: Additional Features
@@ -46,7 +50,7 @@ Header: "Additional Features"
 Options:
   - label: "None"
     description: "Implement required features only"
-→ Or free text via "Other"
+> Or free text via "Other"
 ```
 
 ### Step 5: Technical Constraints
@@ -98,7 +102,7 @@ Header: "Out of Scope"
 Options:
   - label: "None"
     description: "No items to exclude"
-→ Or free text via "Other"
+> Or free text via "Other"
 ```
 
 ---
@@ -107,7 +111,7 @@ Options:
 
 **MANDATORY**: After gathering user requirements (Steps 1-8), execute analysis phases.
 
-Read `_analysis.md` for the common analysis workflow (Steps A-E).
+Follow the `_analysis` command for the common analysis workflow (Steps A-E). Claude will auto-load the command content.
 
 ### Feature-Specific Analysis
 

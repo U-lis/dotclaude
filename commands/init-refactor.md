@@ -1,3 +1,7 @@
+---
+description: Initialize refactoring work through target analysis and dependency mapping.
+user-invocable: false
+---
 # init-refactor Instructions
 
 Instructions for initializing refactoring work through target analysis and dependency mapping.
@@ -22,7 +26,7 @@ Use AskUserQuestion tool for each step sequentially:
 ```
 Question: "What is the refactoring target?"
 Header: "Refactoring Target"
-→ Free text (file, module, class, function, etc.)
+> Free text (file, module, class, function, etc.)
 ```
 
 ### Step 2: Problems
@@ -47,7 +51,7 @@ multiSelect: true
 ```
 Question: "What is the expected state after refactoring?"
 Header: "Goal"
-→ Free text (target architecture, patterns, etc.)
+> Free text (target architecture, patterns, etc.)
 ```
 
 ### Step 4: Behavior Change
@@ -83,7 +87,7 @@ Header: "Dependencies"
 Options:
   - label: "None/Unknown"
     description: "Not used by other modules or needs investigation"
-→ Or free text via "Other"
+> Or free text via "Other"
 ```
 
 ---
@@ -92,7 +96,7 @@ Options:
 
 **MANDATORY**: After gathering user requirements (Steps 1-6), execute analysis phases.
 
-Read `_analysis.md` for the common analysis workflow (Steps A-E).
+Follow the `_analysis` command for the common analysis workflow (Steps A-E). Claude will auto-load the command content.
 
 ### Refactor-Specific Analysis
 

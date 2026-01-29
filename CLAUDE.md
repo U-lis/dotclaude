@@ -12,7 +12,7 @@ When developing dotclaude, distinguish between:
 ## Development Rules
 
 1. **Always modify source files in this repository**
-   - Edit files under `skills/`, `commands/`, `agents/`, etc.
+   - Edit files under `commands/`, `agents/`, etc.
    - These are the source of truth
 
 2. **Never modify installed plugin files**
@@ -27,19 +27,20 @@ When developing dotclaude, distinguish between:
 
 ```
 dotclaude/
-├── commands/           # Autocomplete entry points
-├── skills/             # Full skill logic
-├── agents/             # Agent definitions
+├── commands/           # Self-contained command files (user-invocable + internal)
+├── agents/             # Agent definitions with frontmatter
 ├── {working_directory}/ # Working documents (configurable, default: .dc_workspace)
 └── .claude-plugin/     # Plugin configuration
 ```
 
-## Skill vs Command
+## Command Structure
 
-- `commands/*.md` - Thin wrappers for autocomplete
-- `skills/*/SKILL.md` - Full implementation details
+- `commands/*.md` - Self-contained command files with full implementation
+  - User-invocable commands: appear in slash menu (default)
+  - Internal commands: `user-invocable: false` in frontmatter (Claude-only)
+- `agents/*.md` - Agent definitions with `name`/`description` frontmatter, invoked via `dotclaude:{agent-name}`
 
-When invoked via `/dotclaude:*`, Claude reads the command file which directs to the corresponding SKILL.md.
+When invoked via `/dotclaude:*`, Claude reads the command file and follows its instructions directly.
 
 ## Version Management
 

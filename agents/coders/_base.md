@@ -1,3 +1,8 @@
+---
+name: coder-base
+description: Common rules for all Coder agents including TDD principles, phase discipline, and code reuse.
+---
+
 # Coder Base Agent
 
 This document defines common rules that ALL Coder agents MUST follow.

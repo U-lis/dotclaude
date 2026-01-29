@@ -1,3 +1,7 @@
+---
+description: Initialize bug fix work through bug detail gathering and root cause analysis.
+user-invocable: false
+---
 # init-bugfix Instructions
 
 Instructions for initializing bug fix work through bug detail gathering and root cause analysis.
@@ -22,14 +26,14 @@ Use AskUserQuestion tool for each step sequentially:
 ```
 Question: "What bug/problem is occurring?"
 Header: "Bug Symptoms"
-→ Free text (symptom description)
+> Free text (symptom description)
 ```
 
 ### Step 2: Reproduction Steps
 ```
 Question: "Are there conditions or steps to reproduce this bug?"
 Header: "Reproduction Steps"
-→ Free text (reproduction steps)
+> Free text (reproduction steps)
 ```
 
 ### Step 3: Expected Cause
@@ -71,7 +75,7 @@ Header: "Related Files"
 Options:
   - label: "Unknown"
     description: "Investigation needed"
-→ Or free text via "Other" (enter file path)
+> Or free text via "Other" (enter file path)
 ```
 
 ### Step 6: Impact Scope
@@ -81,7 +85,7 @@ Header: "Impact Scope"
 Options:
   - label: "None/Unknown"
     description: "No effect on other features or investigation needed"
-→ Or free text via "Other"
+> Or free text via "Other"
 ```
 
 ---
@@ -90,7 +94,7 @@ Options:
 
 **MANDATORY**: After gathering user input (Steps 1-6), execute analysis phases.
 
-Read `_analysis.md` for the common analysis workflow (Steps A-E).
+Follow the `_analysis` command for the common analysis workflow (Steps A-E). Claude will auto-load the command content.
 
 ### Bugfix-Specific Analysis
 

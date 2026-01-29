@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2026-01-29
+
+### Fixed
+
+- Plugin commands failing when installed in projects other than the dotclaude development repository due to relative path resolution of `skills/` directory
+
+### Changed
+
+- Commands are now self-contained with full implementation content instead of thin wrappers redirecting to `skills/` directory
+- Agent invocation uses direct `dotclaude:{agent-name}` pattern instead of `general-purpose` subagent with embedded file-read instructions
+- Internal commands (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`, `_analysis`) now use `user-invocable: false` frontmatter
+- Cross-references updated from file path patterns to command-based references
+- `CLAUDE.md` updated to reflect new directory structure (no more `skills/` directory)
+
+### Added
+
+- YAML frontmatter (`name`, `description`) to all 10 agent files for direct plugin system invocation
+- 5 internal commands in `commands/` directory with `user-invocable: false` (moved from `skills/start-new/`)
+
+### Removed
+
+- `skills/` directory (all content inlined into `commands/`)
+- Relative path resolution dependency that caused plugin failures outside dev repo
+
 ## [0.2.0] - 2026-01-27
 
 ### Added
