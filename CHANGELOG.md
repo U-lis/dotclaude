@@ -36,7 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Language resolution follows config merge order: Defaults (`en_US`) < Global < Local
   - Graceful fallback: `jq` preferred, `grep/sed` fallback when `jq` unavailable
 - `## Language` instruction section added to all agent files (`designer.md`, `spec-validator.md`, `code-validator.md`, `coders/_base.md`)
-- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_analysis.md`, `merge-main.md`, `configure.md`)
+- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_analysis.md`, `merge.md`, `configure.md`)
 - `gh` CLI prerequisite documentation in README
 - Version consistency check before tagging: `plugin.json`, `marketplace.json`, and `CHANGELOG.md` must all contain matching version strings before a tag is created
 - Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly
@@ -49,19 +49,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enforce branching strategy: new work branches now always derive from the configured `base_branch` with latest changes ([#22](https://github.com/U-lis/dotclaude/issues/22))
   - `start-new.md`: Added `git checkout {base_branch} && git pull origin {base_branch}` step before work branch creation (Step 2.3), renumbered subsequent steps (2.3-2.8 to 2.4-2.9)
   - `init-github-issue.md`: Added base branch checkout+pull before branch creation in pre-filled context flow
-  - `merge-main.md`: Replaced all hardcoded `main` references with configurable `{base_branch}` value (checkout, pull, merge target, push, safety rules, output summary)
+  - `merge.md`: Replaced all hardcoded `main` references with configurable `{base_branch}` value (checkout, pull, merge target, push, safety rules, output summary)
   - `start-new.md`: Updated Step 12 merge commands, output contract, next steps, and progress indicator to use `{base_branch}` instead of hardcoded `main`
 - Branch creation in all init commands replaced with `git worktree add ../{subject} -b {type}/{keyword} {base_branch}` for proper worktree isolation
 - SPEC.md metadata block now includes `worktree_path` field (e.g., `worktree_path: ../{subject}`) so downstream commands (`/dotclaude:code`, `/dotclaude:design`, etc.) resolve the correct working location
 - `/dotclaude:code` reads `worktree_path` from SPEC.md metadata (defaults to `.` for backward compatibility)
 - Merge step (Step 12) in `/dotclaude:start-new` now includes `git worktree remove` cleanup
 - Pre-design checkpoint (Step 5) now verifies worktree existence before proceeding
+- Renamed `/dotclaude:merge-main` command to `/dotclaude:merge` ([#20](https://github.com/U-lis/dotclaude/issues/20))
+- `/dotclaude:merge` now reads `base_branch` from config chain (SPEC.md metadata -> config file -> default "main") instead of hardcoding "main"
+- Enhanced conflict resolution in `/dotclaude:merge`: analyzes conflict content, recommends strategy per file, waits for user confirmation before resolving
+- Removed "Design -> Code -> Docs -> Merge" option from `/dotclaude:start-new` Step 5 scope selection
+- Step 12 of `/dotclaude:start-new` changed from unconditional merge to conditional post-completion integration question ("Direct Merge" or "Create PR")
 - `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
 - `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
 
 ### Removed
 
 - "Language translation support (currently language setting stored but unused)" from `configure.md` future enhancements list (feature now implemented)
+- "PR Option" section from merge command (PR creation will be handled by separate `/dotclaude:pr` command, see [#9](https://github.com/U-lis/dotclaude/issues/9))
 
 ## [0.2.1] - 2026-01-29
 
