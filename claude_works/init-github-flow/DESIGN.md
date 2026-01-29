@@ -4,7 +4,7 @@
 
 | Phase | Description | Status | Dependencies | Files |
 |-------|-------------|--------|--------------|-------|
-| 1 | Enhance `init-github-issue.md` with deep body analysis and auto-skip routing | Pending | None | `commands/init-github-issue.md` |
+| 1 | Enhance `init-github-issue.md` with deep body analysis and auto-skip routing | Complete | None | `commands/init-github-issue.md` |
 | 2 | Add pre-fill skip logic to `init-feature.md`, `init-bugfix.md`, `init-refactor.md` | Pending | Phase 1 (key name contract) | `commands/init-feature.md`, `commands/init-bugfix.md`, `commands/init-refactor.md` |
 
 ---
@@ -170,13 +170,13 @@ Add a new sub-section titled "Field Mapping per Work Type" containing three tabl
 
 ### Completion Checklist
 
-- [ ] Step 4 contains "Deep Body Analysis" sub-section with introductory paragraph, general extraction rule, and three heuristic tables (feature: 8 rows, bugfix: 6 rows, refactor: 6 rows)
-- [ ] Step 5 "Pre-populated Context" shows three work-type-specific YAML blocks with all possible keys
-- [ ] Step 5 item 2 reads "SKIP questions where `pre_filled` data is available" (not "show-as-default")
-- [ ] Step 5 item 2 no longer contains "[Extracted from GitHub Issue]" format instruction
-- [ ] Step 5 contains "Field Mapping per Work Type" sub-section with three mapping tables
-- [ ] Step 5 item 3 (Target Version) and item 4 (SPEC.md) are unchanged
-- [ ] All other sections of `init-github-issue.md` are unchanged (Steps 1-3, Analysis Phase, Communication Rules, Output)
+- [x] Step 4 contains "Deep Body Analysis" sub-section with introductory paragraph, general extraction rule, and three heuristic tables (feature: 8 rows, bugfix: 6 rows, refactor: 6 rows): Verified in `commands/init-github-issue.md`:122-161
+- [x] Step 5 "Pre-populated Context" shows three work-type-specific YAML blocks with all possible keys: Verified in `commands/init-github-issue.md`:179-236
+- [x] Step 5 item 2 reads "SKIP questions where `pre_filled` data is available" (not "show-as-default"): Verified in `commands/init-github-issue.md`:243
+- [x] Step 5 item 2 no longer contains "[Extracted from GitHub Issue]" format instruction: Verified via grep (zero matches)
+- [x] Step 5 contains "Field Mapping per Work Type" sub-section with three mapping tables: Verified in `commands/init-github-issue.md`:255-293
+- [x] Step 5 item 3 (Target Version) and item 4 (SPEC.md) are unchanged: Verified in `commands/init-github-issue.md`:248-253 (identical to original)
+- [x] All other sections of `init-github-issue.md` are unchanged (Steps 1-3, Analysis Phase, Communication Rules, Output): Verified via git diff (no changes outside Step 4 Deep Body Analysis and Step 5 updates)
 
 ### Notes
 
