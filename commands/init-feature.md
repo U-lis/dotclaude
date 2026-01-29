@@ -178,3 +178,10 @@ After completing analysis, create SPEC.md with:
 1. Feature branch `feature/{keyword}` created and checked out
 2. Directory `{working_directory}/{subject}/` created
 3. `{working_directory}/{subject}/SPEC.md` created with all sections above
+
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).

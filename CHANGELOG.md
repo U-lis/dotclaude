@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Added
+
+- Language integration: `language` config setting is now active and used at runtime ([#17](https://github.com/U-lis/dotclaude/issues/17))
+  - SessionStart hook (`init-config.sh`) resolves and outputs configured language to Claude at session start
+  - Language resolution follows config merge order: Defaults (`en_US`) < Global < Local
+  - Graceful fallback: `jq` preferred, `grep/sed` fallback when `jq` unavailable
+- `## Language` instruction section added to all agent files (`designer.md`, `spec-validator.md`, `code-validator.md`, `coders/_base.md`)
+- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_analysis.md`, `merge-main.md`, `configure.md`)
+
+### Changed
+
+- `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
+- `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
+
+### Removed
+
+- "Language translation support (currently language setting stored but unused)" from `configure.md` future enhancements list (feature now implemented)
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
