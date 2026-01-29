@@ -159,13 +159,13 @@ Any other `main` inside backtick-quoted git commands (`git checkout main`, `git 
 
 ## Completion Checklist
 
-- [ ] CL-1: `commands/start-new.md` -- Inserted `git checkout {base_branch} && git pull origin {base_branch}` step before branch creation (line ~85 area); renumbered subsequent steps (items 4-8 became 5-9)
-- [ ] CL-2: `commands/start-new.md` -- Replaced hardcoded `main` with `{base_branch}` in merge step (lines ~283-284)
-- [ ] CL-3: `commands/merge-main.md` -- Replaced `main` with `{base_branch}` in checkout+pull command (line ~19)
-- [ ] CL-4: `commands/merge-main.md` -- Replaced `main` with `{base_branch}` in safety instruction (line ~47), output template (line ~57), and git push command (line ~62)
-- [ ] CL-5: `commands/init-github-issue.md` -- Inserted `git checkout {base_branch} && git pull origin {base_branch}` before branch creation (line ~155)
-- [ ] CL-6: Verified no other hardcoded `main` remains in git commands across all three files (prose references to main/master are acceptable)
-- [ ] CL-7: Verified markdown formatting is preserved (no broken code blocks, lists, or tables)
+- [x] CL-1: `commands/start-new.md` -- Inserted `git checkout {base_branch} && git pull origin {base_branch}` step before branch creation (line 85); renumbered subsequent steps (items 3-8 became 4-9). Verified at start-new.md:85.
+- [x] CL-2: `commands/start-new.md` -- Replaced hardcoded `main` with `{base_branch}` in merge step (lines 284-285). Verified at start-new.md:284-285.
+- [x] CL-3: `commands/merge-main.md` -- Replaced `main` with `{base_branch}` in checkout+pull command (line 19). Verified at merge-main.md:19.
+- [x] CL-4: `commands/merge-main.md` -- Replaced `main` with `{base_branch}` in safety instruction (line 48), output template (line 57), and git push command (line 61). Verified at merge-main.md:48,57,61.
+- [x] CL-5: `commands/init-github-issue.md` -- Inserted `git checkout {base_branch} && git pull origin {base_branch}` before branch creation (line 155). Verified at init-github-issue.md:155.
+- [x] CL-6: Verified no other hardcoded `main` remains in git commands across all three files. Only prose references remain (config default value, branch name checks, descriptive text).
+- [x] CL-7: Verified markdown formatting is preserved -- all frontmatter blocks, code blocks, numbered lists, tables, and heading hierarchy intact across all three files.
 
 ## Notes
 

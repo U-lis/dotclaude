@@ -82,12 +82,13 @@ Based on Step 1 response, follow the corresponding init command (Claude auto-loa
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
 2. Auto-generate branch keyword
-3. Create work branch: `git checkout -b {type}/{keyword}`
-4. Create project directory: `mkdir -p {working_directory}/{subject}`
-5. Analysis phase (follow the `_analysis` command for details)
-6. **Target Version Question** (see below)
-7. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
-8. Commit SPEC.md
+3. Checkout and update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
+4. Create work branch: `git checkout -b {type}/{keyword}`
+5. Create project directory: `mkdir -p {working_directory}/{subject}`
+6. Analysis phase (follow the `_analysis` command for details)
+7. **Target Version Question** (see below)
+8. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
+9. Commit SPEC.md
 
 **Step 2.6: Target Version Question**
 
@@ -280,8 +281,8 @@ Then commit:
 
 **Step 12: Merge to Main**
 ```bash
-git checkout main
-git pull origin main
+git checkout {base_branch}
+git pull origin {base_branch}
 git merge {branch} --no-edit
 git branch -d {branch}
 ```
@@ -871,7 +872,7 @@ docs:
     - "CHANGELOG.md"
     - "README.md"
 merge:
-  merged_to: "main"
+  merged_to: "{base_branch}"
   branch_deleted: true
 issues:
   - "Description of issue"
@@ -906,7 +907,7 @@ After all steps in the chain complete, display summary:
 
 ## Next Steps
 1. Review changes: `git log --oneline -10`
-2. Push to remote: `git push origin main`
+2. Push to remote: `git push origin {base_branch}`
 3. (Optional) Create tag: `/dotclaude:tagging`
 ```
 
@@ -942,4 +943,4 @@ Example for "Design -> Code -> Docs -> Merge":
 - [Step 1/4] Design phase - Creating architecture
 - [Step 2/4] Code implementation - Executing phases
 - [Step 3/4] Documentation update - Updating CHANGELOG
-- [Step 4/4] Merge to main - Completing workflow
+- [Step 4/4] Merge to {base_branch} - Completing workflow
