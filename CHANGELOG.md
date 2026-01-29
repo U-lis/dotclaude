@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Added
+
+- `/dotclaude:pr` command for creating GitHub Pull Requests from working branches ([#9](https://github.com/U-lis/dotclaude/issues/9))
+  - Auto-generates PR title from branch name (strips prefix, humanizes)
+  - Auto-generates PR body from commit log and file diff stats
+  - Prerequisite checks for `gh` CLI installation and authentication
+  - Branch validation (rejects execution from main/master/base_branch)
+  - Detects existing PRs to avoid duplicates
+  - Resolves base branch from SPEC.md metadata, dotclaude-config.json, or default (`main`)
+- `gh` CLI prerequisite documentation in README
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
