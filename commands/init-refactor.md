@@ -1,18 +1,10 @@
+---
+description: Initialize refactoring work through target analysis and dependency mapping.
+user-invocable: false
+---
 # init-refactor Instructions
 
 Instructions for initializing refactoring work through target analysis and dependency mapping.
-
-## Configuration Loading
-
-Before executing any operations, load the working directory from configuration:
-
-1. **Default**: `working_directory = ".dc_workspace"`
-2. **Global Override**: Load from `~/.claude/dotclaude-config.json` if exists
-3. **Local Override**: Load from `<git_root>/.claude/dotclaude-config.json` if exists
-
-Configuration merge order: Defaults < Global < Local
-
-The resolved `{working_directory}` value is used for all document and file paths in this skill.
 
 ## Step-by-Step Questions
 
@@ -22,7 +14,7 @@ Use AskUserQuestion tool for each step sequentially:
 ```
 Question: "What is the refactoring target?"
 Header: "Refactoring Target"
-→ Free text (file, module, class, function, etc.)
+> Free text (file, module, class, function, etc.)
 ```
 
 ### Step 2: Problems
@@ -47,7 +39,7 @@ multiSelect: true
 ```
 Question: "What is the expected state after refactoring?"
 Header: "Goal"
-→ Free text (target architecture, patterns, etc.)
+> Free text (target architecture, patterns, etc.)
 ```
 
 ### Step 4: Behavior Change
@@ -83,7 +75,7 @@ Header: "Dependencies"
 Options:
   - label: "None/Unknown"
     description: "Not used by other modules or needs investigation"
-→ Or free text via "Other"
+> Or free text via "Other"
 ```
 
 ---
@@ -92,7 +84,7 @@ Options:
 
 **MANDATORY**: After gathering user requirements (Steps 1-6), execute analysis phases.
 
-Read `_analysis.md` for the common analysis workflow (Steps A-E).
+Follow the `_analysis` command for the common analysis workflow (Steps A-E). Claude will auto-load the command content.
 
 ### Refactor-Specific Analysis
 

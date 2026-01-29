@@ -1,3 +1,7 @@
+---
+description: Initialize work from GitHub issue URL or number with auto-parsing.
+user-invocable: false
+---
 # init-github-issue Instructions
 
 Instructions for initializing work from GitHub issue URL or number.
@@ -17,12 +21,12 @@ Options:
     description: "https://github.com/owner/repo/issues/123"
   - label: "Number format"
     description: "#123 (Based on current repository)"
-→ Free text via "Other"
+> Free text via "Other"
 ```
 
 **Input Parsing**:
 - Full URL: Extract owner, repo, number from `https://github.com/{owner}/{repo}/issues/{number}`
-- Number only: `#123` or `123` → use current repository context
+- Number only: `#123` or `123` -> use current repository context
 
 ---
 
@@ -47,7 +51,7 @@ gh issue view {number} --json title,body,labels,milestone
 | No access | 403 / permission error | "No access permission to issue" |
 | Invalid URL | Regex mismatch | "Not a valid GitHub issue URL" |
 
-**On Error**: Return to Step 1 of /dc:start-new (work type selection)
+**On Error**: Return to Step 1 of /dotclaude:start-new (work type selection)
 
 ---
 
@@ -86,9 +90,9 @@ multiSelect: false
 ```
 
 **Work Type Mapping from User Confirmation**:
-- "Add/Modify Feature" → feature
-- "Bug Fix" → bugfix
-- "Refactoring" → refactor
+- "Add/Modify Feature" -> feature
+- "Bug Fix" -> bugfix
+- "Refactoring" -> refactor
 
 ---
 
@@ -108,7 +112,7 @@ From parsed issue, extract:
 **Branch Keyword Generation**:
 - Extract keywords from issue title (remove common words, special chars)
 - Format: `{work_type}/{keyword}`
-- Example: Issue #4 "fetch github issue and work" → `feature/github-issue-fetch`
+- Example: Issue #4 "fetch github issue and work" -> `feature/github-issue-fetch`
 
 **Target Version Extraction**:
 - If milestone exists: Extract version from milestone.title

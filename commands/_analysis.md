@@ -1,3 +1,7 @@
+---
+description: Common analysis workflow for init phase - input analysis, codebase analysis, and DDD context mapping.
+user-invocable: false
+---
 # Analysis Phases
 
 Common analysis workflow for init phase. Execute after gathering requirements, before creating SPEC.md.
