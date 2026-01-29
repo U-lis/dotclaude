@@ -55,9 +55,9 @@ The resolved `{working_directory}` value is used for all document and file paths
 
 ```
 Task tool:
-  subagent_type: "general-purpose"
+  subagent_type: "dotclaude:technical-writer"
   prompt: |
-    You are TechnicalWriter in DOCS_UPDATE role. Read agents/technical-writer.md.
+    You are in DOCS_UPDATE role.
 
     ## Task: Update Project Documentation
 

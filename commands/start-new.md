@@ -336,8 +336,8 @@ NEVER do any of the following:
 ### MUST DO
 
 The orchestrator MUST:
-- Use Task tool with `subagent_type: "general-purpose"` for all agent invocations
-- Pass agent role explicitly in prompt: "You are {AgentName}. Read agents/{agent-file}.md for your role."
+- Use Task tool with the appropriate `subagent_type: "dotclaude:{agent-name}"` for all agent invocations
+- The agent role is auto-loaded by the plugin system. Prompts should contain only task instructions.
 - Wait for subagent completion before proceeding to next step
 - Collect subagent results and use them for workflow decisions
 
@@ -363,7 +363,7 @@ After executing any workflow step involving TechnicalWriter, Designer, Coder, or
 
 **Correct Pattern** (Task tool invocation visible):
 ```
-Invoke Task tool (subagent_type: general-purpose, prompt: "You are TechnicalWriter...")
+Invoke Task tool (subagent_type: "dotclaude:technical-writer")
   Subagent completed successfully
 Output created: claude_works/{subject}/SPEC.md
 ```
@@ -390,10 +390,8 @@ When invoking TechnicalWriter, you MUST call the Task tool with exactly this str
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:technical-writer",
   prompt="""
-You are TechnicalWriter. Read agents/technical-writer.md for your role.
-
 {Specific task instructions based on context - see examples below}
 
 Follow the template structure from your agent definition.
@@ -405,10 +403,8 @@ Follow the template structure from your agent definition.
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:technical-writer",
   prompt="""
-You are TechnicalWriter. Read agents/technical-writer.md for your role.
-
 Create SPEC.md document at: claude_works/{subject}/SPEC.md
 
 Include these sections:
@@ -429,10 +425,8 @@ Use the template structure from templates/SPEC.md as reference.
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:technical-writer",
   prompt="""
-You are TechnicalWriter. Read agents/technical-writer.md for your role.
-
 Create design documents based on Designer output:
 
 Designer Output Summary:
@@ -453,10 +447,8 @@ Follow the document templates from your agent definition.
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:technical-writer",
   prompt="""
-You are TechnicalWriter. Read agents/technical-writer.md for your role.
-
 ## Task: Update Documentation (DOCS_UPDATE Role)
 
 ### Context
@@ -493,10 +485,8 @@ If any prerequisite fails, HALT and report error. Do NOT proceed to Designer inv
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:designer",
   prompt="""
-You are Designer. Read agents/designer.md for your role.
-
 ## Task: Analyze SPEC and Create Design
 
 ### Input
@@ -538,10 +528,8 @@ Collect Designer output and pass it to TechnicalWriter for document creation (St
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:coder-{detected_language}",
   prompt="""
-You are Coder. Read agents/coders/{detected_language}.md for your role.
-
 ## Task: Implement Phase {phase_id}
 
 ### Input
@@ -579,10 +567,8 @@ Then invoke multiple Coder agents in a SINGLE message (parallel execution):
 ```
 # Call 1
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:coder-{detected_language}",
   prompt="""
-You are Coder. Read agents/coders/{detected_language}.md for your role.
-
 ## Task: Implement Phase 3A (Parallel Branch)
 
 ### Working Directory
@@ -599,10 +585,8 @@ PLAN path: claude_works/{subject}/PHASE_3A_PLAN_{keyword}.md
 
 # Call 2
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:coder-{detected_language}",
   prompt="""
-You are Coder. Read agents/coders/{detected_language}.md for your role.
-
 ## Task: Implement Phase 3B (Parallel Branch)
 
 ### Working Directory
@@ -637,10 +621,8 @@ git worktree remove ../{subject}-3C
 
 ```
 Task(
-  subagent_type="general-purpose",
+  subagent_type="dotclaude:code-validator",
   prompt="""
-You are code-validator. Read agents/code-validator.md for your role.
-
 ## Task: Validate Phase {phase_id} Implementation
 
 ### Input
@@ -771,12 +753,12 @@ Parse GLOBAL.md Phase Overview table:
 # All execute simultaneously
 
 <Task tool call 1>
-  subagent_type: "general-purpose"
+  subagent_type: "dotclaude:coder-{detected_language}"
   prompt: "Execute PHASE_3A in worktree ../{subject}-3A"
 </Task tool call 1>
 
 <Task tool call 2>
-  subagent_type: "general-purpose"
+  subagent_type: "dotclaude:coder-{detected_language}"
   prompt: "Execute PHASE_3B in worktree ../{subject}-3B"
 </Task tool call 2>
 ```
