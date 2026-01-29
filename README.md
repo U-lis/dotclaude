@@ -104,7 +104,7 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 | 9 | Code | Phase list parsing |
 | 10 | Code | Phase execution (sequential/parallel) |
 | 11 | Docs | Documentation update |
-| 12 | Merge | Merge to main |
+| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
 | 13 | Final | Summary return |
 
 ## Skills (Commands)
@@ -268,9 +268,10 @@ cp -r dotclaude/.claude your-project/
 #    - If GitHub Issue: parses issue URL, auto-detects type, pre-populates fields
 # 3. Asks target version (auto-filled from milestone if GitHub Issue)
 # 4. Creates and reviews SPEC with user
-# 5. Asks execution scope
-# 6. Executes selected scope (Design/Code/Docs/Merge)
-# 7. Returns final summary
+# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
+# 6. Executes selected scope
+# 7. Asks post-completion integration (Direct Merge or Create PR)
+# 8. Returns final summary
 
 # After merge, optionally create version tag:
 /dotclaude:tagging
