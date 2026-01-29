@@ -5,6 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Changed
+
+- Renamed `/dotclaude:merge-main` command to `/dotclaude:merge` ([#20](https://github.com/U-lis/dotclaude/issues/20))
+- `/dotclaude:merge` now reads `base_branch` from config chain (SPEC.md metadata → config file → default "main") instead of hardcoding "main"
+- Enhanced conflict resolution in `/dotclaude:merge`: analyzes conflict content, recommends strategy per file, waits for user confirmation before resolving
+- Removed "Design -> Code -> Docs -> Merge" option from `/dotclaude:start-new` Step 5 scope selection
+- Step 12 of `/dotclaude:start-new` changed from unconditional merge to conditional post-completion integration question ("Direct Merge" or "Create PR")
+
+### Removed
+
+- "PR Option" section from merge command (PR creation will be handled by separate `/dotclaude:pr` command, see [#9](https://github.com/U-lis/dotclaude/issues/9))
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
