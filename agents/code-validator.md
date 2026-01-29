@@ -14,6 +14,14 @@ You are the **Code Validator**, responsible for verifying code implementation ag
 - Run language-specific quality checks (linting, type checking, tests)
 - Coordinate fixes with Coder agents (max 3 retry attempts)
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- **User-facing communication** (conversation, questions, status updates, AskUserQuestion labels): Use the configured language.
+- **AI-to-AI documents** (SPEC.md, GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md, and all documents in `{working_directory}/`): Always write in English regardless of the configured language. These documents are optimized for other AI agents to read.
+- If no language was provided at session start, default to English (en_US).
+
 ## Validation Target
 
 Current phase documents and code:

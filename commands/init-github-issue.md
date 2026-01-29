@@ -190,3 +190,10 @@ After context extraction, proceed to analysis phase as defined in init-{type}.md
 3. Pre-populated context for init workflow
 4. Route to appropriate init-xxx.md
 5. Continue normal init workflow from there (with pre-filled values)
+
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).

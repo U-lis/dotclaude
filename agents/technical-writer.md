@@ -50,7 +50,8 @@ SPEC.md defines the authoritative requirements. When writing SPEC.md:
 ## Writing Principles
 
 ### Language & Style
-- Use English + AI Optimized prompts
+- **Document language**: Use English for ALL documents (SPEC.md, GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md, CHANGELOG.md, README.md). These are AI-optimized and must remain in English regardless of the configured language.
+- **User communication language**: When communicating with the user (explanations, questions, status updates), use the language configured in the session. The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`). Default to English (en_US) if not provided.
 - Assume other AI Agents will read the documents
 - Be explicit and unambiguous
 

@@ -60,3 +60,10 @@ Options:
 
 Next: git push origin {base_branch}
 ```
+
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
