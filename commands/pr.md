@@ -50,8 +50,18 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
 7. Check for existing PR: gh pr view --json url 2>/dev/null
    -> If PR exists: display existing PR URL, skip creation
 8. Generate PR title from branch name (convert slashes/hyphens to readable format)
-9. Generate PR body from: git log {base_branch}..HEAD --oneline + git diff --stat {base_branch}...HEAD
-10. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}"
+9. Generate PR body:
+   a. git log {base_branch}..HEAD --oneline (commit log)
+   b. git diff --stat {base_branch}...HEAD (file stats)
+   c. If SPEC.md has `GitHub Issue Number`: append "Resolves #N" to body
+10. Resolve label from branch prefix:
+    -> feature/ -> "enhancement", bugfix/ -> "bug", refactor/ -> "refactoring"
+    -> Check label exists: gh label list --search "{label}"
+    -> If not found: gh label create "{label}" (warn on failure, do not halt)
+11. Resolve milestone from SPEC.md Target Version:
+    -> Check milestone exists: gh api repos/{owner}/{repo}/milestones --jq '.[].title'
+    -> If not found: gh api repos/{owner}/{repo}/milestones -f title="{version}" (warn on failure, do not halt)
+12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"] [--milestone "{milestone}"]
 ```
 
 ## PR Title Generation
@@ -70,6 +80,7 @@ The PR body is auto-generated from:
 
 1. **Commit log**: `git log {base_branch}..HEAD --oneline` -- list of commits on this branch
 2. **File stats**: `git diff --stat {base_branch}...HEAD` -- summary of files changed
+3. **Issue link**: If SPEC.md contains `GitHub Issue Number` metadata (e.g., `#9`), append `Resolves #N` at the end of the body
 
 Format the body as markdown:
 
@@ -83,7 +94,39 @@ Format the body as markdown:
 ## Files Changed
 
 {git diff --stat output}
+
+Resolves #{N}
 ```
+
+If SPEC.md has no `GitHub Issue Number`, omit the `Resolves` line entirely.
+
+## Milestone
+
+Assign a GitHub milestone matching the `Target Version` from SPEC.md:
+
+1. Read `Target Version` from SPEC.md (e.g., `0.3.0`, `1.0.0`)
+2. If present, check existing milestones: `gh api repos/{owner}/{repo}/milestones --jq '.[].title'`
+3. If milestone does not exist, create it: `gh api repos/{owner}/{repo}/milestones -f title="{version}"`
+4. Pass `--milestone "{version}"` to `gh pr create`
+
+If SPEC.md has no `Target Version`, skip milestone assignment. If milestone creation fails (e.g., insufficient permissions), warn the user and continue PR creation without milestone.
+
+## Label
+
+Auto-assign a label based on branch prefix:
+
+| Branch Prefix | Label |
+|---------------|-------|
+| `feature/` | `enhancement` |
+| `bugfix/` | `bug` |
+| `refactor/` | `refactoring` |
+
+1. Determine the label from current branch prefix
+2. Check if the label exists: `gh label list --search "{label}"`
+3. If the label does not exist, create it: `gh label create "{label}"`
+4. Pass `--label "{label}"` to `gh pr create`
+
+If the branch prefix doesn't match any known pattern, skip label assignment. If label creation fails (e.g., insufficient permissions), warn the user and continue PR creation without label.
 
 ## Edge Cases
 
@@ -95,6 +138,11 @@ Format the body as markdown:
 | 4 | PR already exists | Show existing PR URL |
 | 5 | gh CLI not installed | Installation guide + halt |
 | 6 | gh not authenticated | Auth instructions + halt |
+| 7 | SPEC.md has no `GitHub Issue Number` | Skip `Resolves #N`, no error |
+| 8 | SPEC.md has no `Target Version` | Skip milestone, no error |
+| 9 | Milestone creation fails | Warn + continue without milestone |
+| 10 | Label creation fails | Warn + continue without label |
+| 11 | Unknown branch prefix | Skip label, no error |
 
 ## Safety
 
@@ -110,6 +158,9 @@ Format the body as markdown:
 - Branch: {branch}
 - Target: {base_branch}
 - Title: {pr_title}
+- Label: {label} (if assigned)
+- Milestone: {milestone} (if assigned)
+- Issue: Resolves #{N} (if linked)
 - URL: {pr_url}
 
 Next: Review and merge the PR on GitHub

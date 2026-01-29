@@ -31,6 +31,9 @@ Create a new user-invocable command `pr` that pushes the current branch to remot
 - [ ] FR-3: Support any working branch (reject `main`, `master`, or the configured `base_branch`)
 - [ ] FR-4: Auto-generate PR title from branch name or commit history
 - [ ] FR-5: Auto-generate PR body with summary of changes (commit log, files changed)
+- [ ] FR-6: If SPEC.md contains `GitHub Issue Number` metadata, include `Resolves #N` in the PR body to auto-close the linked issue on merge
+- [ ] FR-7: Create or assign a GitHub milestone matching the `Target Version` from SPEC.md (e.g., `0.3.0`, `1.0.0`). If the milestone does not exist on the repository, create it via `gh api`
+- [ ] FR-8: Auto-assign label based on branch prefix: `feature/` → `enhancement`, `bugfix/` → `bug`, `refactor/` → `refactoring`. If the label does not exist on the repository, create it via `gh label create`
 
 ## Non-Functional Requirements
 
@@ -73,3 +76,8 @@ No conflicts identified. The new `pr` command does not overlap with existing com
 | 4 | PR already exists for this branch | Detect existing PR via `gh pr view` or `gh pr list`. Display existing PR URL instead of creating a duplicate. |
 | 5 | `gh` CLI not installed | Display installation guide: "gh CLI is not installed. Install from https://cli.github.com/" Halt execution. |
 | 6 | `gh` CLI not authenticated | Detect via `gh auth status`. Display message: "gh CLI is not authenticated. Run `gh auth login` first." Halt execution. |
+| 7 | SPEC.md has no `GitHub Issue Number` | Skip `Resolves #N` in PR body. No error. |
+| 8 | SPEC.md has no `Target Version` | Skip milestone assignment. No error. |
+| 9 | Milestone creation fails (insufficient permissions) | Warn user but continue PR creation without milestone. |
+| 10 | Label creation fails (insufficient permissions) | Warn user but continue PR creation without label. |
+| 11 | Branch prefix doesn't match any known pattern | Skip label assignment. No error. |
