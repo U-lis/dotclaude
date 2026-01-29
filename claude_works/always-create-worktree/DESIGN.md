@@ -55,7 +55,7 @@
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
 | 1 | Central Orchestrator and Metadata Changes | Complete | None |
-| 2 | Init Command Files Alignment | Pending | Phase 1 |
+| 2 | Init Command Files Alignment | Complete | Phase 1 |
 
 ---
 
@@ -290,11 +290,11 @@ In the Output section (around lines 186-192), add worktree creation mention. Upd
 
 ### Completion Checklist
 
-- [ ] `init-feature.md` Output section updated with worktree creation language
-- [ ] `init-bugfix.md` Output section updated with worktree creation language
-- [ ] `init-refactor.md` Output section updated with worktree creation language
-- [ ] `init-github-issue.md` Step 5 branch creation changed to `git worktree add`
-- [ ] `init-github-issue.md` Output section includes worktree creation mention
+- [x] `init-feature.md` Output section updated with worktree creation language
+- [x] `init-bugfix.md` Output section updated with worktree creation language
+- [x] `init-refactor.md` Output section updated with worktree creation language
+- [x] `init-github-issue.md` Step 5 branch creation changed to `git worktree add`
+- [x] `init-github-issue.md` Output section includes worktree creation mention
 
 ### Notes
 

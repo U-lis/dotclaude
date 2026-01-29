@@ -152,7 +152,7 @@ pre_filled:
 **Init File Behavior with Pre-filled Context**:
 
 1. **Branch Creation**: Use pre-filled `branch_keyword`
-   - Create: `git checkout -b {work_type}/{branch_keyword}`
+   - Create: `git worktree add ../{subject} -b {work_type}/{branch_keyword} {base_branch}`
 
 2. **Questions**: Show pre-filled values as defaults
    - Format: "[Extracted from GitHub Issue] {value}"
@@ -187,5 +187,6 @@ After context extraction, proceed to analysis phase as defined in init-{type}.md
 1. Parsed GitHub issue data
 2. Detected work type (feature/bugfix/refactor)
 3. Pre-populated context for init workflow
-4. Route to appropriate init-xxx.md
-5. Continue normal init workflow from there (with pre-filled values)
+4. Worktree created at `../{subject}` with branch `{work_type}/{branch_keyword}`
+5. Route to appropriate init-xxx.md
+6. Continue normal init workflow from there (with pre-filled values)
