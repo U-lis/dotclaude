@@ -288,7 +288,8 @@ cp -r dotclaude/.claude your-project/
 # Orchestrator takes over:
 # 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
 # 2. Gathers requirements via step-by-step questions
-#    - If GitHub Issue: parses issue URL, auto-detects type, pre-populates fields
+#    - If GitHub Issue: parses issue URL, auto-detects type, pre-fills fields
+#      and skips questions already answered in the issue body
 # 3. Asks target version (auto-filled from milestone if GitHub Issue)
 # 4. Creates and reviews SPEC with user
 # 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
