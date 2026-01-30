@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-01-29
+
+### Fixed
+
+- Init workflow (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) used `git checkout -b` to create branches in the current working tree instead of creating an isolated git worktree ([#29](https://github.com/U-lis/dotclaude/issues/29))
+- Parallel phase worktrees (3A, 3B, 3C) now correctly branch from the feature branch instead of main, ensuring parallel work is based on the feature's latest state
+
+### Changed
+
+- Branch creation in all init commands replaced with `git worktree add ../{subject} -b {type}/{keyword} {base_branch}` for proper worktree isolation
+- SPEC.md metadata block now includes `worktree_path` field (e.g., `worktree_path: ../{subject}`) so downstream commands (`/dotclaude:code`, `/dotclaude:design`, etc.) resolve the correct working location
+- `/dotclaude:code` reads `worktree_path` from SPEC.md metadata (defaults to `.` for backward compatibility)
+- Merge step (Step 12) in `/dotclaude:start-new` now includes `git worktree remove` cleanup
+- Pre-design checkpoint (Step 5) now verifies worktree existence before proceeding
+
 ## [0.2.1] - 2026-01-29
 
 ### Fixed
