@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dotclaude:tagging` command now enforces mandatory push after tag creation (`git push && git push --tags`), preventing local-only tags that fail to reach the remote ([#3](https://github.com/U-lis/dotclaude/issues/3))
 - Init workflow (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) used `git checkout -b` to create branches in the current working tree instead of creating an isolated git worktree ([#29](https://github.com/U-lis/dotclaude/issues/29))
 - Parallel phase worktrees (3A, 3B, 3C) now correctly branch from the feature branch instead of main, ensuring parallel work is based on the feature's latest state
+- GitHub Issue workflow asking redundant questions when answers are already available in the issue body ([#27](https://github.com/U-lis/dotclaude/issues/27))
+  - `init-github-issue.md` Step 4 now performs deep body analysis to extract ALL possible init-xxx question fields (not just goal/problem)
+  - Questions with pre-filled data from the issue body are now skipped entirely instead of shown as defaults
+  - Added conditional skip logic to every step in `init-feature.md` (8 steps), `init-bugfix.md` (6 steps), and `init-refactor.md` (6 steps)
 
 ### Added
 
@@ -61,6 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced conflict resolution in `/dotclaude:merge`: analyzes conflict content, recommends strategy per file, waits for user confirmation before resolving
 - Removed "Design -> Code -> Docs -> Merge" option from `/dotclaude:start-new` Step 5 scope selection
 - Step 12 of `/dotclaude:start-new` changed from unconditional merge to conditional post-completion integration question ("Direct Merge" or "Create PR")
+- `init-github-issue.md` routing behavior from "show-as-default" to "auto-skip" for pre-filled fields
+- Expanded `pre_filled` data structure to support per-work-type field extraction (feature: 8 fields, bugfix: 6 fields, refactor: 6 fields)
 - `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
 - `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
 
