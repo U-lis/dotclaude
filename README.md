@@ -14,9 +14,11 @@ This repository provides a structured workflow for software development using sp
 
 For the full project structure, see [Architecture](docs/ARCHITECTURE.md).
 
-## Installation
+## Getting Started
 
-### Option 1: Plugin Marketplace (Recommended)
+### Install
+
+#### Option 1: Plugin Marketplace (Recommended)
 
 Install dotclaude via Claude Code's plugin marketplace:
 
@@ -28,7 +30,7 @@ Install dotclaude via Claude Code's plugin marketplace:
 /plugin install dotclaude
 ```
 
-### Option 2: Manual Installation
+#### Option 2: Manual Installation
 
 For direct control or customization, clone and copy manually:
 
@@ -37,7 +39,7 @@ git clone https://github.com/U-lis/dotclaude.git
 cp -r dotclaude/.claude your-project/
 ```
 
-**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
+**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation). Restart Claude Code after updating to apply changes.
 
 ### Optional: GitHub CLI
 
@@ -46,9 +48,17 @@ The `/dotclaude:pr` command requires [GitHub CLI (`gh`)](https://cli.github.com/
 - Install: `brew install gh` (macOS) or see [installation guide](https://github.com/cli/cli#installation)
 - Authenticate: `gh auth login`
 
-## Quick Start
+### Configure
 
-### Start New Work
+Configure dotclaude settings for your project:
+
+```bash
+/dotclaude:configure
+```
+
+See the [Configuration](#configuration) section below for available settings and file locations.
+
+### Start Your First Task
 
 ```bash
 # In Claude Code session
@@ -72,15 +82,6 @@ The `/dotclaude:pr` command requires [GitHub CLI (`gh`)](https://cli.github.com/
 /dotclaude:tagging 0.3.0
 ```
 
-### Update dotclaude
-
-```bash
-# Update via plugin marketplace
-/plugin update dotclaude
-```
-
-Note: Restart Claude Code after updating to apply changes.
-
 ### Manual Execution (Bypass Orchestrator)
 
 Individual skills can be invoked directly for debugging or partial work:
@@ -95,6 +96,7 @@ Individual skills can be invoked directly for debugging or partial work:
 /dotclaude:tagging          # Create version tag (with push + version checks)
 /dotclaude:tagging 0.3.0   # Create tag for specific version
 /dotclaude:purge            # Clean up merged branches and worktrees
+/dotclaude:purge 0.3.0     # Clean up using specific version as deployment boundary
 ```
 
 ## Configuration
@@ -146,25 +148,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:pr` | Create GitHub Pull Request from current branch |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
-| `/dotclaude:purge` | Clean up merged branches and orphaned worktrees |
-
-### Workflow Overview
-
-```
-User → /dotclaude:start-new → Orchestrator Agent
-                          ↓
-              ┌───────────────────────┐
-              │ Orchestrator manages: │
-              │ - Init (questions)    │
-              │ - SPEC.md creation    │
-              │ - Design              │
-              │ - Code (parallel)     │
-              │ - Documentation       │
-              │ - Merge               │
-              └───────────────────────┘
-                          ↓
-                   Final Summary
-```
+| `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
 
 ### Orchestrator
 
