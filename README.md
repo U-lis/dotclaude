@@ -27,7 +27,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── start-new.md             # /dotclaude:start-new (entry point + orchestrator)
 │   ├── design.md                # /dotclaude:design
 │   ├── code.md                  # /dotclaude:code [phase]
-│   ├── merge-main.md            # /dotclaude:merge-main
+│   ├── merge.md                 # /dotclaude:merge
 │   ├── pr.md                    # /dotclaude:pr
 │   ├── tagging.md               # /dotclaude:tagging
 │   ├── update-docs.md           # /dotclaude:update-docs
@@ -106,7 +106,7 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 | 9 | Code | Phase list parsing |
 | 10 | Code | Phase execution (sequential/parallel) |
 | 11 | Docs | Documentation update |
-| 12 | Merge | Merge to main |
+| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
 | 13 | Final | Summary return |
 
 ## Skills (Commands)
@@ -121,7 +121,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:validate-spec` | Validate document consistency (optional) |
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
-| `/dotclaude:merge-main` | Merge feature branch to main |
+| `/dotclaude:merge` | Merge current branch to base branch |
 | `/dotclaude:pr` | Create GitHub Pull Request from current branch |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
@@ -291,9 +291,10 @@ cp -r dotclaude/.claude your-project/
 #    - If GitHub Issue: parses issue URL, auto-detects type, pre-populates fields
 # 3. Asks target version (auto-filled from milestone if GitHub Issue)
 # 4. Creates and reviews SPEC with user
-# 5. Asks execution scope
-# 6. Executes selected scope (Design/Code/Docs/Merge)
-# 7. Returns final summary
+# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
+# 6. Executes selected scope
+# 7. Asks post-completion integration (Direct Merge or Create PR)
+# 8. Returns final summary
 
 # After merge, create version tag (verifies version consistency, pushes automatically):
 /dotclaude:tagging
@@ -320,7 +321,7 @@ Individual skills can be invoked directly for debugging or partial work:
 /dotclaude:code 1           # Implement Phase 1
 /dotclaude:code all         # Implement all phases
 /dotclaude:update-docs      # Update documentation
-/dotclaude:merge-main       # Merge to main
+/dotclaude:merge             # Merge to base branch
 /dotclaude:tagging          # Create version tag (with push + version checks)
 /dotclaude:tagging 0.3.0   # Create tag for specific version
 /dotclaude:purge            # Clean up merged branches and worktrees
