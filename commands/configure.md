@@ -159,7 +159,7 @@ context: |
   Current value: <current_language>
 
   Specify language code (e.g., en_US, fr_FR, ja_JP).
-  Note: Translation features not implemented in v0.2.0 - this setting is stored for future use.
+  The SessionStart hook reads this setting and outputs it as session context.
 ```
 
 **Validation**:
@@ -481,7 +481,6 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 
 ## Future Enhancements (Out of Scope for v0.2.0)
 
-- Language translation support (currently language setting stored but unused)
 - Configuration schema versioning
 - Configuration validation command
 - Configuration export/import
@@ -502,6 +501,13 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 - [ ] Empty required fields rejected
 - [ ] Invalid JSON in config handled gracefully
 - [ ] Permission errors handled gracefully
+
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
 - [ ] Configuration saved with correct JSON format
 - [ ] Boolean values saved as true/false (not "true"/"false")
 - [ ] Changes take effect immediately

@@ -198,7 +198,7 @@ Interactive workflow to edit settings at global or local scope. Changes take eff
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `language` | string | `en_US` | Language for conversations and documents |
+| `language` | string | `en_US` | Language for agent conversations and user-facing text. Set via SessionStart hook. Documents remain in English. |
 | `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
 | `check_version` | boolean | `true` | Check for plugin updates on session start |
 | `auto_update` | boolean | `false` | Auto-update when update available |
@@ -231,6 +231,19 @@ Interactive workflow to edit settings at global or local scope. Changes take eff
 **Different base branch:**
 ```bash
 /dotclaude:configure → Set base_branch to "develop"
+```
+
+### Language Support
+
+The `language` setting controls the language used for user-facing communication (questions, status messages, reports). All agents and commands respect this setting.
+
+- Documents (SPEC.md, GLOBAL.md, PLAN, TEST, CHANGELOG, README) are always written in English regardless of the language setting
+- The setting is loaded at session start via the SessionStart hook
+- Default: `en_US`
+
+**Set language:**
+```bash
+/dotclaude:configure → Set language to "ko_KR"
 ```
 
 ## Installation

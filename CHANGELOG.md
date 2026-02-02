@@ -29,6 +29,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Git worktree cleanup with uncommitted changes protection (skips dirty worktrees)
   - User confirmation flow via AskUserQuestion before destructive operations
   - Graceful degradation when remote is unreachable (falls back to local-only cleanup)
+- Language integration: `language` config setting is now active and used at runtime ([#17](https://github.com/U-lis/dotclaude/issues/17))
+  - SessionStart hook (`init-config.sh`) resolves and outputs configured language to Claude at session start
+  - Language resolution follows config merge order: Defaults (`en_US`) < Global < Local
+  - Graceful fallback: `jq` preferred, `grep/sed` fallback when `jq` unavailable
+- `## Language` instruction section added to all agent files (`designer.md`, `spec-validator.md`, `code-validator.md`, `coders/_base.md`)
+- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_analysis.md`, `merge-main.md`, `configure.md`)
 - `gh` CLI prerequisite documentation in README
 - Version consistency check before tagging: `plugin.json`, `marketplace.json`, and `CHANGELOG.md` must all contain matching version strings before a tag is created
 - Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly
@@ -43,6 +49,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `init-github-issue.md`: Added base branch checkout+pull before branch creation in pre-filled context flow
   - `merge-main.md`: Replaced all hardcoded `main` references with configurable `{base_branch}` value (checkout, pull, merge target, push, safety rules, output summary)
   - `start-new.md`: Updated Step 12 merge commands, output contract, next steps, and progress indicator to use `{base_branch}` instead of hardcoded `main`
+- `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
+- `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
+
+### Removed
+
+- "Language translation support (currently language setting stored but unused)" from `configure.md` future enhancements list (feature now implemented)
 
 ## [0.2.1] - 2026-01-29
 
