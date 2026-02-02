@@ -120,7 +120,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge-main` | Merge feature branch to main |
-| `/dotclaude:tagging` | Create version tag based on CHANGELOG |
+| `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 
 ## Agents
@@ -272,8 +272,10 @@ cp -r dotclaude/.claude your-project/
 # 6. Executes selected scope (Design/Code/Docs/Merge)
 # 7. Returns final summary
 
-# After merge, optionally create version tag:
+# After merge, create version tag (verifies version consistency, pushes automatically):
 /dotclaude:tagging
+# Or specify version explicitly:
+/dotclaude:tagging 0.3.0
 ```
 
 ### Update dotclaude
@@ -296,7 +298,8 @@ Individual skills can be invoked directly for debugging or partial work:
 /dotclaude:code all         # Implement all phases
 /dotclaude:update-docs      # Update documentation
 /dotclaude:merge-main       # Merge to main
-/dotclaude:tagging          # Create version tag
+/dotclaude:tagging          # Create version tag (with push + version checks)
+/dotclaude:tagging 0.3.0   # Create tag for specific version
 ```
 
 ## License
