@@ -23,6 +23,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Branch validation (rejects execution from main/master/base_branch)
   - Detects existing PRs to avoid duplicates
   - Resolves base branch from SPEC.md metadata, dotclaude-config.json, or default (`main`)
+- `/dotclaude:purge` command for cleaning up merged branches and orphaned worktrees ([#28](https://github.com/U-lis/dotclaude/issues/28))
+  - Merged branch detection for both local and remote branches with configurable `base_branch`
+  - Tag deployment safety filter: only deletes branches from releases that have been tagged/deployed
+  - Git worktree cleanup with uncommitted changes protection (skips dirty worktrees)
+  - User confirmation flow via AskUserQuestion before destructive operations
+  - Graceful degradation when remote is unreachable (falls back to local-only cleanup)
 - `gh` CLI prerequisite documentation in README
 - Version consistency check before tagging: `plugin.json`, `marketplace.json`, and `CHANGELOG.md` must all contain matching version strings before a tag is created
 - Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly
