@@ -16,7 +16,7 @@ Merge feature branch to main, resolve conflicts, cleanup.
 
 ```
 1. Save feature branch name
-2. git checkout main && git pull origin main
+2. git checkout {base_branch} && git pull origin {base_branch}
 3. git merge {feature-branch}
    → If conflict: guide user, wait for resolution
 4. Run tests (if configured)
@@ -45,7 +45,7 @@ Options:
 ## Safety
 
 - Never force push
-- Never commit directly to main (only merge)
+- Never commit directly to {base_branch} (only merge)
 - Confirm before branch deletion
 
 ## Output
@@ -54,9 +54,9 @@ Options:
 # Merge Complete
 
 - Feature: {branch}
-- Merged to: main
+- Merged to: {base_branch}
 - Conflicts: {resolved/none}
 - Branch deleted: yes/no
 
-Next: git push origin main
+Next: git push origin {base_branch}
 ```
