@@ -28,6 +28,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── design.md                # /dotclaude:design
 │   ├── code.md                  # /dotclaude:code [phase]
 │   ├── merge-main.md            # /dotclaude:merge-main
+│   ├── pr.md                    # /dotclaude:pr
 │   ├── tagging.md               # /dotclaude:tagging
 │   ├── update-docs.md           # /dotclaude:update-docs
 │   ├── validate-spec.md         # /dotclaude:validate-spec
@@ -120,6 +121,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge-main` | Merge feature branch to main |
+| `/dotclaude:pr` | Create GitHub Pull Request from current branch |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 
@@ -253,6 +255,12 @@ cp -r dotclaude/.claude your-project/
 ```
 
 **Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
+
+## Prerequisites
+
+- [GitHub CLI (`gh`)](https://cli.github.com/) - Required for `/dotclaude:pr` command
+  - Install: `brew install gh` (macOS) or see [installation guide](https://github.com/cli/cli#installation)
+  - Authenticate: `gh auth login`
 
 ## Usage
 
