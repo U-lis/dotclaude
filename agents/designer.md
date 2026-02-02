@@ -131,11 +131,13 @@ Pass structured design results including:
 
 ## Git Worktree Strategy (for Parallel Phases)
 
+Worktree naming rule: `{project_name}-{type}-{keyword}-{phase}`
+
 ```
-feature/subject (base branch)
-├── git worktree add ../subject-{k}A feature/subject-{k}A
-├── git worktree add ../subject-{k}B feature/subject-{k}B
-└── git worktree add ../subject-{k}C feature/subject-{k}C
+feature/keyword (base branch)
+├── git worktree add ../{project_name}-{type}-{keyword}-{k}A feature/{keyword}-{k}A feature/{keyword}
+├── git worktree add ../{project_name}-{type}-{keyword}-{k}B feature/{keyword}-{k}B feature/{keyword}
+└── git worktree add ../{project_name}-{type}-{keyword}-{k}C feature/{keyword}-{k}C feature/{keyword}
 ```
 
 Each parallel Coder works in isolated worktree. Merge phase handles integration.

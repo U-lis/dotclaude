@@ -175,7 +175,7 @@ After completing analysis, create SPEC.md with:
 
 ## Output
 
-1. Feature branch `feature/{keyword}` created and checked out
+1. Feature worktree created at `../{project_name}-feature-{keyword}` with branch `feature/{keyword}`
 2. Directory `{working_directory}/{subject}/` created
 3. `{working_directory}/{subject}/SPEC.md` created with all sections above
 
