@@ -37,7 +37,7 @@ This repository provides a structured workflow for software development using sp
 │   ├── init-bugfix.md           # Internal: bugfix init (user-invocable: false)
 │   ├── init-refactor.md         # Internal: refactor init (user-invocable: false)
 │   ├── init-github-issue.md     # Internal: GitHub issue init (user-invocable: false)
-│   └── _analysis.md             # Internal: common analysis phases (user-invocable: false)
+│   └── _init-common.md           # Internal: common init workflow (user-invocable: false)
 ├── agents/                      # Agent definitions (frontmatter-enabled)
 │   ├── designer.md              # Architecture and planning
 │   ├── technical-writer.md      # Documentation

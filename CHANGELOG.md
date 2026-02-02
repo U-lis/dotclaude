@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Language resolution follows config merge order: Defaults (`en_US`) < Global < Local
   - Graceful fallback: `jq` preferred, `grep/sed` fallback when `jq` unavailable
 - `## Language` instruction section added to all agent files (`designer.md`, `spec-validator.md`, `code-validator.md`, `coders/_base.md`)
-- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_analysis.md`, `merge.md`, `configure.md`)
+- `## Language` instruction section added to all command files (`start-new.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `init-github-issue.md`, `_init-common.md`, `merge.md`, `configure.md`)
 - `gh` CLI prerequisite documentation in README
 - Version consistency check before tagging: `plugin.json`, `marketplace.json`, and `CHANGELOG.md` must all contain matching version strings before a tag is created
 - Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly

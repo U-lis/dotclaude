@@ -111,11 +111,11 @@ Options:
 
 ---
 
-## Analysis Phase
+## Branch Creation & Analysis Phase
 
-**MANDATORY**: After gathering user input (Steps 1-6), execute analysis phases.
+**MANDATORY**: After gathering user input (Steps 1-6), execute the common init workflow.
 
-Follow the `_analysis` command for the common analysis workflow (Steps A-E). Claude will auto-load the command content.
+Follow the `_init-common` command for branch creation and analysis phases (Steps A-E). Claude will auto-load the command content.
 
 ### Bugfix-Specific Analysis
 
