@@ -89,16 +89,10 @@ Based on Step 1 response, follow the corresponding init command (Claude auto-loa
 
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
-2. Auto-generate branch keyword
-3. Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
-4. Create work branch via worktree: `git worktree add ../{project_name}-{type}-{keyword} -b {type}/{keyword} {base_branch}`
-   - `{project_name}`: name of the current git repository root directory
-   - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-always-create-worktree`)
-5. Create project directory: `mkdir -p ../{project_name}-{type}-{keyword}/{working_directory}/{subject}`
-6. Analysis phase (follow the `_analysis` command for details)
-7. **Target Version Question** (see below)
-8. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
-9. Commit SPEC.md
+2. Branch creation & analysis phase (each init file defines this)
+3. **Target Version Question** (see below)
+4. Draft SPEC.md via TechnicalWriter (include target_version in SPEC)
+5. Commit SPEC.md
 
 **Step 2.6: Target Version Question**
 

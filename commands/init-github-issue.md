@@ -237,9 +237,7 @@ pre_filled:
 
 **Init File Behavior with Pre-filled Context**:
 
-1. **Branch Creation**: Use pre-filled `branch_keyword`
-   - Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
-   - Create: `git worktree add ../{project_name}-{work_type}-{branch_keyword} -b {work_type}/{branch_keyword} {base_branch}`
+1. **Branch Creation**: Use pre-filled `branch_keyword`, follow branch creation steps in the `_init-common` command (keyword is pre-filled, not auto-generated)
 
 2. **Questions**: SKIP questions where `pre_filled` data is available
    - If a `pre_filled` key exists and is non-empty for a question, that question is auto-skipped

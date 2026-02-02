@@ -6,6 +6,12 @@ description: Clean up merged-and-deployed branches and associated worktrees
 
 Clean up merged branches, remote tracking branches, and orphaned worktrees after releases.
 
+## Version Argument
+
+If the user provides an explicit version argument (e.g., `/dotclaude:purge 0.3.0`), use that version tag as the deployment boundary directly.
+
+If no argument is provided, fall back to auto-detection: determine the latest deployed tag via git (see Step 3 in the Workflow).
+
 ## Prerequisites
 
 Before starting the workflow, resolve the following values:
@@ -47,18 +53,23 @@ Store the result as `{current_branch}`.
    -> If the command succeeds:
       - Set REMOTE_REACHABLE=true
 
-3. Determine latest deployed tag
-   -> If REMOTE_REACHABLE=true:
-      - Query remote tags: git ls-remote --tags origin
-      - Determine latest local tag: git describe --tags --abbrev=0
-      - Compare: find the latest tag that exists on the remote
-      - Store as {latest_remote_tag}
-   -> If REMOTE_REACHABLE=false:
-      - Determine latest local tag only: git describe --tags --abbrev=0
-      - Store as {latest_remote_tag} (local only, no remote verification)
-   -> If no tags found at all (local or remote):
-      - Set NO_TAGS=true
-      - Warn: "No tags found. All merged branches will be treated as safe to delete."
+3. Determine deployment boundary tag
+   -> If explicit version argument provided:
+      - Use "v{argument}" as {latest_remote_tag} (e.g., argument "0.3.0" -> tag "v0.3.0")
+      - Verify tag exists: git tag -l v{argument}
+      - If tag does NOT exist: HALT with error "Tag v{argument} not found."
+   -> If no argument provided, auto-detect:
+      -> If REMOTE_REACHABLE=true:
+         - Query remote tags: git ls-remote --tags origin
+         - Determine latest local tag: git describe --tags --abbrev=0
+         - Compare: find the latest tag that exists on the remote
+         - Store as {latest_remote_tag}
+      -> If REMOTE_REACHABLE=false:
+         - Determine latest local tag only: git describe --tags --abbrev=0
+         - Store as {latest_remote_tag} (local only, no remote verification)
+      -> If no tags found at all (local or remote):
+         - Set NO_TAGS=true
+         - Warn: "No tags found. All merged branches will be treated as safe to delete."
 
 4. List worktrees
    -> Execute: git worktree list
@@ -219,6 +230,7 @@ Store the result as `{current_branch}`.
 | EC-10 | Worktree path no longer exists on disk | `git worktree prune` handles this; include in cleanup |
 | EC-11 | Latest local tag has NOT been pushed to remote | Branches merged after the previous remote tag are protected; report them as "Merged but not yet deployed" |
 | EC-12 | No tags exist at all (local or remote) | Set `NO_TAGS=true`, skip tag deployment check, treat all merged branches as safe to delete, warn user |
+| EC-13 | Explicit version argument tag does not exist | HALT with error. Do NOT proceed with cleanup. |
 
 ## Output
 

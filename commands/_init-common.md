@@ -1,12 +1,42 @@
 ---
-description: Common analysis workflow for init phase - input analysis, codebase analysis, and DDD context mapping.
+description: Common init workflow - branch creation, analysis phases, and shared utilities for all init commands.
 user-invocable: false
 ---
-# Analysis Phases
+# Init Common Workflow
 
-Common analysis workflow for init phase. Execute after gathering requirements, before creating SPEC.md.
+Shared workflow steps for all init commands (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`).
 
-## Iteration Limits
+---
+
+## Branch Creation
+
+After gathering requirements (or using pre-filled values from GitHub issue), create the work branch.
+
+### Steps
+
+1. Auto-generate branch keyword from the work description
+2. Update base branch: `git checkout {base_branch} && git pull origin {base_branch}`
+3. Create work branch via worktree: `git worktree add ../{project_name}-{type}-{keyword} -b {type}/{keyword} {base_branch}`
+   - `{project_name}`: name of the current git repository root directory
+   - `{type}`: work type prefix (`feature`, `bugfix`, `refactor`)
+   - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
+4. Create project directory: `mkdir -p ../{project_name}-{type}-{keyword}/{working_directory}/{subject}`
+
+### Naming Examples
+
+| Work Type | Branch Name | Worktree Path |
+|-----------|-------------|---------------|
+| Feature | `feature/user-auth` | `../dotclaude-feature-user-auth` |
+| Bugfix | `bugfix/login-crash` | `../dotclaude-bugfix-login-crash` |
+| Refactor | `refactor/api-cleanup` | `../dotclaude-refactor-api-cleanup` |
+
+---
+
+## Analysis Phases
+
+Execute after gathering requirements and creating the work branch, before creating SPEC.md.
+
+### Iteration Limits
 
 | Limit Type | Maximum |
 |------------|---------|
@@ -16,11 +46,11 @@ Common analysis workflow for init phase. Execute after gathering requirements, b
 
 ---
 
-## Step A: Input Analysis
+### Step A: Input Analysis
 
 Analyze collected user answers for completeness and clarity.
 
-### Detection Targets
+#### Detection Targets
 
 | Issue Type | Examples | Action |
 |------------|----------|--------|
@@ -29,7 +59,7 @@ Analyze collected user answers for completeness and clarity.
 | Implicit assumptions | Assumed tech stack, user type | Ask to confirm assumptions |
 | Conflicting statements | A contradicts B in answers | Ask user to clarify |
 
-### Process
+#### Process
 
 1. Review all collected answers from question phase
 2. For each issue found, generate clarifying question
@@ -50,18 +80,18 @@ Options:
 
 ---
 
-## Step B: Codebase Investigation
+### Step B: Codebase Investigation
 
 Search codebase for related code. Work-type-specific details in each init file.
 
-### Common Process
+#### Common Process
 
 1. Extract keywords from user requirements
 2. Use Grep tool to search for related code
 3. Use Read tool to examine relevant files (max 10 reads)
 4. Document findings
 
-### Output Format
+#### Output Format
 
 ```markdown
 ### Related Code
@@ -71,7 +101,7 @@ Search codebase for related code. Work-type-specific details in each init file.
 | 2 | path/to/other.ts | 100 | Will need modification |
 ```
 
-### Work-Type Specifics
+#### Work-Type Specifics
 
 - **Feature**: See init-feature.md - focus on similar functionality, patterns
 - **Bugfix**: See init-bugfix.md - focus on root cause, affected code
@@ -79,11 +109,11 @@ Search codebase for related code. Work-type-specific details in each init file.
 
 ---
 
-## Step C: Conflict Detection
+### Step C: Conflict Detection
 
 Compare requirements against existing implementation.
 
-### Conflict Types
+#### Conflict Types
 
 | Type | Check For |
 |------|-----------|
@@ -91,7 +121,7 @@ Compare requirements against existing implementation.
 | Data model | Schema changes affect existing data |
 | Behavioral | New behavior contradicts current behavior |
 
-### Process
+#### Process
 
 For each potential conflict:
 1. Document existing behavior
@@ -110,7 +140,7 @@ Options:
     description: "Support both behaviors for compatibility"
 ```
 
-### Output Format
+#### Output Format
 
 ```markdown
 ### Conflicts Identified
@@ -121,11 +151,11 @@ Options:
 
 ---
 
-## Step D: Edge Case Generation
+### Step D: Edge Case Generation
 
 Generate boundary conditions and error scenarios.
 
-### Case Categories
+#### Case Categories
 
 | Category | Examples |
 |----------|----------|
@@ -134,7 +164,7 @@ Generate boundary conditions and error scenarios.
 | Null/Empty | Null parameters, empty collections |
 | Concurrent | Race conditions, parallel access (if applicable) |
 
-### Process
+#### Process
 
 1. Based on requirements, generate 5-10 edge cases
 2. Present to user via AskUserQuestion:
@@ -149,7 +179,7 @@ Options:
     description: "Need to add or modify cases (enter details)"
 ```
 
-### Output Format
+#### Output Format
 
 ```markdown
 ### Edge Cases
@@ -162,18 +192,18 @@ Options:
 
 ---
 
-## Step E: Summary + Clarification
+### Step E: Summary + Clarification
 
 Present complete analysis summary and allow user refinement.
 
-### Summary Components
+#### Summary Components
 
 1. **Collected Requirements**: Brief recap of user's answers
 2. **Analysis Findings**: Related code found
 3. **Conflicts + Resolutions**: Documented decisions
 4. **Edge Cases**: Confirmed test scenarios
 
-### Process
+#### Process
 
 ```
 iteration = 0

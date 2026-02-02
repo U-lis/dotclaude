@@ -12,166 +12,92 @@ This repository provides a structured workflow for software development using sp
 - Language-specific coding standards
 - **Orchestrator-managed workflow** from init to merge
 
-## Structure
+For the full project structure, see [Architecture](docs/ARCHITECTURE.md).
 
-```
-.
-├── CLAUDE.md                    # Development guidelines
-├── .claude/
-│   └── dotclaude-config.json    # Plugin configuration
-├── .claude-plugin/              # Plugin marketplace metadata
-│   ├── marketplace.json         # Registry metadata
-│   └── plugin.json              # Plugin configuration
-├── commands/                    # Self-contained command files
-│   ├── configure.md             # /dotclaude:configure
-│   ├── start-new.md             # /dotclaude:start-new (entry point + orchestrator)
-│   ├── design.md                # /dotclaude:design
-│   ├── code.md                  # /dotclaude:code [phase]
-│   ├── merge.md                 # /dotclaude:merge
-│   ├── pr.md                    # /dotclaude:pr
-│   ├── tagging.md               # /dotclaude:tagging
-│   ├── update-docs.md           # /dotclaude:update-docs
-│   ├── validate-spec.md         # /dotclaude:validate-spec
-│   ├── purge.md                 # /dotclaude:purge
-│   ├── init-feature.md          # Internal: feature init (user-invocable: false)
-│   ├── init-bugfix.md           # Internal: bugfix init (user-invocable: false)
-│   ├── init-refactor.md         # Internal: refactor init (user-invocable: false)
-│   ├── init-github-issue.md     # Internal: GitHub issue init (user-invocable: false)
-│   └── _analysis.md             # Internal: common analysis phases (user-invocable: false)
-├── agents/                      # Agent definitions (frontmatter-enabled)
-│   ├── designer.md              # Architecture and planning
-│   ├── technical-writer.md      # Documentation
-│   ├── spec-validator.md        # Specification validation
-│   ├── code-validator.md        # Code quality validation
-│   └── coders/                  # Language-specific coders
-│       ├── _base.md             # Common coder rules
-│       ├── python.md            # Python specialist
-│       ├── javascript.md        # JS/TS specialist
-│       ├── svelte.md            # Svelte specialist
-│       ├── rust.md              # Rust specialist
-│       └── sql.md               # SQL/DB specialist
-├── templates/                   # Document templates
-│   ├── SPEC.md
-│   ├── GLOBAL.md
-│   ├── PHASE_PLAN.md
-│   ├── PHASE_TEST.md
-│   └── PHASE_MERGE.md
-├── hooks/                       # Hook scripts
-│   ├── hooks.json               # Hook configuration
-│   ├── init-config.sh           # SessionStart config initializer
-│   ├── check-update.sh          # SessionStart update checker
-│   └── check-validation-complete.sh  # Validation completion checker
-└── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
+## Getting Started
+
+### Install
+
+#### Option 1: Plugin Marketplace (Recommended)
+
+Install dotclaude via Claude Code's plugin marketplace:
+
+```bash
+# Add the marketplace repository (first time only)
+/plugin marketplace add https://github.com/U-lis/dotclaude
+
+# Install the plugin
+/plugin install dotclaude
 ```
 
-## Workflow
+#### Option 2: Manual Installation
 
-```
-User → /dotclaude:start-new → Orchestrator Agent
-                          ↓
-              ┌───────────────────────┐
-              │ Orchestrator manages: │
-              │ - Init (questions)    │
-              │ - SPEC.md creation    │
-              │ - Design              │
-              │ - Code (parallel)     │
-              │ - Documentation       │
-              │ - Merge               │
-              └───────────────────────┘
-                          ↓
-                   Final Summary
+For direct control or customization, clone and copy manually:
+
+```bash
+git clone https://github.com/U-lis/dotclaude.git
+cp -r dotclaude/.claude your-project/
 ```
 
-## Orchestrator
+**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation). Restart Claude Code after updating to apply changes.
 
-The orchestrator workflow is integrated into `/dotclaude:start-new` command (`commands/start-new.md`):
+### Optional: GitHub CLI
 
-- **Manages entire workflow** from init to merge
-- **Coordinates subagents** via Task tool
-- **Enables parallel execution** for parallel phases
-- **Tracks state** for resumability
+The `/dotclaude:pr` command requires [GitHub CLI (`gh`)](https://cli.github.com/).
 
-### 13-Step Workflow
+- Install: `brew install gh` (macOS) or see [installation guide](https://github.com/cli/cli#installation)
+- Authenticate: `gh auth login`
 
-| Step | Phase | Description |
-|------|-------|-------------|
-| 1 | Init | Work type selection |
-| 2 | Init | Load init instructions (questions, analysis, target version, branch, SPEC) |
-| 3 | Init | SPEC review |
-| 4 | Init | SPEC commit |
-| 5 | Init | Scope selection |
-| 6 | Design | Designer analysis |
-| 7 | Design | Document creation via TechnicalWriter |
-| 8 | Design | Design commit |
-| 9 | Code | Phase list parsing |
-| 10 | Code | Phase execution (sequential/parallel) |
-| 11 | Docs | Documentation update |
-| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
-| 13 | Final | Summary return |
+### Configure
 
-## Skills (Commands)
+Configure dotclaude settings for your project:
 
-All dotclaude skills are prefixed with `dotclaude:` namespace:
-
-| Command | Description |
-|---------|-------------|
-| `/dotclaude:configure` | Interactive configuration management |
-| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow |
-| `/dotclaude:design` | Transform SPEC into implementation plan |
-| `/dotclaude:validate-spec` | Validate document consistency (optional) |
-| `/dotclaude:code [phase]` | Execute coding for specified phase |
-| `/dotclaude:code all` | Execute all phases automatically |
-| `/dotclaude:merge` | Merge current branch to base branch |
-| `/dotclaude:pr` | Create GitHub Pull Request from current branch |
-| `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
-| `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
-| `/dotclaude:purge` | Clean up merged branches and orphaned worktrees |
-
-## Agents
-
-| Agent | Role |
-|-------|------|
-| Designer | Technical architecture and phase decomposition |
-| TechnicalWriter | Structured documentation |
-| spec-validator | Document consistency validation |
-| code-validator | Code quality + plan verification |
-| Coders | Language-specific implementation |
-
-Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.
-
-Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` command.
-
-## Document Types
-
-### Simple Tasks (1-2 phases)
-```
-{working_directory}/{SUBJECT}.md
+```bash
+/dotclaude:configure
 ```
 
-### Complex Tasks (3+ phases)
-```
-{working_directory}/{subject}/
-├── SPEC.md                      # Requirements (What)
-├── GLOBAL.md                    # Architecture, phase overview
-├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
-├── PHASE_1_TEST.md              # Test cases
-└── ...
+See the [Configuration](#configuration) section below for available settings and file locations.
+
+### Start Your First Task
+
+```bash
+# In Claude Code session
+/dotclaude:start-new
+
+# Orchestrator takes over:
+# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
+# 2. Gathers requirements via step-by-step questions
+#    - If GitHub Issue: parses issue URL, auto-detects type, pre-fills fields
+#      and skips questions already answered in the issue body
+# 3. Asks target version (auto-filled from milestone if GitHub Issue)
+# 4. Creates and reviews SPEC with user
+# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
+# 6. Executes selected scope
+# 7. Asks post-completion integration (Direct Merge or Create PR)
+# 8. Returns final summary
+
+# After merge, create version tag (verifies version consistency, pushes automatically):
+/dotclaude:tagging
+# Or specify version explicitly:
+/dotclaude:tagging 0.3.0
 ```
 
-### Parallel Phases
-```
-├── PHASE_3A_PLAN_{keyword}.md   # Parallel work A
-├── PHASE_3B_PLAN_{keyword}.md   # Parallel work B
-├── PHASE_3.5_PLAN_MERGE.md      # Merge phase (required)
-```
+### Manual Execution (Bypass Orchestrator)
 
-## Phase Naming Convention
+Individual skills can be invoked directly for debugging or partial work:
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Sequential | `PHASE_{k}` | PHASE_1, PHASE_2 |
-| Parallel | `PHASE_{k}{A\|B\|C}` | PHASE_3A, PHASE_3B |
-| Merge | `PHASE_{k}.5` | PHASE_3.5 |
+```bash
+/dotclaude:design           # Create implementation plan
+/dotclaude:validate-spec    # Validate document consistency
+/dotclaude:code 1           # Implement Phase 1
+/dotclaude:code all         # Implement all phases
+/dotclaude:update-docs      # Update documentation
+/dotclaude:merge             # Merge to base branch
+/dotclaude:tagging          # Create version tag (with push + version checks)
+/dotclaude:tagging 0.3.0   # Create tag for specific version
+/dotclaude:purge            # Clean up merged branches and worktrees
+/dotclaude:purge 0.3.0     # Clean up using specific version as deployment boundary
+```
 
 ## Configuration
 
@@ -204,129 +130,100 @@ Interactive workflow to edit settings at global or local scope. Changes take eff
 | `auto_update` | boolean | `false` | Auto-update when update available |
 | `base_branch` | string | `main` | Default base branch for git operations |
 
-### Configuration File Format
+## Commands & Core Workflow
 
-```json
-{
-  "language": "en_US",
-  "working_directory": ".dc_workspace",
-  "check_version": true,
-  "auto_update": false,
-  "base_branch": "main"
-}
+### Skills (Commands)
+
+All dotclaude skills are prefixed with `dotclaude:` namespace:
+
+| Command | Description |
+|---------|-------------|
+| `/dotclaude:configure` | Interactive configuration management |
+| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow |
+| `/dotclaude:design` | Transform SPEC into implementation plan |
+| `/dotclaude:validate-spec` | Validate document consistency (optional) |
+| `/dotclaude:code [phase]` | Execute coding for specified phase |
+| `/dotclaude:code all` | Execute all phases automatically |
+| `/dotclaude:merge` | Merge current branch to base branch |
+| `/dotclaude:pr` | Create GitHub Pull Request from current branch |
+| `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
+| `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
+| `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
+
+### Orchestrator
+
+The orchestrator workflow is integrated into `/dotclaude:start-new` command (`commands/start-new.md`):
+
+- **Manages entire workflow** from init to merge
+- **Coordinates subagents** via Task tool
+- **Enables parallel execution** for parallel phases
+- **Tracks state** for resumability
+
+## Appendix
+
+### Agents
+
+| Agent | Role |
+|-------|------|
+| Designer | Technical architecture and phase decomposition |
+| TechnicalWriter | Structured documentation |
+| spec-validator | Document consistency validation |
+| code-validator | Code quality + plan verification |
+| Coders | Language-specific implementation |
+
+Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.
+
+Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` command.
+
+### Document Types
+
+#### Simple Tasks (1-2 phases)
+```
+{working_directory}/{SUBJECT}.md
 ```
 
-### Common Use Cases
-
-**Change working directory globally:**
-```bash
-/dotclaude:configure → Global → Set working_directory to "docs"
+#### Complex Tasks (3+ phases)
+```
+{working_directory}/{subject}/
+├── SPEC.md                      # Requirements (What)
+├── GLOBAL.md                    # Architecture, phase overview
+├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
+├── PHASE_1_TEST.md              # Test cases
+└── ...
 ```
 
-**Per-project working directory:**
-```bash
-/dotclaude:configure → Local → Set working_directory to "project_docs"
+#### Parallel Phases
+```
+├── PHASE_3A_PLAN_{keyword}.md   # Parallel work A
+├── PHASE_3B_PLAN_{keyword}.md   # Parallel work B
+├── PHASE_3.5_PLAN_MERGE.md      # Merge phase (required)
 ```
 
-**Different base branch:**
-```bash
-/dotclaude:configure → Set base_branch to "develop"
-```
+### Phase Naming Convention
 
-### Language Support
+| Type | Pattern | Example |
+|------|---------|---------|
+| Sequential | `PHASE_{k}` | PHASE_1, PHASE_2 |
+| Parallel | `PHASE_{k}{A\|B\|C}` | PHASE_3A, PHASE_3B |
+| Merge | `PHASE_{k}.5` | PHASE_3.5 |
 
-The `language` setting controls the language used for user-facing communication (questions, status messages, reports). All agents and commands respect this setting.
+### 13-Step Workflow
 
-- Documents (SPEC.md, GLOBAL.md, PLAN, TEST, CHANGELOG, README) are always written in English regardless of the language setting
-- The setting is loaded at session start via the SessionStart hook
-- Default: `en_US`
-
-**Set language:**
-```bash
-/dotclaude:configure → Set language to "ko_KR"
-```
-
-## Installation
-
-### Option 1: Plugin Marketplace (Recommended)
-
-Install dotclaude via Claude Code's plugin marketplace:
-
-```bash
-# Add the marketplace repository (first time only)
-/plugin marketplace add https://github.com/U-lis/dotclaude
-
-# Install the plugin
-/plugin install dotclaude
-```
-
-### Option 2: Manual Installation
-
-For direct control or customization, clone and copy manually:
-
-```bash
-git clone https://github.com/U-lis/dotclaude.git
-cp -r dotclaude/.claude your-project/
-```
-
-**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation).
-
-## Prerequisites
-
-- [GitHub CLI (`gh`)](https://cli.github.com/) - Required for `/dotclaude:pr` command
-  - Install: `brew install gh` (macOS) or see [installation guide](https://github.com/cli/cli#installation)
-  - Authenticate: `gh auth login`
-
-## Usage
-
-### Start New Work
-
-```bash
-# In Claude Code session
-/dotclaude:start-new
-
-# Orchestrator takes over:
-# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
-# 2. Gathers requirements via step-by-step questions
-#    - If GitHub Issue: parses issue URL, auto-detects type, pre-fills fields
-#      and skips questions already answered in the issue body
-# 3. Asks target version (auto-filled from milestone if GitHub Issue)
-# 4. Creates and reviews SPEC with user
-# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
-# 6. Executes selected scope
-# 7. Asks post-completion integration (Direct Merge or Create PR)
-# 8. Returns final summary
-
-# After merge, create version tag (verifies version consistency, pushes automatically):
-/dotclaude:tagging
-# Or specify version explicitly:
-/dotclaude:tagging 0.3.0
-```
-
-### Update dotclaude
-
-```bash
-# Update via plugin marketplace
-/plugin update dotclaude
-```
-
-Note: Restart Claude Code after updating to apply changes.
-
-### Manual Execution (Bypass Orchestrator)
-
-Individual skills can be invoked directly for debugging or partial work:
-
-```bash
-/dotclaude:design           # Create implementation plan
-/dotclaude:validate-spec    # Validate document consistency
-/dotclaude:code 1           # Implement Phase 1
-/dotclaude:code all         # Implement all phases
-/dotclaude:update-docs      # Update documentation
-/dotclaude:merge             # Merge to base branch
-/dotclaude:tagging          # Create version tag (with push + version checks)
-/dotclaude:tagging 0.3.0   # Create tag for specific version
-/dotclaude:purge            # Clean up merged branches and worktrees
-```
+| Step | Phase | Description |
+|------|-------|-------------|
+| 1 | Init | Work type selection |
+| 2 | Init | Load init instructions (questions, analysis, target version, branch, SPEC) |
+| 3 | Init | SPEC review |
+| 4 | Init | SPEC commit |
+| 5 | Init | Scope selection |
+| 6 | Design | Designer analysis |
+| 7 | Design | Document creation via TechnicalWriter |
+| 8 | Design | Design commit |
+| 9 | Code | Phase list parsing |
+| 10 | Code | Phase execution (sequential/parallel) |
+| 11 | Docs | Documentation update |
+| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
+| 13 | Final | Summary return |
 
 ## License
 
