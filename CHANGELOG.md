@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Explicit version argument support for `/dotclaude:tagging` (e.g., `/dotclaude:tagging 0.3.0`) to specify the target version directly
 - Error handling for push failures with local tag preservation so tags are not lost if the remote push fails
 - Per-step push result reporting in tagging output (commit push and tag push reported separately)
+- Explicit version argument support for `/dotclaude:purge` (e.g., `/dotclaude:purge 0.3.0`) to use a specific tag as the deployment boundary instead of auto-detecting the latest remote tag
 
 ### Changed
 
@@ -69,7 +70,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Expanded `pre_filled` data structure to support per-work-type field extraction (feature: 8 fields, bugfix: 6 fields, refactor: 6 fields)
 - `agents/technical-writer.md`: `### Language & Style` section updated to explicitly separate document language (always English) from user communication language (configured language)
 - `commands/configure.md`: Language setting context updated - no longer marked as "stored for future use"
-- README.md reorganized for progressive disclosure: reordered sections (Intro, Installation, Quick Start, Configuration, Commands & Core Workflow, Appendix, License), condensed Configuration section, merged Prerequisites into Installation
+- README.md reorganized for progressive disclosure: merged Installation and Quick Start into unified "Getting Started" section with Install, Configure, Start Your First Task, and Manual Execution subsections; removed standalone "Update dotclaude" subsection (restart note integrated into install note); removed duplicate Workflow Overview ASCII diagram
 - Directory structure tree extracted from README.md to new `docs/ARCHITECTURE.md`
 
 ### Removed
