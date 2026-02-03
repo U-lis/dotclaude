@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+
+- Init workflow (`_init-common.md`) missing `cd` into worktree after `git worktree add`, causing SPEC.md and design documents to be created in the original repository directory instead of the worktree ([#48](https://github.com/U-lis/dotclaude/issues/48))
+
+### Changed
+
+- Step 6 Checkpoint Worktree Check in `start-new.md` now uses `pwd`-based current directory verification instead of external directory existence check
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed
