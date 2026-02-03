@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+
+- Orchestrator skipping init delegation chain (`init-github-issue` -> `init-{type}` -> `_init-common`) and executing work inline when `/dotclaude:start-new` is invoked with a GitHub issue URL, causing worktree creation to be skipped entirely ([#40](https://github.com/U-lis/dotclaude/issues/40))
+
+### Changed
+
+- `_init-common.md` Branch Creation section now marked MANDATORY with explicit MUST/NEVER enforcement prohibiting `git checkout -b` as worktree substitute
+- `start-new.md` Step 6 Checkpoint now marked UNCONDITIONAL -- no agent may bypass or override HALT conditions
+
+### Added
+
+- Post-init verification step (Step 2.8) in `start-new.md` that validates worktree and branch creation after init-xxx delegation, with retry loop (max 3 attempts)
+- Worktree existence verification sub-step in `_init-common.md` Branch Creation after `git worktree add`
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed

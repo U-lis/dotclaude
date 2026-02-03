@@ -169,19 +169,19 @@ If ANY check fails: HALT workflow immediately and report error to user. There ar
 
 ## Completion Checklist
 
-- [ ] C-1: `_init-common.md` section header changed to `## Branch Creation -- MANDATORY`
-- [ ] C-2: `_init-common.md` has MUST/NEVER enforcement paragraph after intro sentence
-- [ ] C-3: `_init-common.md` has verification sub-step (step 5) checking directory existence
-- [ ] C-4: `start-new.md` has Step 2.8 Post-Init Verification section inserted between Step 2.6 and Step 3
-- [ ] C-5: Step 2.8 contains `git worktree list` check, `git branch --show-current` check, and working directory existence check
-- [ ] C-6: Step 2.8 contains retry loop (max 3 attempts) with HALT on exhaustion
-- [ ] C-7: `start-new.md` Step 6 Checkpoint header includes `-- UNCONDITIONAL`
-- [ ] C-8: Step 6 Checkpoint intro text includes "NO EXCEPTIONS, NO OVERRIDES"
-- [ ] C-9: All 4 checks in Step 6 Checkpoint have `[UNCONDITIONAL]` prefix
-- [ ] C-10: Step 6 Checkpoint closing line explicitly prohibits justification-based overrides
-- [ ] C-11: No changes made to `init-github-issue.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`
-- [ ] C-12: No version numbers modified in `plugin.json` or `marketplace.json`
-- [ ] C-13: Existing init flows (direct calls to init-feature/bugfix/refactor) are not broken by the changes
+- [x] C-1: `_init-common.md` section header changed to `## Branch Creation -- MANDATORY` -- Verified in `commands/_init-common.md`:11
+- [x] C-2: `_init-common.md` has MUST/NEVER enforcement paragraph after intro sentence -- Verified in `commands/_init-common.md`:15
+- [x] C-3: `_init-common.md` has verification sub-step (step 5) checking directory existence -- Verified in `commands/_init-common.md`:26
+- [x] C-4: `start-new.md` has Step 2.8 Post-Init Verification section inserted between Step 2.6 and Step 3 -- Verified in `commands/start-new.md`:138
+- [x] C-5: Step 2.8 contains `git worktree list` check, `git branch --show-current` check, and working directory existence check -- Verified in `commands/start-new.md`:143-145
+- [x] C-6: Step 2.8 contains retry loop (max 3 attempts) with HALT on exhaustion -- Verified in `commands/start-new.md`:148-162
+- [x] C-7: `start-new.md` Step 6 Checkpoint header includes `-- UNCONDITIONAL` -- Verified in `commands/start-new.md`:197
+- [x] C-8: Step 6 Checkpoint intro text includes "NO EXCEPTIONS, NO OVERRIDES" -- Verified in `commands/start-new.md`:199
+- [x] C-9: All 4 checks in Step 6 Checkpoint have `[UNCONDITIONAL]` prefix -- Verified in `commands/start-new.md`:201,206,210,215
+- [x] C-10: Step 6 Checkpoint closing line explicitly prohibits justification-based overrides -- Verified in `commands/start-new.md`:220
+- [x] C-11: No changes made to `init-github-issue.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md` -- Verified via `git diff main` (empty diff)
+- [x] C-12: No version numbers modified in `plugin.json` or `marketplace.json` -- Verified via `git diff main` (empty diff)
+- [x] C-13: Existing init flows (direct calls to init-feature/bugfix/refactor) are not broken by the changes -- Verified: init files unchanged, _init-common changes are additive only
 
 ## FR Traceability
 
