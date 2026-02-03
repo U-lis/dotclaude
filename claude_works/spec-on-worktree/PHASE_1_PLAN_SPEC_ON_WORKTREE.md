@@ -73,12 +73,12 @@ Key differences from the original:
 
 ## Completion Checklist
 
-- [ ] 1.1: Add `cd ../{project_name}-{type}-{keyword}` step after worktree creation in `commands/_init-common.md`
-- [ ] 1.2: Simplify `mkdir` to relative path `{working_directory}/{subject}` in `commands/_init-common.md`
-- [ ] 1.3: Update Step 6 Checkpoint Worktree Check in `commands/start-new.md` to use `pwd` verification
-- [ ] 1.4: Verify worktree creation failure edge case (instruction order handles it -- `cd` only runs after successful `git worktree add`)
-- [ ] 1.5: Verify no changes needed in `commands/code.md` (parallel phase worktree handling already correct)
-- [ ] 1.6: Verify no changes to agent files (`agents/technical-writer.md`, `agents/designer.md`, etc.)
+- [x] 1.1: Add `cd ../{project_name}-{type}-{keyword}` step after worktree creation in `commands/_init-common.md` -- Verified at line 23
+- [x] 1.2: Simplify `mkdir` to relative path `{working_directory}/{subject}` in `commands/_init-common.md` -- Verified at line 24
+- [x] 1.3: Update Step 6 Checkpoint Worktree Check in `commands/start-new.md` to use `pwd` verification -- Verified at lines 187-191
+- [x] 1.4: Verify worktree creation failure edge case (instruction order handles it -- `cd` only runs after successful `git worktree add`) -- Verified: sequential step ordering ensures cd runs only after successful worktree add
+- [x] 1.5: Verify no changes needed in `commands/code.md` (parallel phase worktree handling already correct) -- Verified: git diff empty
+- [x] 1.6: Verify no changes to agent files (`agents/technical-writer.md`, `agents/designer.md`, etc.) -- Verified: git diff empty
 
 ## Notes
 

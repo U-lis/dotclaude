@@ -20,7 +20,8 @@ After gathering requirements (or using pre-filled values from GitHub issue), cre
    - `{project_name}`: name of the current git repository root directory
    - `{type}`: work type prefix (`feature`, `bugfix`, `refactor`)
    - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
-4. Create project directory: `mkdir -p ../{project_name}-{type}-{keyword}/{working_directory}/{subject}`
+4. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
+5. Create project directory: `mkdir -p {working_directory}/{subject}`
 
 ### Naming Examples
 

@@ -30,7 +30,7 @@ The `_init-common.md` command creates a worktree at `../{project_name}-{type}-{k
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Fix worktree directory context after creation | Pending | None |
+| 1 | Fix worktree directory context after creation | Complete | None |
 
 ## File Structure
 

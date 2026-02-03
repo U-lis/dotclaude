@@ -185,9 +185,10 @@ Call AskUserQuestion tool:
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
 4. **Worktree Check**:
-   - Directory `../{project_name}-{type}-{keyword}` must exist as a valid git worktree
-   - Run: `git worktree list | grep {project_name}-{type}-{keyword}`
-   - If not found: HALT and report "Worktree not found. Create worktree before design phase."
+   - Current directory must be inside the worktree
+   - Run: `pwd` and verify output contains `{project_name}-{type}-{keyword}`
+   - Secondary validation: `git worktree list | grep {project_name}-{type}-{keyword}`
+   - If `pwd` does not contain worktree name: HALT and report "Not in worktree directory. Run cd to enter worktree before design phase."
 
 If any check fails: halt workflow and report error to user.
 
