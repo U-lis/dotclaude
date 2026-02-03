@@ -6,6 +6,13 @@ user-invocable: false
 
 Instructions for initializing bug fix work through bug detail gathering and root cause analysis.
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
+
 ## Pre-filled Data Handling
 
 When invoked from `init-github-issue.md`, a `pre_filled` context may be provided containing data extracted from the GitHub issue. For each step below, check whether the corresponding `pre_filled` key exists and is non-empty. If it does, SKIP the step and use the pre-filled value. If it does not exist, or is an empty string, ask the question normally.
@@ -251,10 +258,3 @@ Create SPEC.md with bug-specific format:
 1. Bugfix worktree created at `../{project_name}-bugfix-{keyword}` with branch `bugfix/{keyword}`
 2. Directory `{working_directory}/{subject}/` created
 3. `{working_directory}/{subject}/SPEC.md` created with all sections above
-
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).

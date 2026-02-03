@@ -6,6 +6,13 @@ user-invocable: false
 
 Instructions for initializing refactoring work through target analysis and dependency mapping.
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
+
 ## Pre-filled Data Handling
 
 When invoked from `init-github-issue.md`, a `pre_filled` context may be provided containing data extracted from the GitHub issue. For each step below, check whether the corresponding `pre_filled` key exists and is non-empty. If it does, SKIP the step and use the pre-filled value. If it does not exist, or is an empty string, ask the question normally.
@@ -234,10 +241,3 @@ Create SPEC.md with refactor-specific format:
 1. Refactor worktree created at `../{project_name}-refactor-{keyword}` with branch `refactor/{keyword}`
 2. Directory `{working_directory}/{subject}/` created
 3. `{working_directory}/{subject}/SPEC.md` created with all sections above
-
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
