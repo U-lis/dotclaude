@@ -5,6 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+
+- Version management in `/dotclaude:tagging` command hardcoded three dotclaude-specific files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `CHANGELOG.md`), making it unusable for non-plugin projects ([#39](https://github.com/U-lis/dotclaude/issues/39))
+
+### Added
+
+- Configurable `version_files` setting in `dotclaude-config.json` for per-project version file management
+  - Each entry specifies `path` (relative file path) and `pattern` (regex with capture group for version extraction)
+  - `CHANGELOG.md` is always mandatory and auto-appended if missing from explicit configuration
+- Auto-detection of common version files when no explicit `version_files` configured: `CHANGELOG.md`, `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+- Setting 6 (`version_files`) in `/dotclaude:configure` command with View/Add/Remove/Reset interactive workflow
+- Dynamic version consistency failure output in `/dotclaude:tagging` that lists all checked files with their extracted versions
+
+### Changed
+
+- `/dotclaude:tagging` version consistency check now reads from configured `version_files` instead of hardcoded 3-file list
+- `CLAUDE.md` version management sections updated to reference configurable version files system instead of hardcoded file list
+- Version Tagging Checklist in `CLAUDE.md` now references `/dotclaude:tagging` command instead of manual bash verification
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed

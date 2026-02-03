@@ -16,7 +16,7 @@ Add version_files management to the configure command (Setting 6) and update CLA
 ## Changes to commands/configure.md
 
 ### Configuration Schema Update
-- [ ] Add `version_files` field to the Configuration Schema JSON block:
+- [x] Add `version_files` field to the Configuration Schema JSON block: Verified in commands/configure.md:43-52
   ```json
   {
     "language": "en_US",
@@ -27,24 +27,24 @@ Add version_files management to the configure command (Setting 6) and update CLA
     "version_files": []
   }
   ```
-- [ ] Empty array `[]` means "use auto-detection"
+- [x] Empty array `[]` means "use auto-detection": Verified in commands/configure.md:50
 
 ### Default Values Update
-- [ ] Add to the Default Values section:
+- [x] Add to the Default Values section: Verified in commands/configure.md:62
   ```bash
   DEFAULT_VERSION_FILES="[]"  # empty = auto-detect
   ```
 
 ### Step 1: Load Current Configuration Update
-- [ ] Add version_files loading to the bash script:
+- [x] Add version_files loading to the bash script: Verified in commands/configure.md:88
   ```bash
   VERSION_FILES="[]"
   ```
-- [ ] In global config loading block, add:
+- [x] In global config loading block, add: Verified in commands/configure.md:98
   ```bash
   VERSION_FILES=$(jq -c '.version_files // []' "$GLOBAL_CONFIG")
   ```
-- [ ] In local config loading block, add:
+- [x] In local config loading block, add: Verified in commands/configure.md:112-115
   ```bash
   local_vf=$(jq -c '.version_files // null' "$LOCAL_CONFIG")
   if [ "$local_vf" != "null" ]; then
@@ -52,13 +52,13 @@ Add version_files management to the configure command (Setting 6) and update CLA
   fi
   ```
   Note: For version_files, local config REPLACES (not merges with) global config when present.
-- [ ] Add to output:
+- [x] Add to output: Verified in commands/configure.md:128
   ```bash
   echo "  version_files: $VERSION_FILES"
   ```
 
 ### Setting 6: Version Files (New Section)
-- [ ] Add after Setting 5 (Base Branch), before Step 4
+- [x] Add after Setting 5 (Base Branch), before Step 4: Verified in commands/configure.md:336-454
 
 Interactive workflow using AskUserQuestion:
 
@@ -82,34 +82,34 @@ context: |
 ```
 
 #### View Sub-action
-- [ ] If version_files is empty array: show "Auto-detection mode (no explicit config)"
-- [ ] Then show what auto-detection WOULD find by checking file existence
-- [ ] If version_files is non-empty: show the configured list with path and pattern
+- [x] If version_files is empty array: show "Auto-detection mode (no explicit config)": Verified in commands/configure.md:359
+- [x] Then show what auto-detection WOULD find by checking file existence: Verified in commands/configure.md:360
+- [x] If version_files is non-empty: show the configured list with path and pattern: Verified in commands/configure.md:361
 
 #### Add Sub-action
-- [ ] Prompt for `path` (relative path to version file)
-- [ ] Validate path: not empty, no leading `/`, no `..`, not `.` or `..`
-- [ ] Prompt for `pattern` (regex with capture group)
-- [ ] Validate pattern: not empty, contains exactly one capture group `(...)` (excluding non-capturing groups `(?:...)`)
-- [ ] Check for duplicate path (reject if already in list)
-- [ ] If adding to an empty list (was auto-detect): warn user that explicit config overrides auto-detection
-- [ ] Auto-append CHANGELOG.md entry if not already present after add
-- [ ] Return to Setting 6 menu after add (allow multiple operations)
+- [x] Prompt for `path` (relative path to version file): Verified in commands/configure.md:365
+- [x] Validate path: not empty, no leading `/`, no `..`, not `.` or `..`: Verified in commands/configure.md:369-397
+- [x] Prompt for `pattern` (regex with capture group): Verified in commands/configure.md:400
+- [x] Validate pattern: not empty, contains exactly one capture group `(...)` (excluding non-capturing groups `(?:...)`): Verified in commands/configure.md:403-429
+- [x] Check for duplicate path (reject if already in list): Verified in commands/configure.md:434
+- [x] If adding to an empty list (was auto-detect): warn user that explicit config overrides auto-detection: Verified in commands/configure.md:435
+- [x] Auto-append CHANGELOG.md entry if not already present after add: Verified in commands/configure.md:436-439
+- [x] Return to Setting 6 menu after add (allow multiple operations): Verified in commands/configure.md:440
 
 #### Remove Sub-action
-- [ ] Show numbered list of current version_files entries
-- [ ] If list is empty: show "No explicit version files configured (using auto-detection)"
-- [ ] Cannot remove CHANGELOG.md entry (show error if attempted)
-- [ ] If removing the last non-CHANGELOG entry: warn that this reverts to CHANGELOG-only (suggest Reset instead)
-- [ ] Return to Setting 6 menu after remove
+- [x] Show numbered list of current version_files entries: Verified in commands/configure.md:443
+- [x] If list is empty: show "No explicit version files configured (using auto-detection)": Verified in commands/configure.md:445
+- [x] Cannot remove CHANGELOG.md entry (show error if attempted): Verified in commands/configure.md:446
+- [x] If removing the last non-CHANGELOG entry: warn that this reverts to CHANGELOG-only (suggest Reset instead): Verified in commands/configure.md:447
+- [x] Return to Setting 6 menu after remove: Verified in commands/configure.md:448
 
 #### Reset Sub-action
-- [ ] Clear version_files array (set to `[]`)
-- [ ] Confirm: "Version files reset to auto-detection mode"
-- [ ] Return to Setting 6 menu
+- [x] Clear version_files array (set to `[]`): Verified in commands/configure.md:452
+- [x] Confirm: "Version files reset to auto-detection mode": Verified in commands/configure.md:453
+- [x] Return to Setting 6 menu: Verified in commands/configure.md:454
 
 ### Step 4: Save Configuration Update
-- [ ] Add version_files to the jq command:
+- [x] Add version_files to the jq command: Verified in commands/configure.md:467-481
   ```bash
   jq -n \
     --arg lang "$LANGUAGE" \
@@ -127,24 +127,24 @@ context: |
       version_files: $vf
     }' > "$TARGET_CONFIG"
   ```
-- [ ] Update the success output to include version_files
+- [x] Update the success output to include version_files: Verified in commands/configure.md:511
 
 ### Testing Checklist Update
-- [ ] Add these test items:
-  - [ ] version_files can be viewed (auto-detect mode)
-  - [ ] version_files can be viewed (explicit config)
-  - [ ] Version file can be added with valid path and pattern
-  - [ ] Invalid path rejected (absolute, parent traversal)
-  - [ ] Invalid pattern rejected (no capture group, empty)
-  - [ ] Duplicate path rejected
-  - [ ] CHANGELOG.md cannot be removed
-  - [ ] Reset clears to auto-detection
-  - [ ] CHANGELOG.md auto-appended when missing from explicit config
+- [x] Add these test items: Verified in commands/configure.md:636-644
+  - [x] version_files can be viewed (auto-detect mode)
+  - [x] version_files can be viewed (explicit config)
+  - [x] Version file can be added with valid path and pattern
+  - [x] Invalid path rejected (absolute, parent traversal)
+  - [x] Invalid pattern rejected (no capture group, empty)
+  - [x] Duplicate path rejected
+  - [x] CHANGELOG.md cannot be removed
+  - [x] Reset clears to auto-detection
+  - [x] CHANGELOG.md auto-appended when missing from explicit config
 
 ## Changes to CLAUDE.md
 
 ### Version Files Section (replace lines 47-52)
-- [ ] Replace the hardcoded 3-file list:
+- [x] Replace the hardcoded 3-file list: Verified in CLAUDE.md:47-59
   ```
   These files contain version information and must stay in sync:
   - `.claude-plugin/plugin.json` -> `"version": "X.Y.Z"`
@@ -167,7 +167,7 @@ context: |
   ```
 
 ### Version Update Rules Section (lines 54-60)
-- [ ] Replace plugin-specific language:
+- [x] Replace plugin-specific language: Verified in CLAUDE.md:63
   ```
   **CRITICAL**: Do NOT modify version numbers in `plugin.json` or `marketplace.json` during:
   ```
@@ -177,7 +177,7 @@ context: |
   ```
 
 ### Version Tagging Checklist Section (lines 67-87)
-- [ ] Replace the hardcoded bash snippet and 3-file verification with:
+- [x] Replace the hardcoded bash snippet and 3-file verification with: Verified in CLAUDE.md:76-84
   ```
   **BEFORE creating a git tag**, verify version consistency using `/dotclaude:tagging`.
 
@@ -189,14 +189,14 @@ context: |
   For manual verification, check all configured version files match.
   See `/dotclaude:configure` Setting 6 to view which files are checked.
   ```
-- [ ] Keep the tag creation commands:
+- [x] Keep the tag creation commands: Verified in CLAUDE.md:88-89
   ```bash
   git tag vX.Y.Z
   git push origin vX.Y.Z
   ```
 
 ### Workflow Section (lines 63-66)
-- [ ] Replace:
+- [x] Replace: Verified in CLAUDE.md:72
   ```
   2. **At release**: Update all three files to the new version, then tag
   ```
