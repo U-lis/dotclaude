@@ -35,7 +35,7 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Relocate Language Sections | Pending | None |
+| 1 | Relocate Language Sections | Complete | None |
 
 ## Affected Files
 

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+
+- Language configuration (`language` setting) not being applied to AskUserQuestion parameters in command files because the `## Language` instruction section was positioned after template text — Claude processed English templates before reading the language override ([#41](https://github.com/U-lis/dotclaude/issues/41))
+  - Moved `## Language` section to immediately after frontmatter (before any AskUserQuestion templates) in 7 command files: `_init-common.md`, `configure.md`, `init-bugfix.md`, `init-feature.md`, `init-github-issue.md`, `init-refactor.md`, `merge.md`
+  - Added missing `## Language` section to `purge.md`
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed

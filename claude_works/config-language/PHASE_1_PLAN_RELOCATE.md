@@ -112,17 +112,17 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 
 ## Completion Checklist
 
-- [ ] `init-feature.md`: Language section removed from line 223, inserted after line 7
-- [ ] `init-bugfix.md`: Language section removed from line 255, inserted after line 7
-- [ ] `init-refactor.md`: Language section removed from line 238, inserted after line 7
-- [ ] `init-github-issue.md`: Language section removed from line 319, inserted after line 7
-- [ ] `_init-common.md`: Language section removed from line 273, inserted after line 9
-- [ ] `configure.md`: Language section (only) removed from lines 505-510, checklist items at 511-513 preserved, Language inserted after line 6
-- [ ] `merge.md`: Language section removed from line 74, inserted after line 5
-- [ ] `purge.md`: New Language section added after line 5
-- [ ] `start-new.md`: Verified Language section already at line 35 (no changes)
-- [ ] All files: No other content changed (question text, logic, structure intact)
-- [ ] All files: Language section content matches the standard block exactly
+- [x] `init-feature.md`: Language section removed from line 223, inserted after line 7. Verified at line 9 in init-feature.md.
+- [x] `init-bugfix.md`: Language section removed from line 255, inserted after line 7. Verified at line 9 in init-bugfix.md.
+- [x] `init-refactor.md`: Language section removed from line 238, inserted after line 7. Verified at line 9 in init-refactor.md.
+- [x] `init-github-issue.md`: Language section removed from line 319, inserted after line 7. Verified at line 9 in init-github-issue.md.
+- [x] `_init-common.md`: Language section removed from line 273, inserted after line 9. Verified at line 9 in _init-common.md.
+- [x] `configure.md`: Language section (only) removed from lines 505-510, checklist items at 511-513 preserved, Language inserted after line 6. Verified at line 9 in configure.md; checklist items at lines 511-513.
+- [x] `merge.md`: Language section removed from line 74, inserted after line 5. Verified at line 7 in merge.md.
+- [x] `purge.md`: New Language section added after line 5. Verified at line 7 in purge.md.
+- [x] `start-new.md`: Verified Language section already at line 35 (no changes needed).
+- [x] All files: No other content changed (question text, logic, structure intact).
+- [x] All files: Language section content matches the standard block exactly.
 
 ## Notes
 
