@@ -223,15 +223,15 @@ The only user-visible change is the PR body content structure.
 
 ## Completion Checklist
 
-- [ ] Add "Document Detection" section to pr.md describing how to find and read SPEC.md, GLOBAL.md, PHASE_*_TEST.md, PHASE_*_PLAN.md
-- [ ] Update workflow step 9 to include document discovery substeps (9a through 9g)
-- [ ] Replace PR Body section template with structured format: Summary -> Resolves -> Changes -> Test plan -> Attribution
-- [ ] Define Summary generation logic with fallback chain: SPEC.md Overview -> GLOBAL.md Feature Overview -> commit-based summary
-- [ ] Define Changes generation logic with fallback: file-level descriptions from commits + PHASE_*_PLAN context -> commit-grouped descriptions
-- [ ] Define Test plan generation logic with fallback: PHASE_*_TEST.md extraction -> minimal scope-based items
-- [ ] Add attribution footer line to template
-- [ ] Add edge cases 12-19 to Edge Cases table
-- [ ] Verify backward compatibility: PR body generates correctly without any design documents
-- [ ] Update the markdown template example in PR Body section to show the new structure
-- [ ] Verify Resolves #N position is after Summary (matching existing PR pattern from #34-#38)
-- [ ] Verify no changes to PR Title, Label, Milestone, or Safety sections
+- [x] Add "Document Detection" section to pr.md describing how to find and read SPEC.md, GLOBAL.md, PHASE_*_TEST.md, PHASE_*_PLAN.md
+- [x] Update workflow step 9 to include document discovery substeps (9a through 9g)
+- [x] Replace PR Body section template with structured format: Summary -> Resolves -> Changes -> Test plan -> Attribution
+- [x] Define Summary generation logic with fallback chain: SPEC.md Overview -> GLOBAL.md Feature Overview -> commit-based summary
+- [x] Define Changes generation logic with fallback: file-level descriptions from commits + PHASE_*_PLAN context -> commit-grouped descriptions
+- [x] Define Test plan generation logic with fallback: PHASE_*_TEST.md extraction -> minimal scope-based items
+- [x] Add attribution footer line to template
+- [x] Add edge cases 12-19 to Edge Cases table
+- [x] Verify backward compatibility: PR body generates correctly without any design documents
+- [x] Update the markdown template example in PR Body section to show the new structure
+- [x] Verify Resolves #N position is after Summary (matching existing PR pattern from #34-#38)
+- [x] Verify no changes to PR Title, Label, Milestone, or Safety sections
