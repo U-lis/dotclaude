@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-04
+
+### Fixed
+
+- `/dotclaude:start-new` orchestrator not invoking init commands (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) after work type selection in Step 2. Replaced ambiguous "follow the command" phrasing with explicit `Skill()` tool invocation, preventing the orchestrator from improvising its own question flow instead of delegating to the correct init command ([#52](https://github.com/U-lis/dotclaude/issues/52))
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed
