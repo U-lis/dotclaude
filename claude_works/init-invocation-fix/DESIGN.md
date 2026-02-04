@@ -68,14 +68,14 @@ Replace the ambiguous init command routing table (lines 79-89) with explicit `Sk
 
 #### Completion Checklist
 
-- [ ] C-1: Line 81 changed from "follow the corresponding init command (Claude auto-loads command content):" to "invoke the corresponding init command via the Skill tool:"
-- [ ] C-2: Table header changed from "Init Command" to "Action"
-- [ ] C-3: All four table rows use `Skill("dotclaude:init-xxx")` syntax
-- [ ] C-4: CRITICAL warning block added immediately after the table
-- [ ] C-5: "Execute ALL steps defined in the loaded init file:" block remains unchanged
-- [ ] C-6: Step 1 (lines 67-78) remains unchanged
-- [ ] C-7: Step 2.6 and all subsequent steps remain unchanged
-- [ ] C-8: No other files are modified
+- [x] C-1: Line 81 changed from "follow the corresponding init command (Claude auto-loads command content):" to "invoke the corresponding init command via the Skill tool:" -- Verified at commands/start-new.md:81
+- [x] C-2: Table header changed from "Init Command" to "Action" -- Verified at commands/start-new.md:83
+- [x] C-3: All four table rows use `Skill("dotclaude:init-xxx")` syntax -- Verified at commands/start-new.md:85-88
+- [x] C-4: CRITICAL warning block added immediately after the table -- Verified at commands/start-new.md:90-91
+- [x] C-5: "Execute ALL steps defined in the loaded init file:" block remains unchanged -- Verified at commands/start-new.md:93
+- [x] C-6: Step 1 (lines 67-78) remains unchanged -- Verified at commands/start-new.md:67-77
+- [x] C-7: Step 2.6 and all subsequent steps remain unchanged -- Verified at commands/start-new.md:100+
+- [x] C-8: No other files are modified -- Verified via git diff --name-only (only commands/start-new.md)
 
 #### Notes
 
@@ -95,24 +95,24 @@ Replace the ambiguous init command routing table (lines 79-89) with explicit `Sk
 
 #### Content Verification
 
-- [ ] T-1: Line 81 contains the exact text `invoke the corresponding init command via the Skill tool:`
-- [ ] T-2: Table header row contains `| User Selection | Action |`
-- [ ] T-3: Feature row contains `` `Skill("dotclaude:init-feature")` ``
-- [ ] T-4: Bug Fix row contains `` `Skill("dotclaude:init-bugfix")` ``
-- [ ] T-5: Refactoring row contains `` `Skill("dotclaude:init-refactor")` ``
-- [ ] T-6: GitHub Issue row contains `` `Skill("dotclaude:init-github-issue")` ``
-- [ ] T-7: CRITICAL warning block is present with text "Do NOT improvise questions"
-- [ ] T-8: Second line of warning contains "Wait for the Skill to load, then follow its instructions exactly."
+- [x] T-1: Line 81 contains the exact text `invoke the corresponding init command via the Skill tool:`
+- [x] T-2: Table header row contains `| User Selection | Action |`
+- [x] T-3: Feature row contains `` `Skill("dotclaude:init-feature")` ``
+- [x] T-4: Bug Fix row contains `` `Skill("dotclaude:init-bugfix")` ``
+- [x] T-5: Refactoring row contains `` `Skill("dotclaude:init-refactor")` ``
+- [x] T-6: GitHub Issue row contains `` `Skill("dotclaude:init-github-issue")` ``
+- [x] T-7: CRITICAL warning block is present with text "Do NOT improvise questions"
+- [x] T-8: Second line of warning contains "Wait for the Skill to load, then follow its instructions exactly."
 
 #### Regression Tests (No Unintended Changes)
 
-- [ ] T-9: Step 1 block (AskUserQuestion for work type selection) is unchanged
-- [ ] T-10: "Execute ALL steps defined in the loaded init file:" block and its sub-items (lines 90-95) are unchanged
-- [ ] T-11: Step 2.6 (Target Version Question) is unchanged
-- [ ] T-12: Step 3 and all subsequent steps are unchanged
-- [ ] T-13: No other files in the repository are modified (verify via `git diff --name-only`)
+- [x] T-9: Step 1 block (AskUserQuestion for work type selection) is unchanged
+- [x] T-10: "Execute ALL steps defined in the loaded init file:" block and its sub-items (lines 93-98) are unchanged
+- [x] T-11: Step 2.6 (Target Version Question) is unchanged
+- [x] T-12: Step 3 and all subsequent steps are unchanged
+- [x] T-13: No other files in the repository are modified (verified via `git diff --name-only`)
 
 #### Edge Cases
 
-- [ ] T-14: The word "follow" does NOT appear in the Step 2 routing table (confirms full replacement)
-- [ ] T-15: The phrase "auto-loads" does NOT appear anywhere in Step 2 (confirms removal of ambiguous language)
+- [x] T-14: The word "follow" does NOT appear in the Step 2 routing table (confirmed: grep for "Follow the .init-" returned no matches)
+- [x] T-15: The phrase "auto-loads" does NOT appear anywhere in Step 2 (confirmed: grep for "auto-loads" returned no matches)

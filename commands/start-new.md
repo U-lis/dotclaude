@@ -78,14 +78,17 @@ Call AskUserQuestion tool with these exact parameters:
 
 **Step 2: Load Init Instructions**
 
-Based on Step 1 response, follow the corresponding init command (Claude auto-loads command content):
+Based on Step 1 response, invoke the corresponding init command via the Skill tool:
 
-| User Selection | Init Command |
-|----------------|--------------|
-| Add/Modify Feature | Follow the `init-feature` command |
-| Bug Fix | Follow the `init-bugfix` command |
-| Refactoring | Follow the `init-refactor` command |
-| GitHub Issue | Follow the `init-github-issue` command |
+| User Selection | Action |
+|----------------|--------|
+| Add/Modify Feature | `Skill("dotclaude:init-feature")` |
+| Bug Fix | `Skill("dotclaude:init-bugfix")` |
+| Refactoring | `Skill("dotclaude:init-refactor")` |
+| GitHub Issue | `Skill("dotclaude:init-github-issue")` |
+
+**CRITICAL**: Do NOT improvise questions. The init command defines its own question flow.
+Wait for the Skill to load, then follow its instructions exactly.
 
 Execute ALL steps defined in the loaded init file:
 1. Step-by-step questions (using AskUserQuestion)
