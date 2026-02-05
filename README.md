@@ -145,7 +145,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge` | Merge current branch to base branch |
-| `/dotclaude:pr` | Create GitHub Pull Request from current branch |
+| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan) from design docs or git history |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |

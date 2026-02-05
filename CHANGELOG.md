@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.1] - 2026-02-03
+
+### Fixed
+
+- `/dotclaude:pr` command now generates structured PR bodies with design document extraction instead of raw commit log and diff stats ([#43](https://github.com/U-lis/dotclaude/issues/43))
+  - Summary section extracted from SPEC.md `## Overview` and GLOBAL.md Feature Overview, with git log-based fallback when design docs are unavailable
+  - Changes section lists each modified file with a meaningful description derived from PHASE_*_PLAN.md or per-file commit messages, replacing the previous raw `git diff --stat` output
+  - Test plan section extracted from PHASE_*_TEST.md checkbox items (Unit Tests, Integration Tests, Edge Cases), with minimal generic fallback
+  - Claude Code attribution footer appended to all PR bodies
+  - Document Detection step resolves `working_directory` and scans for SPEC.md, GLOBAL.md, PHASE_*_PLAN.md, and PHASE_*_TEST.md before composing the body
+  - Graceful fallback for each section when design documents are missing (manual PR outside dotclaude workflow, skipped design step, etc.)
+  - 8 new edge case handlers (cases 12-19) covering missing docs, empty commit logs, long histories, and nonexistent working directories
+
+### Added
+
+- Design documentation for the refine-pr-contents bugfix (`claude_works/refine-pr-contents/SPEC.md`, `claude_works/refine-pr-contents/DESIGN.md`)
+
 ## [0.3.0] - 2026-01-29
 
 ### Fixed
