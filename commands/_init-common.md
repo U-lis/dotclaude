@@ -22,8 +22,9 @@ After gathering requirements (or using pre-filled values from GitHub issue), cre
    - `{project_name}`: name of the current git repository root directory
    - `{type}`: work type prefix (`feature`, `bugfix`, `refactor`)
    - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
-4. Create project directory: `mkdir -p ../{project_name}-{type}-{keyword}/{working_directory}/{subject}`
-5. **Verify worktree creation**: Run `ls ../{project_name}-{type}-{keyword}` and confirm the directory exists. If the directory does not exist, the worktree creation failed -- report the error immediately. Do NOT silently fall back to `git checkout -b`.
+4. **Verify worktree creation**: Run `ls ../{project_name}-{type}-{keyword}` and confirm the directory exists. If the directory does not exist, the worktree creation failed -- report the error immediately. Do NOT silently fall back to `git checkout -b`.
+5. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
+6. Create project directory: `mkdir -p {working_directory}/{subject}`
 
 ### Naming Examples
 

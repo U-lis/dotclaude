@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Init workflow (`_init-common.md`) missing `cd` into worktree after `git worktree add`, causing SPEC.md and design documents to be created in the original repository directory instead of the worktree ([#48](https://github.com/U-lis/dotclaude/issues/48))
 - Orchestrator skipping init delegation chain (`init-github-issue` -> `init-{type}` -> `_init-common`) and executing work inline when `/dotclaude:start-new` is invoked with a GitHub issue URL, causing worktree creation to be skipped entirely ([#40](https://github.com/U-lis/dotclaude/issues/40))
 - Version management in `/dotclaude:tagging` command hardcoded three dotclaude-specific files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `CHANGELOG.md`), making it unusable for non-plugin projects ([#39](https://github.com/U-lis/dotclaude/issues/39))
 - `/dotclaude:pr` command now generates structured PR bodies with design document extraction instead of raw commit log and diff stats ([#43](https://github.com/U-lis/dotclaude/issues/43))
@@ -22,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Step 6 Checkpoint Worktree Check in `start-new.md` now uses `pwd`-based current directory verification instead of external directory existence check
 - `_init-common.md` Branch Creation section now marked MANDATORY with explicit MUST/NEVER enforcement prohibiting `git checkout -b` as worktree substitute
 - `start-new.md` Step 6 Checkpoint now marked UNCONDITIONAL -- no agent may bypass or override HALT conditions
 - `/dotclaude:tagging` version consistency check now reads from configured `version_files` instead of hardcoded 3-file list
