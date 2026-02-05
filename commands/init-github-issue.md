@@ -6,6 +6,13 @@ user-invocable: false
 
 Instructions for initializing work from GitHub issue URL or number.
 
+## Language
+
+The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+
+- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
+- If no language was provided at session start, default to English (en_US).
+
 **Requirements**: `gh` CLI must be installed and authenticated.
 
 ## Step-by-Step Process
@@ -315,10 +322,3 @@ After context extraction, proceed to analysis phase as defined in init-{type}.md
 4. Worktree created at `../{project_name}-{work_type}-{branch_keyword}` with branch `{work_type}/{branch_keyword}`
 5. Route to appropriate init-xxx.md
 6. Continue normal init workflow from there (with pre-filled values)
-
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).

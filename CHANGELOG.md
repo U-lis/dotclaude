@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Language configuration (`language` setting) not being applied to AskUserQuestion parameters in command files because the `## Language` instruction section was positioned after template text — Claude processed English templates before reading the language override ([#41](https://github.com/U-lis/dotclaude/issues/41))
+  - Moved `## Language` section to immediately after frontmatter (before any AskUserQuestion templates) in 7 command files: `_init-common.md`, `configure.md`, `init-bugfix.md`, `init-feature.md`, `init-github-issue.md`, `init-refactor.md`, `merge.md`
+  - Added missing `## Language` section to `purge.md`
 - `/dotclaude:start-new` orchestrator not invoking init commands (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) after work type selection in Step 2. Replaced ambiguous "follow the command" phrasing with explicit `Skill()` tool invocation, preventing the orchestrator from improvising its own question flow instead of delegating to the correct init command ([#52](https://github.com/U-lis/dotclaude/issues/52))
 - Init workflow (`_init-common.md`) missing `cd` into worktree after `git worktree add`, causing SPEC.md and design documents to be created in the original repository directory instead of the worktree ([#48](https://github.com/U-lis/dotclaude/issues/48))
 - Orchestrator skipping init delegation chain (`init-github-issue` -> `init-{type}` -> `_init-common`) and executing work inline when `/dotclaude:start-new` is invoked with a GitHub issue URL, causing worktree creation to be skipped entirely ([#40](https://github.com/U-lis/dotclaude/issues/40))
