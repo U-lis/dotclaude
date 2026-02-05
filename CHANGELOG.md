@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Version management in `/dotclaude:tagging` command hardcoded three dotclaude-specific files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `CHANGELOG.md`), making it unusable for non-plugin projects ([#39](https://github.com/U-lis/dotclaude/issues/39))
 - `/dotclaude:pr` command now generates structured PR bodies with design document extraction instead of raw commit log and diff stats ([#43](https://github.com/U-lis/dotclaude/issues/43))
   - Summary section extracted from SPEC.md `## Overview` and GLOBAL.md Feature Overview, with git log-based fallback when design docs are unavailable
   - Changes section lists each modified file with a meaningful description derived from PHASE_*_PLAN.md or per-file commit messages, replacing the previous raw `git diff --stat` output
@@ -20,7 +21,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Configurable `version_files` setting in `dotclaude-config.json` for per-project version file management
+  - Each entry specifies `path` (relative file path) and `pattern` (regex with capture group for version extraction)
+  - `CHANGELOG.md` is always mandatory and auto-appended if missing from explicit configuration
+- Auto-detection of common version files when no explicit `version_files` configured: `CHANGELOG.md`, `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`
+- Setting 6 (`version_files`) in `/dotclaude:configure` command with View/Add/Remove/Reset interactive workflow
+- Dynamic version consistency failure output in `/dotclaude:tagging` that lists all checked files with their extracted versions
 - Design documentation for the refine-pr-contents bugfix (`claude_works/refine-pr-contents/SPEC.md`, `claude_works/refine-pr-contents/DESIGN.md`)
+
+### Changed
+
+- `/dotclaude:tagging` version consistency check now reads from configured `version_files` instead of hardcoded 3-file list
+- `CLAUDE.md` version management sections updated to reference configurable version files system instead of hardcoded file list
+- Version Tagging Checklist in `CLAUDE.md` now references `/dotclaude:tagging` command instead of manual bash verification
 
 ## [0.3.0] - 2026-01-29
 
