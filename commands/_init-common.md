@@ -8,9 +8,11 @@ Shared workflow steps for all init commands (`init-feature`, `init-bugfix`, `ini
 
 ---
 
-## Branch Creation
+## Branch Creation -- MANDATORY
 
-After gathering requirements (or using pre-filled values from GitHub issue), create the work branch.
+After gathering requirements (or using pre-filled values from GitHub issue), create the work branch using `git worktree add`. This step is MANDATORY.
+
+**MUST**: Use `git worktree add` as shown below. **NEVER** use `git checkout -b`, `git switch -c`, or any other branch creation method as a substitute.
 
 ### Steps
 
@@ -20,8 +22,9 @@ After gathering requirements (or using pre-filled values from GitHub issue), cre
    - `{project_name}`: name of the current git repository root directory
    - `{type}`: work type prefix (`feature`, `bugfix`, `refactor`)
    - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
-4. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
-5. Create project directory: `mkdir -p {working_directory}/{subject}`
+4. **Verify worktree creation**: Run `ls ../{project_name}-{type}-{keyword}` and confirm the directory exists. If the directory does not exist, the worktree creation failed -- report the error immediately. Do NOT silently fall back to `git checkout -b`.
+5. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
+6. Create project directory: `mkdir -p {working_directory}/{subject}`
 
 ### Naming Examples
 
