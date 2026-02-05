@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- `/dotclaude:start-new` orchestrator not invoking init commands (`init-feature`, `init-bugfix`, `init-refactor`, `init-github-issue`) after work type selection in Step 2. Replaced ambiguous "follow the command" phrasing with explicit `Skill()` tool invocation, preventing the orchestrator from improvising its own question flow instead of delegating to the correct init command ([#52](https://github.com/U-lis/dotclaude/issues/52))
 - Init workflow (`_init-common.md`) missing `cd` into worktree after `git worktree add`, causing SPEC.md and design documents to be created in the original repository directory instead of the worktree ([#48](https://github.com/U-lis/dotclaude/issues/48))
 - Orchestrator skipping init delegation chain (`init-github-issue` -> `init-{type}` -> `_init-common`) and executing work inline when `/dotclaude:start-new` is invoked with a GitHub issue URL, causing worktree creation to be skipped entirely ([#40](https://github.com/U-lis/dotclaude/issues/40))
 - Version management in `/dotclaude:tagging` command hardcoded three dotclaude-specific files (`.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`, `CHANGELOG.md`), making it unusable for non-plugin projects ([#39](https://github.com/U-lis/dotclaude/issues/39))
