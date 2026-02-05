@@ -129,6 +129,11 @@ Interactive workflow to edit settings at global or local scope. Changes take eff
 | `check_version` | boolean | `true` | Check for plugin updates on session start |
 | `auto_update` | boolean | `false` | Auto-update when update available |
 | `base_branch` | string | `main` | Default base branch for git operations |
+| `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
+
+#### Version Files
+
+When `version_files` is empty (default), `/dotclaude:tagging` auto-detects common version files in the project (e.g., `package.json`, `pyproject.toml`, `Cargo.toml`, `.claude-plugin/plugin.json`). To override, configure explicit `{path, pattern}` entries where `pattern` is a regex with a capture group for the version string. `CHANGELOG.md` is always included regardless of configuration. Use `/dotclaude:configure` (Setting 6) to manage version files interactively.
 
 ## Commands & Core Workflow
 
@@ -145,7 +150,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge` | Merge current branch to base branch |
-| `/dotclaude:pr` | Create GitHub Pull Request from current branch |
+| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan) from design docs or git history |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |

@@ -46,14 +46,21 @@ When invoked via `/dotclaude:*`, Claude reads the command file and follows its i
 
 ### Version Files
 
-These files contain version information and must stay in sync:
-- `.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
-- `.claude-plugin/marketplace.json` → `"version": "X.Y.Z"`
-- `CHANGELOG.md` → `## [X.Y.Z] - YYYY-MM-DD`
+Version files are configurable per-project via `dotclaude-config.json`.
+
+When `version_files` is configured, those files are checked.
+When not configured, common version files are auto-detected
+(CHANGELOG.md, package.json, pyproject.toml, Cargo.toml, pom.xml,
+.claude-plugin/plugin.json, .claude-plugin/marketplace.json).
+
+CHANGELOG.md is always mandatory and cannot be removed.
+
+Configure version files via `/dotclaude:configure` (Setting 6)
+or edit `dotclaude-config.json` directly.
 
 ### Version Update Rules
 
-**CRITICAL**: Do NOT modify version numbers in `plugin.json` or `marketplace.json` during:
+**CRITICAL**: Do NOT modify version numbers in version files during:
 - `/dotclaude:code` phase (implementation)
 - `/dotclaude:update-docs` phase (documentation)
 
@@ -62,23 +69,19 @@ Version updates should ONLY happen at release time (tagging phase).
 ### Workflow
 
 1. **During development**: Keep version files unchanged
-2. **At release**: Update all three files to the new version, then tag
+2. **At release**: Update all version files to the new version, then tag
 
 ## Version Tagging Checklist
 
-**BEFORE creating a git tag**, verify version consistency across all files:
+**BEFORE creating a git tag**, verify version consistency using `/dotclaude:tagging`.
 
-```bash
-# Check all three files have matching versions
-grep '"version"' .claude-plugin/plugin.json
-grep '"version"' .claude-plugin/marketplace.json
-head -20 CHANGELOG.md | grep '## \['
-```
+The tagging command automatically:
+1. Resolves the version files list (from config or auto-detection)
+2. Checks all version files for consistency
+3. Reports any mismatches before proceeding
 
-All three must show the same version:
-- `.claude-plugin/plugin.json` → `"version": "X.Y.Z"`
-- `.claude-plugin/marketplace.json` → `"version": "X.Y.Z"`
-- `CHANGELOG.md` → `## [X.Y.Z] - YYYY-MM-DD`
+For manual verification, check all configured version files match.
+See `/dotclaude:configure` Setting 6 to view which files are checked.
 
 Only after verification, create the tag:
 ```bash
