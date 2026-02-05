@@ -10,7 +10,7 @@
     {
       "name": "dotclaude",
       "description": "Structured development workflow with SPEC-driven design, phased implementation, and mandatory validation. Includes Designer, TechnicalWriter, and Coder agent orchestration.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "author": {
         "name": "U-lis",
         "email": "ulismoon@gmail.com"
