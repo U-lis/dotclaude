@@ -138,6 +138,34 @@ Store the target_version for:
 - Include in SPEC.md header
 - Pass to TechnicalWriter for CHANGELOG updates (Step 11)
 
+**Step 2.8: Post-Init Verification**
+
+**MANDATORY**: After Step 2 (init-xxx) completes, verify that the init delegation chain executed correctly BEFORE proceeding to Step 3.
+
+Verification checks:
+1. Run `git worktree list` and confirm `../{project_name}-{type}-{keyword}` appears in the output
+2. Run `git branch --show-current` and confirm the current branch is `{type}/{keyword}` (NOT main, NOT master)
+3. Confirm the working directory `../{project_name}-{type}-{keyword}/{working_directory}/{subject}` exists
+
+If ANY check fails:
+```
+retry_count = 0
+while retry_count < 3:
+    Re-execute Step 2 (init-xxx delegation) from the beginning
+    Run verification checks again
+    if all checks pass:
+        break
+    retry_count += 1
+
+if retry_count == 3 and checks still fail:
+    HALT workflow immediately
+    Report to user: "Init delegation chain failed after 3 attempts.
+    Worktree or branch was not created correctly.
+    Manual intervention required."
+```
+
+This step ensures the orchestrator catches any case where the init chain was bypassed or partially executed.
+
 **Step 3: SPEC Review**
 
 Present SPEC.md summary to user, then call AskUserQuestion tool:
@@ -169,30 +197,31 @@ Call AskUserQuestion tool:
 
 ---
 
-### Step 6 Checkpoint (Before Design)
+### Step 6 Checkpoint (Before Design) -- UNCONDITIONAL
 
-**MANDATORY**: Before calling Designer agent, validate:
+**MANDATORY -- UNCONDITIONAL CHECK -- NO EXCEPTIONS, NO OVERRIDES**: Before calling Designer agent, validate ALL of the following. Every check MUST pass. No agent may bypass, skip, or override any HALT condition below, regardless of project size, complexity, or any other justification.
 
-1. **Branch Check**:
+1. **[UNCONDITIONAL] Branch Check**:
    - Current branch must NOT be main/master
    - Must be feature/, bugfix/, or refactor/ branch
    - If on main: HALT and report "Work branch not created. Create branch before proceeding."
 
-2. **SPEC.md Check**:
+2. **[UNCONDITIONAL] SPEC.md Check**:
    - File `{working_directory}/{subject}/SPEC.md` must exist
    - If missing: HALT and report "SPEC.md not found. Create SPEC.md before design phase."
 
-3. **SPEC.md Committed Check**:
+3. **[UNCONDITIONAL] SPEC.md Committed Check**:
    - SPEC.md must be committed (not just staged)
    - Run: `git log --oneline -1 -- {working_directory}/{subject}/SPEC.md`
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
-4. **Worktree Check**:
-   - Directory `../{project_name}-{type}-{keyword}` must exist as a valid git worktree
-   - Run: `git worktree list | grep {project_name}-{type}-{keyword}`
-   - If not found: HALT and report "Worktree not found. Create worktree before design phase."
+4. **[UNCONDITIONAL] Worktree Check**:
+   - Current directory must be inside the worktree
+   - Run: `pwd` and verify output contains `{project_name}-{type}-{keyword}`
+   - Secondary validation: `git worktree list | grep {project_name}-{type}-{keyword}`
+   - If `pwd` does not contain worktree name: HALT and report "Not in worktree directory. Run cd to enter worktree before design phase."
 
-If any check fails: halt workflow and report error to user.
+If ANY check fails: HALT workflow immediately and report error to user. There are NO exceptions to this rule. Do NOT proceed with a justification for why the check can be skipped.
 
 ---
 
