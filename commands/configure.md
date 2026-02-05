@@ -53,7 +53,8 @@ Final values = Defaults < Global < Local
   "working_directory": ".dc_workspace",
   "check_version": true,
   "auto_update": false,
-  "base_branch": "main"
+  "base_branch": "main",
+  "version_files": []
 }
 ```
 
@@ -65,6 +66,7 @@ DEFAULT_WORKING_DIRECTORY=".dc_workspace"
 DEFAULT_CHECK_VERSION=true
 DEFAULT_AUTO_UPDATE=false
 DEFAULT_BASE_BRANCH="main"
+DEFAULT_VERSION_FILES="[]"  # empty = auto-detect
 
 GLOBAL_CONFIG_PATH="$HOME/.claude/dotclaude-config.json"
 LOCAL_CONFIG_PATH="<git_root>/.claude/dotclaude-config.json"
@@ -90,6 +92,7 @@ WORKING_DIR=".dc_workspace"
 CHECK_VERSION="true"
 AUTO_UPDATE="false"
 BASE_BRANCH="main"
+VERSION_FILES="[]"
 
 # Load global config (if exists)
 if [ -f "$GLOBAL_CONFIG" ]; then
@@ -99,6 +102,7 @@ if [ -f "$GLOBAL_CONFIG" ]; then
     CHECK_VERSION=$(jq -r '.check_version // true' "$GLOBAL_CONFIG")
     AUTO_UPDATE=$(jq -r '.auto_update // false' "$GLOBAL_CONFIG")
     BASE_BRANCH=$(jq -r '.base_branch // "main"' "$GLOBAL_CONFIG")
+    VERSION_FILES=$(jq -c '.version_files // []' "$GLOBAL_CONFIG")
   else
     echo "Warning: Invalid JSON in global config, using defaults" >&2
   fi
@@ -112,6 +116,10 @@ if [ -n "$GIT_ROOT" ] && [ -f "$LOCAL_CONFIG" ]; then
     CHECK_VERSION=$(jq -r '.check_version // '"$CHECK_VERSION"'' "$LOCAL_CONFIG")
     AUTO_UPDATE=$(jq -r '.auto_update // '"$AUTO_UPDATE"'' "$LOCAL_CONFIG")
     BASE_BRANCH=$(jq -r '.base_branch // "'"$BASE_BRANCH"'"' "$LOCAL_CONFIG")
+    local_vf=$(jq -c '.version_files // null' "$LOCAL_CONFIG")
+    if [ "$local_vf" != "null" ]; then
+      VERSION_FILES="$local_vf"
+    fi
   else
     echo "Warning: Invalid JSON in local config, using global/defaults" >&2
   fi
@@ -124,6 +132,7 @@ echo "  working_directory: $WORKING_DIR"
 echo "  check_version: $CHECK_VERSION"
 echo "  auto_update: $AUTO_UPDATE"
 echo "  base_branch: $BASE_BRANCH"
+echo "  version_files: $VERSION_FILES"
 ```
 
 Store loaded values for display in interactive prompts.
@@ -331,6 +340,126 @@ validate_base_branch() {
 }
 ```
 
+#### Setting 6: Version Files
+
+```yaml
+question: "Manage version files for tagging consistency check?"
+options:
+  - "View current version files"
+  - "Add a version file"
+  - "Remove a version file"
+  - "Reset to auto-detection"
+  - "Skip (no changes)"
+context: |
+  Current value: <current_version_files or "auto-detect (no explicit config)">
+
+  Version files are checked during /dotclaude:tagging to ensure all files
+  contain the same version before creating a git tag.
+
+  When no explicit version_files are configured, auto-detection finds
+  common version files (CHANGELOG.md, package.json, pyproject.toml, etc.)
+  in your project.
+```
+
+##### View Sub-action
+
+- If version_files is empty array (`[]`): show "Auto-detection mode (no explicit config)"
+  - Then show what auto-detection WOULD find by checking file existence in the project
+- If version_files is non-empty: show the configured list with path and pattern
+
+##### Add Sub-action
+
+Prompt for `path` (relative path to version file).
+
+**Path Validation**:
+```bash
+validate_version_file_path() {
+  local path="$1"
+
+  # Reject empty
+  if [ -z "$path" ]; then
+    echo "Error: Path cannot be empty"
+    return 1
+  fi
+
+  # Reject absolute paths
+  if [[ "$path" == /* ]]; then
+    echo "Error: Path must be relative (cannot start with /)"
+    return 1
+  fi
+
+  # Reject parent traversal
+  if [[ "$path" == *".."* ]]; then
+    echo "Error: Path cannot contain .. (parent traversal)"
+    return 1
+  fi
+
+  # Reject exactly . or ..
+  if [[ "$path" == "." ]] || [[ "$path" == ".." ]]; then
+    echo "Error: Path cannot be . or .."
+    return 1
+  fi
+
+  return 0
+}
+```
+
+Prompt for `pattern` (regex with capture group).
+
+**Pattern Validation**:
+```bash
+validate_version_pattern() {
+  local pattern="$1"
+
+  # Reject empty
+  if [ -z "$pattern" ]; then
+    echo "Error: Pattern cannot be empty"
+    return 1
+  fi
+
+  # Must contain exactly one capture group (...) excluding non-capturing groups (?:...)
+  # Count capturing groups: remove non-capturing (?:...) first, then count remaining (
+  local cleaned=$(echo "$pattern" | sed 's/(?://g')
+  local count=$(echo "$cleaned" | grep -o '(' | wc -l)
+
+  if [ "$count" -eq 0 ]; then
+    echo "Error: Pattern must contain exactly one capture group (...)"
+    return 1
+  fi
+
+  if [ "$count" -gt 1 ]; then
+    echo "Error: Pattern must contain exactly one capture group (found $count)"
+    return 1
+  fi
+
+  return 0
+}
+```
+
+**Add workflow**:
+1. Validate path and pattern
+2. Check for duplicate path (reject if already in list)
+3. If adding to an empty list (was auto-detect): warn user that explicit config overrides auto-detection
+4. Auto-append CHANGELOG.md entry if not already present after add:
+   ```json
+   {"path": "CHANGELOG.md", "pattern": "## \\[(\\d+\\.\\d+\\.\\d+)\\]"}
+   ```
+5. Return to Setting 6 menu after add (allow multiple operations)
+
+##### Remove Sub-action
+
+- Show numbered list of current version_files entries
+- If list is empty: show "No explicit version files configured (using auto-detection)"
+- Cannot remove CHANGELOG.md entry (show error if attempted)
+- If removing the last non-CHANGELOG entry: warn that this reverts to CHANGELOG-only (suggest Reset instead)
+- Return to Setting 6 menu after remove
+
+##### Reset Sub-action
+
+- Clear version_files array (set to `[]`)
+- Confirm: "Version files reset to auto-detection mode"
+- Return to Setting 6 menu
+
 ### Step 4: Save Configuration
 
 After all settings collected, save to target config file:
@@ -348,12 +477,14 @@ jq -n \
   --argjson cv "$CHECK_VERSION" \
   --argjson au "$AUTO_UPDATE" \
   --arg bb "$BASE_BRANCH" \
+  --argjson vf "$VERSION_FILES" \
   '{
     language: $lang,
     working_directory: $wd,
     check_version: $cv,
     auto_update: $au,
-    base_branch: $bb
+    base_branch: $bb,
+    version_files: $vf
   }' > "$TARGET_CONFIG"
 
 if [ $? -eq 0 ]; then
@@ -384,6 +515,7 @@ Settings:
   check_version: <value>
   auto_update: <value>
   base_branch: <value>
+  version_files: <value or "auto-detect">
 
 Changes take effect immediately (no restart required).
 ```
@@ -501,13 +633,22 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 - [ ] Global config can be edited
 - [ ] Local config can be edited (in git repo)
 - [ ] Local config rejected when not in git repo
-- [ ] All 5 settings can be modified
+- [ ] All 6 settings can be modified
 - [ ] Invalid working directory paths rejected
 - [ ] Working directory migration prompts when directory has files
 - [ ] Working directory migration works correctly
 - [ ] Empty required fields rejected
 - [ ] Invalid JSON in config handled gracefully
 - [ ] Permission errors handled gracefully
+- [ ] version_files can be viewed (auto-detect mode)
+- [ ] version_files can be viewed (explicit config)
+- [ ] Version file can be added with valid path and pattern
+- [ ] Invalid path rejected (absolute, parent traversal)
+- [ ] Invalid pattern rejected (no capture group, empty)
+- [ ] Duplicate path rejected
+- [ ] CHANGELOG.md cannot be removed
+- [ ] Reset clears to auto-detection
+- [ ] CHANGELOG.md auto-appended when missing from explicit config
 - [ ] Configuration saved with correct JSON format
 - [ ] Boolean values saved as true/false (not "true"/"false")
 - [ ] Changes take effect immediately
