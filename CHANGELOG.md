@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-09
+
+### Removed
+
+- `check_version` and `auto_update` configuration settings removed entirely. These were non-functional (never read by hooks) and redundant with Claude Code's built-in marketplace auto-update mechanism ([#54](https://github.com/U-lis/dotclaude/issues/54))
+- `hooks/check-update.sh` SessionStart hook deleted. Eliminates redundant GitHub network request on every session start
+
+### Changed
+
+- Configuration schema reduced from 6 settings to 4: `language`, `working_directory`, `base_branch`, `version_files`
+- Settings renumbered in `/dotclaude:configure`: Setting 3=Base Branch (was 5), Setting 4=Version Files (was 6)
+- `hooks/hooks.json` description updated from "update check and validation enforcement" to "validation enforcement"
+
 ## [0.3.1] - 2026-02-03
 
 ### Fixed

@@ -49,7 +49,6 @@ This document shows the project directory structure for dotclaude. For the full 
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
 │   ├── init-config.sh           # SessionStart config initializer
-│   ├── check-update.sh          # SessionStart update checker
 │   └── check-validation-complete.sh  # Validation completion checker
 └── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```
