@@ -55,7 +55,7 @@ When not configured, common version files are auto-detected
 
 CHANGELOG.md is always mandatory and cannot be removed.
 
-Configure version files via `/dotclaude:configure` (Setting 6)
+Configure version files via `/dotclaude:configure` (Setting 4)
 or edit `dotclaude-config.json` directly.
 
 ### Version Update Rules
@@ -81,7 +81,7 @@ The tagging command automatically:
 3. Reports any mismatches before proceeding
 
 For manual verification, check all configured version files match.
-See `/dotclaude:configure` Setting 6 to view which files are checked.
+See `/dotclaude:configure` Setting 4 to view which files are checked.
 
 Only after verification, create the tag:
 ```bash
