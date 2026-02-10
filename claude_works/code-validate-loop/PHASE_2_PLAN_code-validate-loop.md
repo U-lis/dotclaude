@@ -206,18 +206,18 @@ With:
 
 ## Completion Checklist
 
-- [ ] C1: All coder namespace references in code.md use `dotclaude:coders:coder-{language}`
-- [ ] C1: Note added above Coder Selection table explaining Task tool namespace
-- [ ] C2: Validation Loop diagram updated to show validator-managed loop with single invocation
-- [ ] C3: Validation Requirements updated to include full context passing and document update verification
-- [ ] C4: Pre-Commit Checklist expanded to include PLAN, GLOBAL, TEST document files
-- [ ] C5: Workflow Step 5 updated with worktree context and coder namespace passing
-- [ ] C5: Workflow Step 6 updated to "Process Validator Result"
-- [ ] C6: "code all" error handling updated to reflect validator-internal retries
-- [ ] C6: "code all" auto-commit updated to include document files
-- [ ] C7: Workflow Step 7 updated to include document files in git add
-- [ ] No remaining references to orchestrator-managed retry loop in code.md
-- [ ] No remaining references to old coder namespace (dotclaude:coder-{lang} without coders:)
+- [x] C1: All coder namespace references in code.md use `dotclaude:coders:coder-{language}`: Verified no `dotclaude:coder-` (without coders:) remains; correct namespace at code.md:168
+- [x] C1: Note added above Coder Selection table explaining Task tool namespace: Verified at code.md:168
+- [x] C2: Validation Loop diagram updated to show validator-managed loop with single invocation: Verified at code.md:83-109
+- [x] C3: Validation Requirements updated to include full context passing and document update verification: Verified at code.md:76-81
+- [x] C4: Pre-Commit Checklist expanded to include PLAN, GLOBAL, TEST document files: Verified at code.md:113-123
+- [x] C5: Workflow Step 5 updated with worktree context and coder namespace passing: Verified at code.md:53-57
+- [x] C5: Workflow Step 6 updated to "Process Validator Result": Verified at code.md:59-61
+- [x] C6: "code all" error handling updated to reflect validator-internal retries: Verified at code.md:253-257
+- [x] C6: "code all" auto-commit updated to include document files: Verified at code.md:259-262
+- [x] C7: Workflow Step 7 updated to include document files in git add: Verified at code.md:63-66
+- [x] No remaining references to orchestrator-managed retry loop in code.md: Verified via grep (0 matches)
+- [x] No remaining references to old coder namespace (dotclaude:coder-{lang} without coders:): Verified via grep (0 matches)
 
 ## Notes
 

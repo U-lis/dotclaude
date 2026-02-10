@@ -79,7 +79,7 @@ After the SPEC-based design phase completes correctly, the code implementation p
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
 | 1 | Core Loop Fix: Rewrite code-validator.md (self-loop, quality detection, document timing) and start-new.md (namespace fix, validator prompt, simplified loop, expanded commit) | Complete | - |
-| 2 | Align code.md: Mirror Phase 1 patterns (correct namespace, validator-managed loop reference, expanded commit, worktree context) | Not Started | Phase 1 |
+| 2 | Align code.md: Mirror Phase 1 patterns (correct namespace, validator-managed loop reference, expanded commit, worktree context) | Complete | Phase 1 |
 
 ## File Structure
 
