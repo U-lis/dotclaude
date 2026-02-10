@@ -1,0 +1,100 @@
+# Phase 1: Test Cases
+
+## Test Coverage Target
+
+>= 70%
+
+These test cases verify the correctness of changes to `agents/code-validator.md` and `commands/start-new.md`. Since all changes are to markdown instruction files (not executable code), "testing" means structural verification, content correctness, and behavioral contract validation through manual or automated inspection.
+
+## Unit Tests
+
+### code-validator.md: Context from Orchestrator Section
+
+- [ ] TC-1.1: Section "## Context from Orchestrator" exists after "## Language" section
+- [ ] TC-1.2: Section documents all 6 required parameters: worktree_path, coder_namespace, phase_id, plan_path, test_path, global_path
+- [ ] TC-1.3: Default behavior documented for missing worktree_path (defaults to ".", warns)
+
+### code-validator.md: Quality Tool Auto-Detection
+
+- [ ] TC-2.1: Section "## Quality Tool Detection and Execution" exists and replaces the old static commands section
+- [ ] TC-2.2: Detection algorithm covers package.json (JS/TS), pyproject.toml (Python), Cargo.toml (Rust), svelte.config.js (Svelte)
+- [ ] TC-2.3: For Python detection: ruff, ty/mypy, pytest commands listed with dependency checks
+- [ ] TC-2.4: For JS/TS detection: eslint, tsc, npm test commands listed with config checks
+- [ ] TC-2.5: For Rust detection: cargo clippy, cargo test commands listed
+- [ ] TC-2.6: For Svelte detection: eslint, svelte-check, npm test commands listed
+- [ ] TC-2.7: Binary availability check instruction present (which/command -v pattern)
+- [ ] TC-2.8: N/A fallback documented with message format "Tool not available: {binary}"
+- [ ] TC-2.9: Quality Command Reference subsection preserved as reference with disclaimer note
+- [ ] TC-2.10: Each check reports as PASS / FAIL (with details) / N/A (with reason)
+
+### code-validator.md: Validate-Fix Loop
+
+- [ ] TC-3.1: Section "## Validate-Fix Loop" exists and replaces old "## Retry Logic" section
+- [ ] TC-3.2: Flow diagram shows 3 steps: Validate -> Invoke Coder -> Document Update
+- [ ] TC-3.3: Coder invocation uses Task tool with `{coder_namespace}` parameter
+- [ ] TC-3.4: Coder fix prompt includes: worktree_path, detailed error list, fix instructions, scope limitation
+- [ ] TC-3.5: Maximum 3 attempts enforced (attempt counter starts at 1, loops while < 3)
+- [ ] TC-3.6: Document update step explicitly states "AFTER final success ONLY"
+- [ ] TC-3.7: On 3x failure: GLOBAL.md updated to "Skipped", FAIL report returned
+- [ ] TC-3.8: No references to old pseudo-code patterns (send_fix_instructions, wait_for_coder_completion)
+
+### code-validator.md: Checklist Update Authority
+
+- [ ] TC-4.1: Timing rule present at top of section: "TIMING: These updates execute ONLY after the final coder completion"
+- [ ] TC-4.2: File path resolution instruction references `{worktree_path}` for constructing absolute paths
+- [ ] TC-4.3: PLAN update subsection references `plan_path` parameter from orchestrator prompt
+- [ ] TC-4.4: GLOBAL update subsection references `global_path` parameter from orchestrator prompt
+- [ ] TC-4.5: New subsection "### 3. Update PHASE_{k}_TEST.md" exists with test result update instructions
+- [ ] TC-4.6: Verification subsection renumbered to "### 4. Verification Before Reporting"
+
+### start-new.md: Coder Namespace Fix
+
+- [ ] TC-5.1: Line ~600 contains `dotclaude:coders:coder-{detected_language}` (sequential phase)
+- [ ] TC-5.2: Line ~639 contains `dotclaude:coders:coder-{detected_language}` (parallel Call 1)
+- [ ] TC-5.3: Line ~657 contains `dotclaude:coders:coder-{detected_language}` (parallel Call 2)
+- [ ] TC-5.4: Line ~824 contains `dotclaude:coders:coder-{detected_language}` (parallel execution pattern 1)
+- [ ] TC-5.5: Line ~829 contains `dotclaude:coders:coder-{detected_language}` (parallel execution pattern 2)
+- [ ] TC-5.6: No remaining occurrences of `dotclaude:coder-{detected_language}` (without `coders:`) in the file
+- [ ] TC-5.7: Corrected namespace matches actual agent directory: `agents/coders/` exists with coder agent files
+
+### start-new.md: Validator Prompt Rewrite
+
+- [ ] TC-6.1: Validator Task tool prompt includes `Worktree Path: {worktree_path}`
+- [ ] TC-6.2: Validator prompt includes `Coder Agent Namespace: dotclaude:coders:coder-{detected_language}`
+- [ ] TC-6.3: Validator prompt includes all 3 document paths (PLAN, TEST, GLOBAL) relative to worktree
+- [ ] TC-6.4: Validator prompt grants loop management authority ("You manage the ENTIRE validate-fix loop")
+- [ ] TC-6.5: Validator prompt instructs: update documents ONLY after final successful validation
+- [ ] TC-6.6: Validator prompt instructs: auto-detect quality tools from project config files
+- [ ] TC-6.7: Validator prompt instructs: return final status (PASS or FAIL) with comprehensive report
+
+### start-new.md: Simplified Retry Loop
+
+- [ ] TC-7.1: No orchestrator-level retry loop exists (no `while attempt < 3` in orchestrator context)
+- [ ] TC-7.2: "After code-validator Completes" section describes single-invocation pattern
+- [ ] TC-7.3: PASS case includes expanded commit (code files + PLAN + GLOBAL + TEST)
+- [ ] TC-7.4: FAIL case states validator already marked SKIPPED in GLOBAL.md
+- [ ] TC-7.5: Explicit statement: "There is NO orchestrator-level retry loop"
+
+### start-new.md: Expanded Commit Scope
+
+- [ ] TC-8.1: git add includes `{working_directory}/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md`
+- [ ] TC-8.2: git add includes `{working_directory}/{subject}/GLOBAL.md`
+- [ ] TC-8.3: git add includes `{working_directory}/{subject}/PHASE_{phase_id}_TEST.md`
+- [ ] TC-8.4: git add still includes changed code files
+
+## Integration Tests
+
+- [ ] IT-1: Validator prompt in start-new.md references parameters that match the "Context from Orchestrator" section in code-validator.md (worktree_path, coder_namespace, phase_id, plan_path, test_path, global_path)
+- [ ] IT-2: Coder namespace in validator prompt matches the corrected namespace used in coder invocations (`dotclaude:coders:coder-{detected_language}`)
+- [ ] IT-3: Document paths in validator prompt use the same `{working_directory}/{subject}/` pattern as the rest of start-new.md
+- [ ] IT-4: The "After code-validator Completes" section in start-new.md is consistent with the validator's output contract (PASS -> COMMIT, FAIL -> SKIP)
+- [ ] IT-5: The commit scope in start-new.md matches the documents the validator is instructed to update (PLAN, GLOBAL, TEST)
+
+## Edge Cases
+
+- [ ] EC-1: Verify code-validator.md handles missing worktree_path gracefully (default to ".", log warning)
+- [ ] EC-2: Verify quality detection handles project with no config files (all checks N/A, validation still proceeds)
+- [ ] EC-3: Verify quality detection handles project with multiple config files (e.g., package.json AND pyproject.toml - both toolchains detected)
+- [ ] EC-4: Verify 3x failure path updates GLOBAL.md to "Skipped" and returns structured FAIL report
+- [ ] EC-5: Verify document update timing constraint is explicitly stated (no updates during retry iterations)
+- [ ] EC-6: Verify coder fix prompt includes scope limitation ("ONLY fix the listed errors")
