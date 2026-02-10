@@ -271,31 +271,31 @@ The entire block from line 736 ("**After code-validator Completes**:") through l
 ## Completion Checklist
 
 ### Part A: code-validator.md
-- [ ] A1: New "Context from Orchestrator" section added after "Language" section
-- [ ] A2: Quality Tool Auto-Detection section replaces static commands (lines 56-81)
-- [ ] A2: Quality Command Reference subsection preserved as reference
-- [ ] A2: Detection algorithm covers Python, JS/TS, Rust, Svelte
-- [ ] A2: Binary availability check before execution documented
-- [ ] A2: Graceful N/A fallback documented
-- [ ] A3: Retry Logic section (lines 86-103) replaced with Validate-Fix Loop
-- [ ] A3: Flow diagram shows Task tool coder invocation
-- [ ] A3: Document update happens AFTER final success only
-- [ ] A3: Max 3 attempts enforced
-- [ ] A3: SKIPPED handling for 3x failure documented
-- [ ] A4: File path resolution using worktree_path added
-- [ ] A4: PHASE_TEST.md update subsection added
-- [ ] A4: TIMING rule added (documents updated after final completion only)
+- [x] A1: New "Context from Orchestrator" section added after "Language" section: Verified in agents/code-validator.md:25
+- [x] A2: Quality Tool Auto-Detection section replaces static commands (lines 56-81): Verified in agents/code-validator.md:67 ("## Quality Tool Detection and Execution"), old "## Language-Specific Quality Commands" section no longer exists
+- [x] A2: Quality Command Reference subsection preserved as reference: Verified in agents/code-validator.md:110 ("### Quality Command Reference") with disclaimer note at line 112
+- [x] A2: Detection algorithm covers Python, JS/TS, Rust, Svelte: Verified in agents/code-validator.md:74-100
+- [x] A2: Binary availability check before execution documented: Verified in agents/code-validator.md:102-104 (which/command -v pattern)
+- [x] A2: Graceful N/A fallback documented: Verified in agents/code-validator.md:104 ("Tool not available: {binary}") and line 107 (PASS/FAIL/N/A reporting)
+- [x] A3: Retry Logic section (lines 86-103) replaced with Validate-Fix Loop: Verified in agents/code-validator.md:141 ("## Validate-Fix Loop"), no "## Retry Logic" section exists
+- [x] A3: Flow diagram shows Task tool coder invocation: Verified in agents/code-validator.md:168-186 (Task tool with {coder_namespace})
+- [x] A3: Document update happens AFTER final success only: Verified in agents/code-validator.md:193 ("Step 3: Document Update (AFTER final success ONLY)") and line 203
+- [x] A3: Max 3 attempts enforced: Verified in agents/code-validator.md:145,160 (attempt < 3 check)
+- [x] A3: SKIPPED handling for 3x failure documented: Verified in agents/code-validator.md:162,207
+- [x] A4: File path resolution using worktree_path added: Verified in agents/code-validator.md:276 (path resolution instruction with worktree_path)
+- [x] A4: PHASE_TEST.md update subsection added: Verified in agents/code-validator.md:310 ("### 3. Update PHASE_{k}_TEST.md")
+- [x] A4: TIMING rule added (documents updated after final completion only): Verified in agents/code-validator.md:272 (bold TIMING rule)
 
 ### Part B: start-new.md
-- [ ] B1: Namespace fixed at line 600 (`dotclaude:coders:coder-{detected_language}`)
-- [ ] B1: Namespace fixed at line 639
-- [ ] B1: Namespace fixed at line 657
-- [ ] B1: Namespace fixed at line 824
-- [ ] B1: Namespace fixed at line 829
-- [ ] B2: Validator prompt rewritten with full context (worktree, namespace, document paths, loop authority)
-- [ ] B3: Retry loop replaced with single-invocation pattern
-- [ ] B4: Commit scope expanded to include PLAN, GLOBAL, TEST documents
-- [ ] B5: "After code-validator Completes" section updated for single-invocation pattern
+- [x] B1: Namespace fixed at line 600 (`dotclaude:coders:coder-{detected_language}`): Verified in commands/start-new.md:600
+- [x] B1: Namespace fixed at line 639: Verified in commands/start-new.md:639
+- [x] B1: Namespace fixed at line 657: Verified in commands/start-new.md:657
+- [x] B1: Namespace fixed at line 824: Verified in commands/start-new.md:805 (line shifted due to edits; parallel execution pattern Task call 1)
+- [x] B1: Namespace fixed at line 829: Verified in commands/start-new.md:810 (line shifted due to edits; parallel execution pattern Task call 2)
+- [x] B2: Validator prompt rewritten with full context (worktree, namespace, document paths, loop authority): Verified in commands/start-new.md:691-725
+- [x] B3: Retry loop replaced with single-invocation pattern: Verified in commands/start-new.md:727-743 (single-invocation, explicit "NO orchestrator-level retry loop" at line 743)
+- [x] B4: Commit scope expanded to include PLAN, GLOBAL, TEST documents: Verified in commands/start-new.md:735-738 (git add for PLAN, GLOBAL, TEST)
+- [x] B5: "After code-validator Completes" section updated for single-invocation pattern: Verified in commands/start-new.md:727-743
 
 ## Notes
 

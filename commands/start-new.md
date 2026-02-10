@@ -597,7 +597,7 @@ Collect Designer output and pass it to TechnicalWriter for document creation (St
 
 ```
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase {phase_id}
 
@@ -636,7 +636,7 @@ Then invoke multiple Coder agents in a SINGLE message (parallel execution):
 ```
 # Call 1
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase 3A (Parallel Branch)
 
@@ -654,7 +654,7 @@ PLAN path: claude_works/{subject}/PHASE_3A_PLAN_{keyword}.md
 
 # Call 2
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase 3B (Parallel Branch)
 
@@ -692,41 +692,32 @@ git worktree remove ../{project_name}-{type}-{keyword}-3C
 Task(
   subagent_type="dotclaude:code-validator",
   prompt="""
-## Task: Validate Phase {phase_id} Implementation
+## Task: Validate and Fix Phase {phase_id} Implementation
 
-### Input
+### Context
+Worktree Path: {worktree_path}
+Coder Agent Namespace: dotclaude:coders:coder-{detected_language}
 Phase ID: {phase_id}
-PLAN path: claude_works/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
-(Read this file to extract the completion checklist)
 
-### Your Tasks
-1. Extract completion checklist from PLAN document
-2. Verify each checklist item:
-   - Files created/modified as specified
-   - Functionality implemented correctly
-   - Code follows project conventions
-3. Run quality checks:
-   - Build passes (if applicable)
-   - No linting errors
-   - No type errors (TypeScript projects)
-4. Report validation result: PASS or FAIL with details
+### Document Paths (relative to worktree)
+PLAN: {working_directory}/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+TEST: {working_directory}/{subject}/PHASE_{phase_id}_TEST.md
+GLOBAL: {working_directory}/{subject}/GLOBAL.md
 
-### Output Format
-```yaml
-status: "PASS" | "FAIL"
-phase_id: "{phase_id}"
-checklist_results:
-  - item: "Checklist item description"
-    status: "COMPLETE" | "INCOMPLETE"
-    notes: "Details if incomplete"
-quality_checks:
-  build: "PASS" | "FAIL" | "N/A"
-  lint: "PASS" | "FAIL" | "N/A"
-  types: "PASS" | "FAIL" | "N/A"
-issues:
-  - "Description of any issues found"
-recommendation: "COMMIT" | "RETRY" | "SKIP"
-```
+### Your Authority
+You manage the ENTIRE validate-fix loop for this phase:
+1. Run validation (checklist + quality checks)
+2. If FAIL: invoke the coder agent (via Task tool using the namespace above) with fix instructions
+3. Re-validate after coder fix (max 3 total attempts)
+4. On final SUCCESS: update PLAN checklist, GLOBAL phase status, TEST results
+5. On 3x FAIL: mark phase as SKIPPED in GLOBAL, document unresolved errors
+
+### Important Rules
+- Use {worktree_path} to resolve ALL file paths
+- Pass {worktree_path} to the coder agent in fix prompts
+- Update documents ONLY after final successful validation (not during retries)
+- Auto-detect quality tools from project config files
+- Return final status: PASS or FAIL with comprehensive report
 
 Follow validation procedures from your agent definition.
 """
@@ -735,31 +726,21 @@ Follow validation procedures from your agent definition.
 
 **After code-validator Completes**:
 
-Based on validation result:
-- **PASS**: Commit the phase
+The code-validator manages the entire validate-fix cycle internally.
+The orchestrator receives only the final result.
+
+Based on the final validation result:
+- **PASS (recommendation: COMMIT)**: Commit the phase (all code files + updated documents)
   ```bash
-  git add {changed_files}
+  git add {changed_code_files}
+  git add {working_directory}/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+  git add {working_directory}/{subject}/GLOBAL.md
+  git add {working_directory}/{subject}/PHASE_{phase_id}_TEST.md
   git commit -m "feat/fix: implement phase {phase_id} - {brief_description}"
   ```
-- **FAIL + retry_count < 3**: Call Coder again with feedback from validator
-- **FAIL + retry_count >= 3**: Mark phase as SKIPPED, record error, continue to next phase
+- **FAIL (recommendation: SKIP)**: Phase already marked as SKIPPED in GLOBAL.md by the validator. Record error and continue to next phase.
 
-**Retry Loop Pattern**:
-```
-attempt = 0
-while attempt < 3:
-  coder_result = invoke_coder(phase_id)
-  validator_result = invoke_code_validator(phase_id)
-  if validator_result.status == "PASS":
-    commit_phase()
-    break
-  attempt += 1
-
-if validator_result.status != "PASS":
-  mark_phase_skipped()
-  record_error(validator_result.issues)
-  # Continue to next phase
-```
+There is NO orchestrator-level retry loop. The validator handles all retries internally.
 
 ---
 
@@ -821,12 +802,12 @@ Parse GLOBAL.md Phase Overview table:
 # All execute simultaneously
 
 <Task tool call 1>
-  subagent_type: "dotclaude:coder-{detected_language}"
+  subagent_type: "dotclaude:coders:coder-{detected_language}"
   prompt: "Execute PHASE_3A in worktree ../{project_name}-{type}-{keyword}-3A"
 </Task tool call 1>
 
 <Task tool call 2>
-  subagent_type: "dotclaude:coder-{detected_language}"
+  subagent_type: "dotclaude:coders:coder-{detected_language}"
   prompt: "Execute PHASE_3B in worktree ../{project_name}-{type}-{keyword}-3B"
 </Task tool call 2>
 ```
