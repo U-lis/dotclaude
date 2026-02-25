@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-25
+
+### Added
+
+- Date-prefixed documentation directory naming: directories now use `{doc_dir}` = `{yyyy_mm_dd}-{subject}` format for chronological sorting (e.g., `2026_02_25-auth`) ([#50](https://github.com/U-lis/dotclaude/issues/50))
+  - `{doc_dir}` variable stored in SPEC.md metadata and used by downstream commands for path resolution
+  - `{subject}` continues to be used for branch names and commit messages (unchanged)
+- Migration support for existing documentation directories in `_init-common.md`
+  - Git log-based date detection to determine original creation date for existing directories
+  - Bulk migration script for renaming legacy `{subject}` directories to `{yyyy_mm_dd}-{subject}` format
+- "Directory Naming Convention" section in README.md documenting the `{doc_dir}` variable and naming format
+
+### Changed
+
+- Documentation directory path references updated from `{working_directory}/{subject}/` to `{working_directory}/{doc_dir}/` across 12 command and agent files: `start-new.md`, `_init-common.md`, `code.md`, `design.md`, `update-docs.md`, `validate-spec.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `designer.md`, `spec-validator.md`, `README.md`
+
 ## [0.3.1] - 2026-02-03
 
 ### Fixed
