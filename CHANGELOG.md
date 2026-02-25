@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] - 2026-02-25
+
+### Added
+
+- "Auto-detect and suggest" sub-action in `/dotclaude:configure` Setting 6 (Version Files) for automatic discovery of version files in the project
+  - Scans all 7 known version files from the `tagging.md` auto-detection table (`CHANGELOG.md`, `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`)
+  - Displays scan results in a table showing file name, detected version, regex pattern, and status (`New - can add`, `Already configured`, `Configured but missing`)
+  - Suggests adding newly discovered files that are not yet configured
+  - Suggests removing configured files that no longer exist on disk
+  - Follows existing Add/Remove workflow rules (empty-list auto-detect override warning, CHANGELOG.md mandatory and cannot be removed)
+  - Edge case handling: empty results message, all-configured notification
+- Design documentation for version-file-auto-detect feature (`claude_works/version-file-auto-detect/SPEC.md`, `claude_works/version-file-auto-detect/GLOBAL.md`, `claude_works/version-file-auto-detect/PHASE_1_PLAN_AUTO_DETECT_SUGGEST.md`)
+
 ## [0.3.1] - 2026-02-03
 
 ### Fixed
