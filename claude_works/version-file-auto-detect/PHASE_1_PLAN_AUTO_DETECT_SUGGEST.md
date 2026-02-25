@@ -185,17 +185,17 @@ AskUserQuestion:
 
 ## Completion Checklist
 
-- [ ] 1.1: "Auto-detect and suggest" 옵션을 YAML options에 삽입 (Skip 앞)
-- [ ] 1.2: `##### Auto-detect and suggest Sub-action` 섹션 생성 (Reset 서브 액션 뒤)
-- [ ] 1.3: tagging.md의 7개 알려진 파일 참조하는 스캔 의사코드 정의
-- [ ] 1.4: 상태 분류 로직 정의 (New/Already configured/Configured but missing)
-- [ ] 1.5: 결과 테이블 형식 정의 (File, Detected Version, Pattern, Status 컬럼)
-- [ ] 1.6: 엣지 케이스 처리 정의 (파일 없음, 모두 설정됨)
-- [ ] 1.7: "추가할 파일 선택" 워크플로우 정의 (AskUserQuestion, Add 규칙 재사용)
-- [ ] 1.8: "사라진 파일 제거" 워크플로우 정의 (AskUserQuestion, Remove 규칙 재사용)
-- [ ] 1.9: Setting 6 메뉴 복귀 추가
-- [ ] 1.10: Testing Checklist에 자동 감지 관련 항목 추가
-- [ ] 1.11: 기존 서브 액션과 동일한 마크다운 서식 및 의사코드 스타일 확인
+- [x] 1.1: "Auto-detect and suggest" 옵션을 YAML options에 삽입 (Skip 앞) - Verified in configure.md:352
+- [x] 1.2: `##### Auto-detect and suggest Sub-action` 섹션 생성 (Reset 서브 액션 뒤) - Verified in configure.md:464
+- [x] 1.3: tagging.md의 7개 알려진 파일 참조하는 스캔 의사코드 정의 - Verified in configure.md:474-481 (all 7 patterns match tagging.md:55-63)
+- [x] 1.4: 상태 분류 로직 정의 (New/Already configured/Configured but missing) - Verified in configure.md:488-511
+- [x] 1.5: 결과 테이블 형식 정의 (File, Detected Version, Pattern, Status 컬럼) - Verified in configure.md:524-530
+- [x] 1.6: 엣지 케이스 처리 정의 (파일 없음, 모두 설정됨) - Verified in configure.md:518-521
+- [x] 1.7: "추가할 파일 선택" 워크플로우 정의 (AskUserQuestion, Add 규칙 재사용) - Verified in configure.md:536-552
+- [x] 1.8: "사라진 파일 제거" 워크플로우 정의 (AskUserQuestion, Remove 규칙 재사용) - Verified in configure.md:554-567
+- [x] 1.9: Setting 6 메뉴 복귀 추가 - Verified in configure.md:569-571
+- [x] 1.10: Testing Checklist에 자동 감지 관련 항목 추가 - Verified in configure.md:765-772 (8 items)
+- [x] 1.11: 기존 서브 액션과 동일한 마크다운 서식 및 의사코드 스타일 확인 - Verified: ##### header level, pseudocode blocks, bullet lists consistent
 
 ## Notes
 

@@ -40,7 +40,7 @@ Setting 6 메뉴에 "Auto-detect and suggest" 옵션을 추가하여, `tagging.m
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | "Auto-detect and suggest" 서브 액션을 Setting 6에 추가 | pending | None |
+| 1 | "Auto-detect and suggest" 서브 액션을 Setting 6에 추가 | Complete | None |
 
 ## File Structure
 

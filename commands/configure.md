@@ -349,6 +349,7 @@ options:
   - "Add a version file"
   - "Remove a version file"
   - "Reset to auto-detection"
+  - "Auto-detect and suggest"
   - "Skip (no changes)"
 context: |
   Current value: <current_version_files or "auto-detect (no explicit config)">
@@ -458,7 +459,116 @@ validate_version_pattern() {
 
 - Clear version_files array (set to `[]`)
 - Confirm: "Version files reset to auto-detection mode"
-- Return to Setting 6 menu
+- Return to Setting 6 menu after reset
+
+##### Auto-detect and suggest Sub-action
+
+This sub-action is performed in 3 steps: Scan -> Display -> Act
+
+**Step 1: Scan**
+
+Scan the 7 known files defined in the `tagging.md` Auto-Detection table (reference: `commands/tagging.md` line 51-63).
+
+```bash
+# Known version files table (source of truth: tagging.md Auto-Detection table)
+KNOWN_FILES=(
+  "CHANGELOG.md|## \[([^\]]+)\]"
+  "package.json|\"version\":\s*\"([^\"]+)\""
+  "pyproject.toml|version\s*=\s*\"([^\"]+)\""
+  "Cargo.toml|version\s*=\s*\"([^\"]+)\""
+  "pom.xml|<version>([^<]+)</version>"
+  ".claude-plugin/plugin.json|\"version\":\s*\"([^\"]+)\""
+  ".claude-plugin/marketplace.json|\"version\":\s*\"([^\"]+)\""
+)
+
+# Load current version_files from config
+CONFIGURED_PATHS = [entry.path for entry in config.version_files]
+
+RESULTS = []
+for each (file, pattern) in KNOWN_FILES:
+    entry = { file: file, pattern: pattern, version: null, status: null }
+
+    if file exists in project root:
+        # Try to extract version using pattern
+        match = regex_search(read_file(file), pattern)
+        if match:
+            entry.version = match.group(1)
+        else:
+            entry.version = "extraction failed"
+
+        if file in CONFIGURED_PATHS:
+            entry.status = "Already configured"
+        else:
+            entry.status = "New - can add"
+    else:
+        if file in CONFIGURED_PATHS:
+            entry.status = "Configured but missing"
+            entry.version = "-"
+        else:
+            # File doesn't exist and not configured -> skip (don't show)
+            continue
+
+    RESULTS.append(entry)
+```
+
+**Step 2: Display**
+
+Display scan results in a table format.
+
+Edge case handling:
+- If RESULTS is empty (no known files exist in the project and no configured files are missing): Display "No known version files detected in this project. Use 'Add a version file' to manually add one." and return to Setting 6 menu.
+- If all entries have "Already configured" status: Display the table, then show "All detected version files are already configured. No new files to add."
+
+Results table format:
+
+```
+| File | Detected Version | Pattern | Status |
+|------|-----------------|---------|--------|
+| package.json | 1.2.3 | "version":\s*"([^"]+)" | New - can add |
+| CHANGELOG.md | 1.2.3 | ## \[([^\]]+)\] | Already configured |
+| pyproject.toml | - | version\s*=\s*"([^"]+)" | Configured but missing |
+```
+
+**Step 3: Act**
+
+Based on scan results, suggest additions/removals to the user.
+
+**3a. Add Prompt (when "New - can add" files exist)**:
+
+If there are files with "New - can add" status, present the list via AskUserQuestion:
+
+```
+AskUserQuestion:
+  question: "Which files would you like to add to version_files?"
+  options:
+    - "<file1> (version: <detected_version>)"
+    - "<file2> (version: <detected_version>)"
+    - ...
+    - "None - skip adding"
+```
+
+When the user selects files, add the corresponding path and pattern to version_files. Apply the same rules as the existing Add workflow:
+- When adding to an empty list (auto-detect mode): Show "Note: Adding explicit version files will override auto-detection mode." warning
+- If CHANGELOG.md entry is not in version_files, auto-append it (path: "CHANGELOG.md", pattern: `## \[(\d+\.\d+\.\d+)\]`)
+
+**3b. Remove Prompt (when "Configured but missing" files exist)**:
+
+If there are files with "Configured but missing" status, suggest removal via AskUserQuestion:
+
+```
+AskUserQuestion:
+  question: "These configured files no longer exist on disk. Remove them from version_files?"
+  options:
+    - "Yes, remove missing files"
+    - "No, keep them"
+```
+
+When the user selects removal, remove those files from version_files. Apply the same rules as the existing Remove sub-action:
+- CHANGELOG.md cannot be removed (even if missing from disk, it cannot be removed from config)
+
+**Step 4: Return**
+
+- Return to Setting 6 menu (same pattern as other sub-actions)
 
 ### Step 4: Save Configuration
 
@@ -652,3 +762,11 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 - [ ] Configuration saved with correct JSON format
 - [ ] Boolean values saved as true/false (not "true"/"false")
 - [ ] Changes take effect immediately
+- [ ] Auto-detect scans all 7 known files from tagging.md
+- [ ] Detected files show correct version extraction
+- [ ] "New - can add" status shown for unregistered existing files
+- [ ] "Already configured" status shown for registered existing files
+- [ ] "Configured but missing" status shown for registered non-existing files
+- [ ] Adding from auto-detect applies Add workflow rules (empty list warning, CHANGELOG.md auto-append)
+- [ ] Removing missing files applies Remove rules (CHANGELOG.md cannot be removed)
+- [ ] No known files detected shows appropriate message
