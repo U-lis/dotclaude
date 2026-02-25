@@ -119,10 +119,10 @@ Verify that the migration section added in step 2.1:
 
 ## Completion Checklist
 
-- [ ] 2.1: Migration guidance section added to `_init-common.md` with detection method, rename pattern, and bulk migration script
-- [ ] 2.2: `{doc_dir}` convention explanation subsection added to `README.md`
-- [ ] 2.3: `README.md` directory structure example uses `{doc_dir}` (verify Phase 1 change)
-- [ ] 2.4: Migration guidance correctly references `git log --diff-filter=A` for creation date detection
+- [x] 2.1: Migration guidance section added to `_init-common.md` with detection method, rename pattern, and bulk migration script
+- [x] 2.2: `{doc_dir}` convention explanation subsection added to `README.md`
+- [x] 2.3: `README.md` directory structure example uses `{doc_dir}` (verify Phase 1 change)
+- [x] 2.4: Migration guidance correctly references `git log --diff-filter=A` for creation date detection
 
 ## Notes
 

@@ -187,9 +187,25 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 {working_directory}/{SUBJECT}.md
 ```
 
+#### Directory Naming Convention
+
+Documentation directories use date-prefixed names for chronological sorting:
+
+```
+{working_directory}/{yyyy_mm_dd}-{subject}/
+```
+
+- `{yyyy_mm_dd}`: Local date when directory is created (e.g., `2026_02_25`)
+- `{subject}`: Work keyword (e.g., `auth`, `api-cleanup`)
+- Combined as `{doc_dir}` variable (e.g., `2026_02_25-auth`)
+
+This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream commands for path resolution.
+
+**Note**: `{subject}` continues to be used for branch names and commit messages.
+
 #### Complex Tasks (3+ phases)
 ```
-{working_directory}/{doc_dir}/
+{working_directory}/{doc_dir}/               # Example: claude_works/2026_02_25-auth/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
