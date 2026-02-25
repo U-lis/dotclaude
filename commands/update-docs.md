@@ -28,7 +28,7 @@ If SPEC.md is not found, fall back to default: `.dc_workspace`.
 │ 1. Gather Context                                       │
 │    - Get latest tag: git describe --tags --abbrev=0    │
 │    - Get commits since tag: git log {tag}..HEAD        │
-│    - Read {working_directory}/{subject}/SPEC.md for context   │
+│    - Read {working_directory}/{doc_dir}/SPEC.md for context   │
 ├─────────────────────────────────────────────────────────┤
 │ 2. Call TechnicalWriter (DOCS_UPDATE role)             │
 │    - Input: commits, SPEC summary, target version      │

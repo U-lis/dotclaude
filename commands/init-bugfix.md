@@ -256,5 +256,5 @@ Create SPEC.md with bug-specific format:
 ## Output
 
 1. Bugfix worktree created at `../{project_name}-bugfix-{keyword}` with branch `bugfix/{keyword}`
-2. Directory `{working_directory}/{subject}/` created
-3. `{working_directory}/{subject}/SPEC.md` created with all sections above
+2. Directory `{working_directory}/{doc_dir}/` created
+3. `{working_directory}/{doc_dir}/SPEC.md` created with all sections above

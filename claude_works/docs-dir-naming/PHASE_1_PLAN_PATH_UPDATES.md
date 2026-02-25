@@ -252,24 +252,24 @@ Expected commit message patterns (must remain unchanged):
 
 ## Completion Checklist
 
-- [ ] 1.1: `_init-common.md` -- `{doc_dir}` generation step added with `date +%Y_%m_%d` command
-- [ ] 1.2: `_init-common.md` -- `mkdir` path changed from `{subject}` to `{doc_dir}`
-- [ ] 1.3: `start-new.md` -- `doc_dir` field added to SPEC.md metadata block template
-- [ ] 1.4: `start-new.md` -- documentation updated to mention `{doc_dir}` in metadata description
-- [ ] 1.5: `start-new.md` -- all directory path `{subject}` references replaced with `{doc_dir}` (commit messages preserved)
-- [ ] 1.6: `start-new.md` -- all hardcoded `claude_works/{subject}/` examples replaced with `claude_works/{doc_dir}/`
-- [ ] 1.7: `design.md` -- 3 directory path references updated
-- [ ] 1.8: `code.md` -- 3+ directory path references updated
-- [ ] 1.9: `validate-spec.md` -- 2 directory path references updated
-- [ ] 1.10: `update-docs.md` -- 1 directory path reference updated
-- [ ] 1.11: `init-feature.md` -- 2 output path references updated
-- [ ] 1.12: `init-bugfix.md` -- 2 output path references updated
-- [ ] 1.13: `init-refactor.md` -- 2 output path references updated
-- [ ] 1.14: `designer.md` (agent) -- 1 path reference updated
-- [ ] 1.15: `spec-validator.md` (agent) -- 2 path references updated
-- [ ] 1.16: `README.md` -- directory structure example updated
-- [ ] 1.17: `templates/PHASE_MERGE.md` confirmed NOT modified
-- [ ] 1.18: All `git commit -m` patterns verified to still use `{subject}`
+- [x] 1.1: `_init-common.md` -- `{doc_dir}` generation step added with `date +%Y_%m_%d` command. Verified in commands/_init-common.md:34
+- [x] 1.2: `_init-common.md` -- `mkdir` path changed from `{subject}` to `{doc_dir}`. Verified in commands/_init-common.md:35
+- [x] 1.3: `start-new.md` -- `doc_dir` field added to SPEC.md metadata block template. Verified in commands/start-new.md:30
+- [x] 1.4: `start-new.md` -- documentation updated to mention `{doc_dir}` in metadata description. Verified in commands/start-new.md:34
+- [x] 1.5: `start-new.md` -- all directory path `{subject}` references replaced with `{doc_dir}` (commit messages preserved). Verified: 0 occurrences of `{working_directory}/{subject}/` remain; commit messages on lines 185, 252 still use `{subject}`
+- [x] 1.6: `start-new.md` -- all hardcoded `claude_works/{subject}/` examples replaced with `claude_works/{doc_dir}/`. Verified: 0 occurrences of `claude_works/{subject}/` in commands/
+- [x] 1.7: `design.md` -- 3 directory path references updated. Verified in commands/design.md:20,43,80
+- [x] 1.8: `code.md` -- 3+ directory path references updated. Verified in commands/code.md:203,256,264
+- [x] 1.9: `validate-spec.md` -- 2 directory path references updated. Verified in commands/validate-spec.md:20,21
+- [x] 1.10: `update-docs.md` -- 1 directory path reference updated. Verified in commands/update-docs.md:31
+- [x] 1.11: `init-feature.md` -- 2 output path references updated. Verified in commands/init-feature.md:227,228
+- [x] 1.12: `init-bugfix.md` -- 2 output path references updated. Verified in commands/init-bugfix.md:259,260
+- [x] 1.13: `init-refactor.md` -- 2 output path references updated. Verified in commands/init-refactor.md:242,243
+- [x] 1.14: `designer.md` (agent) -- 1 path reference updated. Verified in agents/designer.md:34
+- [x] 1.15: `spec-validator.md` (agent) -- 2 path references updated. Verified in agents/spec-validator.md:26,68
+- [x] 1.16: `README.md` -- directory structure example updated. Verified in README.md:192
+- [x] 1.17: `templates/PHASE_MERGE.md` confirmed NOT modified. Verified: `git diff templates/PHASE_MERGE.md` returns empty
+- [x] 1.18: All `git commit -m` patterns verified to still use `{subject}`. Verified: lines 185, 252 in start-new.md; line 243 in code.md all use `{subject}`
 
 ## Notes
 

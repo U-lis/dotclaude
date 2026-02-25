@@ -189,7 +189,7 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 
 #### Complex Tasks (3+ phases)
 ```
-{working_directory}/{subject}/
+{working_directory}/{doc_dir}/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan

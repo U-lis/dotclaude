@@ -31,7 +31,8 @@ After gathering requirements (or using pre-filled values from GitHub issue), cre
    - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
 4. **Verify worktree creation**: Run `ls ../{project_name}-{type}-{keyword}` and confirm the directory exists. If the directory does not exist, the worktree creation failed -- report the error immediately. Do NOT silently fall back to `git checkout -b`.
 5. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
-6. Create project directory: `mkdir -p {working_directory}/{subject}`
+6. Generate doc_dir: `DOC_DIR="$(date +%Y_%m_%d)-{subject}"` (local timezone)
+7. Create project directory: `mkdir -p {working_directory}/{doc_dir}`
 
 ### Naming Examples
 
