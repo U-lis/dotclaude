@@ -5,11 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2026-02-25
+## [0.4.0] - 2026-03-04
 
 ### Added
 
-- "Auto-detect and suggest" sub-action in `/dotclaude:configure` Setting 6 (Version Files) for automatic discovery of version files in the project
+- Date-prefixed documentation directory naming: directories now use `{doc_dir}` = `{yyyy_mm_dd}-{subject}` format for chronological sorting (e.g., `2026_02_25-auth`) ([#50](https://github.com/U-lis/dotclaude/issues/50))
+  - `{doc_dir}` variable stored in SPEC.md metadata and used by downstream commands for path resolution
+  - `{subject}` continues to be used for branch names and commit messages (unchanged)
+- Migration support for existing documentation directories in `_init-common.md`
+  - Git log-based date detection to determine original creation date for existing directories
+  - Bulk migration script for renaming legacy `{subject}` directories to `{yyyy_mm_dd}-{subject}` format
+- "Directory Naming Convention" section in README.md documenting the `{doc_dir}` variable and naming format
+- "Auto-detect and suggest" sub-action in `/dotclaude:configure` Setting 4 (Version Files) for automatic discovery of version files in the project
   - Scans all 7 known version files from the `tagging.md` auto-detection table (`CHANGELOG.md`, `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`)
   - Displays scan results in a table showing file name, detected version, regex pattern, and status (`New - can add`, `Already configured`, `Configured but missing`)
   - Suggests adding newly discovered files that are not yet configured
@@ -17,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Follows existing Add/Remove workflow rules (empty-list auto-detect override warning, CHANGELOG.md mandatory and cannot be removed)
   - Edge case handling: empty results message, all-configured notification
 - Design documentation for version-file-auto-detect feature (`claude_works/version-file-auto-detect/SPEC.md`, `claude_works/version-file-auto-detect/GLOBAL.md`, `claude_works/version-file-auto-detect/PHASE_1_PLAN_AUTO_DETECT_SUGGEST.md`)
+
+### Changed
+
+- Documentation directory path references updated from `{working_directory}/{subject}/` to `{working_directory}/{doc_dir}/` across 12 command and agent files: `start-new.md`, `_init-common.md`, `code.md`, `design.md`, `update-docs.md`, `validate-spec.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `designer.md`, `spec-validator.md`, `README.md`
+- `/dotclaude:configure` command restructured from individual sequential questions to multi-question batch: Settings 1-3 (Language, Working Directory, Base Branch) are now presented as a single `AskUserQuestion` call with a `questions` array, allowing users to review and edit all basic settings at once instead of answering one at a time. Version Files (Setting 4) remains a separate interactive workflow due to its search/add/remove complexity. ([#55](https://github.com/U-lis/dotclaude/issues/55))
+- `check_version` and `auto_update` settings removed from `/dotclaude:configure` command — configure now manages 4 settings (Language, Working Directory, Base Branch, Version Files) instead of 6
 
 ## [0.3.1] - 2026-02-03
 

@@ -31,7 +31,7 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 
 ## Input
 
-- `{working_directory}/{subject}/SPEC.md` or user requirements
+- `{working_directory}/{doc_dir}/SPEC.md` or user requirements
 - Existing codebase context
 
 ## Output
