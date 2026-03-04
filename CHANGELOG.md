@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.4.0] - 2026-02-25
+## [0.4.0] - 2026-03-04
 
 ### Added
 
@@ -20,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Documentation directory path references updated from `{working_directory}/{subject}/` to `{working_directory}/{doc_dir}/` across 12 command and agent files: `start-new.md`, `_init-common.md`, `code.md`, `design.md`, `update-docs.md`, `validate-spec.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `designer.md`, `spec-validator.md`, `README.md`
+- `/dotclaude:configure` command restructured from individual sequential questions to multi-question batch: Settings 1-3 (Language, Working Directory, Base Branch) are now presented as a single `AskUserQuestion` call with a `questions` array, allowing users to review and edit all basic settings at once instead of answering one at a time. Version Files (Setting 4) remains a separate interactive workflow due to its search/add/remove complexity. ([#55](https://github.com/U-lis/dotclaude/issues/55))
+- `check_version` and `auto_update` settings removed from `/dotclaude:configure` command — configure now manages 4 settings (Language, Working Directory, Base Branch, Version Files) instead of 6
 
 ## [0.3.1] - 2026-02-03
 
