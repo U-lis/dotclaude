@@ -51,8 +51,6 @@ Final values = Defaults < Global < Local
 {
   "language": "en_US",
   "working_directory": ".dc_workspace",
-  "check_version": true,
-  "auto_update": false,
   "base_branch": "main",
   "version_files": []
 }
@@ -63,8 +61,6 @@ Final values = Defaults < Global < Local
 ```bash
 DEFAULT_LANGUAGE="en_US"
 DEFAULT_WORKING_DIRECTORY=".dc_workspace"
-DEFAULT_CHECK_VERSION=true
-DEFAULT_AUTO_UPDATE=false
 DEFAULT_BASE_BRANCH="main"
 DEFAULT_VERSION_FILES="[]"  # empty = auto-detect
 
@@ -89,8 +85,6 @@ LOCAL_CONFIG="$GIT_ROOT/.claude/dotclaude-config.json"
 # Initialize with defaults
 LANGUAGE="en_US"
 WORKING_DIR=".dc_workspace"
-CHECK_VERSION="true"
-AUTO_UPDATE="false"
 BASE_BRANCH="main"
 VERSION_FILES="[]"
 
@@ -99,8 +93,6 @@ if [ -f "$GLOBAL_CONFIG" ]; then
   if jq empty "$GLOBAL_CONFIG" 2>/dev/null; then
     LANGUAGE=$(jq -r '.language // "en_US"' "$GLOBAL_CONFIG")
     WORKING_DIR=$(jq -r '.working_directory // ".dc_workspace"' "$GLOBAL_CONFIG")
-    CHECK_VERSION=$(jq -r '.check_version // true' "$GLOBAL_CONFIG")
-    AUTO_UPDATE=$(jq -r '.auto_update // false' "$GLOBAL_CONFIG")
     BASE_BRANCH=$(jq -r '.base_branch // "main"' "$GLOBAL_CONFIG")
     VERSION_FILES=$(jq -c '.version_files // []' "$GLOBAL_CONFIG")
   else
@@ -113,8 +105,6 @@ if [ -n "$GIT_ROOT" ] && [ -f "$LOCAL_CONFIG" ]; then
   if jq empty "$LOCAL_CONFIG" 2>/dev/null; then
     LANGUAGE=$(jq -r '.language // "'"$LANGUAGE"'"' "$LOCAL_CONFIG")
     WORKING_DIR=$(jq -r '.working_directory // "'"$WORKING_DIR"'"' "$LOCAL_CONFIG")
-    CHECK_VERSION=$(jq -r '.check_version // '"$CHECK_VERSION"'' "$LOCAL_CONFIG")
-    AUTO_UPDATE=$(jq -r '.auto_update // '"$AUTO_UPDATE"'' "$LOCAL_CONFIG")
     BASE_BRANCH=$(jq -r '.base_branch // "'"$BASE_BRANCH"'"' "$LOCAL_CONFIG")
     local_vf=$(jq -c '.version_files // null' "$LOCAL_CONFIG")
     if [ "$local_vf" != "null" ]; then
@@ -129,8 +119,6 @@ fi
 echo "Current Configuration:"
 echo "  language: $LANGUAGE"
 echo "  working_directory: $WORKING_DIR"
-echo "  check_version: $CHECK_VERSION"
-echo "  auto_update: $AUTO_UPDATE"
 echo "  base_branch: $BASE_BRANCH"
 echo "  version_files: $VERSION_FILES"
 ```
@@ -164,39 +152,47 @@ Based on response:
 
 ### Step 3: Interactive Configuration Workflow
 
-For each setting, use AskUserQuestion to get new value. Show current value in context.
+Settings 1-3 are collected as a single multi-question batch. Setting 4 (Version Files) is handled separately with its own interactive workflow.
 
-#### Setting 1: Language
+#### Phase A: Multi-Question Batch (Settings 1-3)
+
+Use a single `AskUserQuestion` call with the `questions` array to collect Language, Working Directory, and Base Branch simultaneously:
 
 ```yaml
-question: "Language code for conversations and documents?"
-default_value: <current_language>
-context: |
-  Current value: <current_language>
+questions:
+  - question: "Language code for conversations and documents?"
+    default_value: <current_language>
+    context: |
+      Specify language code (e.g., en_US, fr_FR, ja_JP, ko_KR).
+      The SessionStart hook reads this setting and outputs it as session context.
 
-  Specify language code (e.g., en_US, fr_FR, ja_JP).
-  The SessionStart hook reads this setting and outputs it as session context.
+  - question: "Working directory name (relative path from project root)?"
+    default_value: <current_working_dir>
+    context: |
+      This is where dotclaude stores plans, notepads, and work artifacts.
+      Must be a relative path (no leading /, no ..).
+      Examples: .dc_workspace, claude_works, workspace/dotclaude
+
+  - question: "Default base branch for git operations?"
+    default_value: <current_base_branch>
+    context: |
+      Used for creating feature branches, PR targets, comparing changes.
+      Common values: main, master, develop
 ```
 
-**Validation**:
+Each question provides `default_value` so the user can accept current values by pressing Enter. Do NOT add manual "Other" options (`AskUserQuestion` provides this automatically).
+
+#### Phase B: Post-Batch Validation and Migration
+
+After receiving all 3 answers from the batch, validate each individually. If any fail, re-ask only the failed item(s) using individual `AskUserQuestion` calls.
+
+##### B-1: Language Validation
+
 - Accept any non-empty string
-- If empty: show error, ask again
+- If empty: re-ask Language individually until valid
 
-#### Setting 2: Working Directory
+##### B-2: Working Directory Validation
 
-```yaml
-question: "Working directory name (relative path from project root)?"
-default_value: <current_working_dir>
-context: |
-  Current value: <current_working_dir>
-
-  This is where dotclaude stores plans, notepads, and work artifacts.
-  Must be a relative path (no leading /, no ..).
-
-  Examples: .dc_workspace, claude_works, workspace/dotclaude
-```
-
-**Validation**:
 ```bash
 validate_working_dir() {
   local path="$1"
@@ -229,9 +225,29 @@ validate_working_dir() {
 }
 ```
 
-**Migration Workflow**:
+If validation fails: show error message, re-ask Working Directory individually until valid.
 
-If working directory value changes from old value:
+##### B-3: Base Branch Validation
+
+```bash
+validate_base_branch() {
+  local branch="$1"
+
+  # Reject empty
+  if [ -z "$branch" ]; then
+    echo "Error: Base branch cannot be empty"
+    return 1
+  fi
+
+  return 0
+}
+```
+
+If validation fails: show error message, re-ask Base Branch individually until valid.
+
+##### B-4: Working Directory Migration
+
+After all 3 values are validated, if Working Directory changed from previous value, trigger migration workflow:
 
 ```bash
 OLD_DIR="<previous_working_dir>"
@@ -276,71 +292,7 @@ else
 fi
 ```
 
-#### Setting 3: Check Version
-
-```yaml
-question: "Check for plugin updates on session start?"
-options:
-  - "true"
-  - "false"
-default_value: <current_check_version>
-context: |
-  Current value: <current_check_version>
-
-  When enabled, dotclaude checks GitHub for updates at session start.
-  Shows notification if newer version available.
-  No automatic updates unless auto_update is also enabled.
-```
-
-#### Setting 4: Auto Update
-
-```yaml
-question: "Automatically update plugin when update available?"
-options:
-  - "true"
-  - "false"
-default_value: <current_auto_update>
-context: |
-  Current value: <current_auto_update>
-
-  When enabled, automatically runs 'plugin update dotclaude' when update detected.
-  Only applies if check_version is also enabled.
-
-  Warning: Auto-update requires trust in update source and may introduce breaking changes.
-```
-
-#### Setting 5: Base Branch
-
-```yaml
-question: "Default base branch for git operations?"
-default_value: <current_base_branch>
-context: |
-  Current value: <current_base_branch>
-
-  This is the branch used for:
-  - Creating new feature branches
-  - Pull request targets
-  - Comparing changes
-
-  Common values: main, master, develop
-```
-
-**Validation**:
-```bash
-validate_base_branch() {
-  local branch="$1"
-
-  # Reject empty
-  if [ -z "$branch" ]; then
-    echo "Error: Base branch cannot be empty"
-    return 1
-  fi
-
-  return 0
-}
-```
-
-#### Setting 6: Version Files
+#### Phase C: Setting 4 - Version Files
 
 ```yaml
 question: "Manage version files for tagging consistency check?"
@@ -349,6 +301,7 @@ options:
   - "Add a version file"
   - "Remove a version file"
   - "Reset to auto-detection"
+  - "Auto-detect and suggest"
   - "Skip (no changes)"
 context: |
   Current value: <current_version_files or "auto-detect (no explicit config)">
@@ -444,7 +397,7 @@ validate_version_pattern() {
    ```json
    {"path": "CHANGELOG.md", "pattern": "## \\[(\\d+\\.\\d+\\.\\d+)\\]"}
    ```
-5. Return to Setting 6 menu after add (allow multiple operations)
+5. Return to Setting 4 menu after add (allow multiple operations)
 
 ##### Remove Sub-action
 
@@ -452,13 +405,122 @@ validate_version_pattern() {
 - If list is empty: show "No explicit version files configured (using auto-detection)"
 - Cannot remove CHANGELOG.md entry (show error if attempted)
 - If removing the last non-CHANGELOG entry: warn that this reverts to CHANGELOG-only (suggest Reset instead)
-- Return to Setting 6 menu after remove
+- Return to Setting 4 menu after remove
 
 ##### Reset Sub-action
 
 - Clear version_files array (set to `[]`)
 - Confirm: "Version files reset to auto-detection mode"
-- Return to Setting 6 menu
+- Return to Setting 4 menu after reset
+
+##### Auto-detect and suggest Sub-action
+
+This sub-action is performed in 3 steps: Scan -> Display -> Act
+
+**Step 1: Scan**
+
+Scan the 7 known files defined in the `tagging.md` Auto-Detection table (reference: `commands/tagging.md` line 51-63).
+
+```bash
+# Known version files table (source of truth: tagging.md Auto-Detection table)
+KNOWN_FILES=(
+  "CHANGELOG.md|## \[([^\]]+)\]"
+  "package.json|\"version\":\s*\"([^\"]+)\""
+  "pyproject.toml|version\s*=\s*\"([^\"]+)\""
+  "Cargo.toml|version\s*=\s*\"([^\"]+)\""
+  "pom.xml|<version>([^<]+)</version>"
+  ".claude-plugin/plugin.json|\"version\":\s*\"([^\"]+)\""
+  ".claude-plugin/marketplace.json|\"version\":\s*\"([^\"]+)\""
+)
+
+# Load current version_files from config
+CONFIGURED_PATHS = [entry.path for entry in config.version_files]
+
+RESULTS = []
+for each (file, pattern) in KNOWN_FILES:
+    entry = { file: file, pattern: pattern, version: null, status: null }
+
+    if file exists in project root:
+        # Try to extract version using pattern
+        match = regex_search(read_file(file), pattern)
+        if match:
+            entry.version = match.group(1)
+        else:
+            entry.version = "extraction failed"
+
+        if file in CONFIGURED_PATHS:
+            entry.status = "Already configured"
+        else:
+            entry.status = "New - can add"
+    else:
+        if file in CONFIGURED_PATHS:
+            entry.status = "Configured but missing"
+            entry.version = "-"
+        else:
+            # File doesn't exist and not configured -> skip (don't show)
+            continue
+
+    RESULTS.append(entry)
+```
+
+**Step 2: Display**
+
+Display scan results in a table format.
+
+Edge case handling:
+- If RESULTS is empty (no known files exist in the project and no configured files are missing): Display "No known version files detected in this project. Use 'Add a version file' to manually add one." and return to Setting 4 menu.
+- If all entries have "Already configured" status: Display the table, then show "All detected version files are already configured. No new files to add."
+
+Results table format:
+
+```
+| File | Detected Version | Pattern | Status |
+|------|-----------------|---------|--------|
+| package.json | 1.2.3 | "version":\s*"([^"]+)" | New - can add |
+| CHANGELOG.md | 1.2.3 | ## \[([^\]]+)\] | Already configured |
+| pyproject.toml | - | version\s*=\s*"([^"]+)" | Configured but missing |
+```
+
+**Step 3: Act**
+
+Based on scan results, suggest additions/removals to the user.
+
+**3a. Add Prompt (when "New - can add" files exist)**:
+
+If there are files with "New - can add" status, present the list via AskUserQuestion:
+
+```
+AskUserQuestion:
+  question: "Which files would you like to add to version_files?"
+  options:
+    - "<file1> (version: <detected_version>)"
+    - "<file2> (version: <detected_version>)"
+    - ...
+    - "None - skip adding"
+```
+
+When the user selects files, add the corresponding path and pattern to version_files. Apply the same rules as the existing Add workflow:
+- When adding to an empty list (auto-detect mode): Show "Note: Adding explicit version files will override auto-detection mode." warning
+- If CHANGELOG.md entry is not in version_files, auto-append it (path: "CHANGELOG.md", pattern: `## \[(\d+\.\d+\.\d+)\]`)
+
+**3b. Remove Prompt (when "Configured but missing" files exist)**:
+
+If there are files with "Configured but missing" status, suggest removal via AskUserQuestion:
+
+```
+AskUserQuestion:
+  question: "These configured files no longer exist on disk. Remove them from version_files?"
+  options:
+    - "Yes, remove missing files"
+    - "No, keep them"
+```
+
+When the user selects removal, remove those files from version_files. Apply the same rules as the existing Remove sub-action:
+- CHANGELOG.md cannot be removed (even if missing from disk, it cannot be removed from config)
+
+**Step 4: Return**
+
+- Return to Setting 4 menu (same pattern as other sub-actions)
 
 ### Step 4: Save Configuration
 
@@ -474,15 +536,11 @@ mkdir -p "$(dirname "$TARGET_CONFIG")"
 jq -n \
   --arg lang "$LANGUAGE" \
   --arg wd "$WORKING_DIR" \
-  --argjson cv "$CHECK_VERSION" \
-  --argjson au "$AUTO_UPDATE" \
   --arg bb "$BASE_BRANCH" \
   --argjson vf "$VERSION_FILES" \
   '{
     language: $lang,
     working_directory: $wd,
-    check_version: $cv,
-    auto_update: $au,
     base_branch: $bb,
     version_files: $vf
   }' > "$TARGET_CONFIG"
@@ -512,8 +570,6 @@ File: <config_file_path>
 Settings:
   language: <value>
   working_directory: <value>
-  check_version: <value>
-  auto_update: <value>
   base_branch: <value>
   version_files: <value or "auto-detect">
 
@@ -633,9 +689,12 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 - [ ] Global config can be edited
 - [ ] Local config can be edited (in git repo)
 - [ ] Local config rejected when not in git repo
-- [ ] All 6 settings can be modified
+- [ ] All 4 settings can be modified
+- [ ] Multi-question batch presents 3 questions (Language, Working Directory, Base Branch) at once
+- [ ] Each question in batch shows current value as default
+- [ ] Batch validation: invalid items are re-asked individually (not entire batch)
 - [ ] Invalid working directory paths rejected
-- [ ] Working directory migration prompts when directory has files
+- [ ] Working directory migration prompts after batch completion when directory has files
 - [ ] Working directory migration works correctly
 - [ ] Empty required fields rejected
 - [ ] Invalid JSON in config handled gracefully
@@ -649,6 +708,13 @@ The init-config.sh hook ensures global config always exists. This skill can assu
 - [ ] CHANGELOG.md cannot be removed
 - [ ] Reset clears to auto-detection
 - [ ] CHANGELOG.md auto-appended when missing from explicit config
-- [ ] Configuration saved with correct JSON format
-- [ ] Boolean values saved as true/false (not "true"/"false")
+- [ ] Configuration saved with correct JSON format (4 fields only)
 - [ ] Changes take effect immediately
+- [ ] Auto-detect scans all 7 known files from tagging.md
+- [ ] Detected files show correct version extraction
+- [ ] "New - can add" status shown for unregistered existing files
+- [ ] "Already configured" status shown for registered existing files
+- [ ] "Configured but missing" status shown for registered non-existing files
+- [ ] Adding from auto-detect applies Add workflow rules (empty list warning, CHANGELOG.md auto-append)
+- [ ] Removing missing files applies Remove rules (CHANGELOG.md cannot be removed)
+- [ ] No known files detected shows appropriate message

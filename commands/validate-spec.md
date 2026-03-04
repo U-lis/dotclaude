@@ -17,8 +17,8 @@ User invokes `/dotclaude:validate-spec` after design documents are created.
 
 ## Prerequisites
 
-- `{working_directory}/{subject}/SPEC.md` exists
-- `{working_directory}/{subject}/GLOBAL.md` exists
+- `{working_directory}/{doc_dir}/SPEC.md` exists
+- `{working_directory}/{doc_dir}/GLOBAL.md` exists
 - At least one `PHASE_{k}_PLAN_{keyword}.md` exists
 - Corresponding `PHASE_{k}_TEST.md` files exist
 

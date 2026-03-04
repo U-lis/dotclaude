@@ -17,7 +17,7 @@ User invokes `/dotclaude:design` after SPEC.md is ready.
 
 ## Prerequisites
 
-- `{working_directory}/{subject}/SPEC.md` exists and is approved
+- `{working_directory}/{doc_dir}/SPEC.md` exists and is approved
 
 ## Workflow
 
@@ -40,7 +40,7 @@ User invokes `/dotclaude:design` after SPEC.md is ready.
 │    - Create PHASE_{k}.5_PLAN_MERGE.md if parallel phases│
 ├─────────────────────────────────────────────────────────┤
 │ 4. Commit Documents                                     │
-│    - git add {working_directory}/{subject}/*.md                │
+│    - git add {working_directory}/{doc_dir}/*.md                │
 │    - git commit -m "docs: add design documents"         │
 ├─────────────────────────────────────────────────────────┤
 │ 5. Review with User                                     │
@@ -77,7 +77,7 @@ When phases can run independently:
 
 ### Complex Tasks (3+ phases)
 ```
-{working_directory}/{subject}/
+{working_directory}/{doc_dir}/
 ├── SPEC.md                         (already exists)
 ├── GLOBAL.md                       (new)
 ├── PHASE_1_PLAN_{keyword}.md       (new)

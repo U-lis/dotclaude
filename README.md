@@ -118,7 +118,7 @@ Configuration merge order: **Defaults < Global < Local**
 /dotclaude:configure
 ```
 
-Interactive workflow to edit settings at global or local scope. Changes take effect immediately.
+Interactive workflow to edit settings at global or local scope. Basic settings (Language, Working Directory, Base Branch) are presented as a multi-question batch for faster configuration. Version Files uses a separate interactive workflow. Changes take effect immediately.
 
 ### Available Settings
 
@@ -126,14 +126,12 @@ Interactive workflow to edit settings at global or local scope. Changes take eff
 |---------|------|---------|-------------|
 | `language` | string | `en_US` | Language for agent conversations and user-facing text. Set via SessionStart hook. Documents remain in English. |
 | `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
-| `check_version` | boolean | `true` | Check for plugin updates on session start |
-| `auto_update` | boolean | `false` | Auto-update when update available |
 | `base_branch` | string | `main` | Default base branch for git operations |
 | `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
 
 #### Version Files
 
-When `version_files` is empty (default), `/dotclaude:tagging` auto-detects common version files in the project (e.g., `package.json`, `pyproject.toml`, `Cargo.toml`, `.claude-plugin/plugin.json`). To override, configure explicit `{path, pattern}` entries where `pattern` is a regex with a capture group for the version string. `CHANGELOG.md` is always included regardless of configuration. Use `/dotclaude:configure` (Setting 6) to manage version files interactively.
+When `version_files` is empty (default), `/dotclaude:tagging` auto-detects common version files in the project (e.g., `package.json`, `pyproject.toml`, `Cargo.toml`, `.claude-plugin/plugin.json`). To override, configure explicit `{path, pattern}` entries where `pattern` is a regex with a capture group for the version string. `CHANGELOG.md` is always included regardless of configuration. Use `/dotclaude:configure` (Setting 4) to manage version files interactively -- the "Auto-detect and suggest" option scans the project for all 7 known version file types, shows their status, and lets you add or remove entries in one step.
 
 ## Commands & Core Workflow
 
@@ -187,9 +185,25 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 {working_directory}/{SUBJECT}.md
 ```
 
+#### Directory Naming Convention
+
+Documentation directories use date-prefixed names for chronological sorting:
+
+```
+{working_directory}/{yyyy_mm_dd}-{subject}/
+```
+
+- `{yyyy_mm_dd}`: Local date when directory is created (e.g., `2026_02_25`)
+- `{subject}`: Work keyword (e.g., `auth`, `api-cleanup`)
+- Combined as `{doc_dir}` variable (e.g., `2026_02_25-auth`)
+
+This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream commands for path resolution.
+
+**Note**: `{subject}` continues to be used for branch names and commit messages.
+
 #### Complex Tasks (3+ phases)
 ```
-{working_directory}/{subject}/
+{working_directory}/{doc_dir}/               # Example: claude_works/2026_02_25-auth/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
