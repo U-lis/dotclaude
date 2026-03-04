@@ -23,7 +23,7 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 
 ## Validation Target
 
-All documents in `{working_directory}/{subject}/` folder:
+All documents in `{working_directory}/{doc_dir}/` folder:
 - SPEC.md
 - GLOBAL.md
 - PHASE_{k}_PLAN_{keyword}.md
@@ -65,7 +65,7 @@ All documents in `{working_directory}/{subject}/` folder:
 ## Validation Process
 
 ```
-1. Read all documents in {working_directory}/{subject}/
+1. Read all documents in {working_directory}/{doc_dir}/
 
 2. Cross-reference validation:
    SPEC.md requirements → GLOBAL.md phases → PHASE_PLAN coverage → PHASE_TEST verification

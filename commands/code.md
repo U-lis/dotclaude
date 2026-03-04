@@ -50,17 +50,19 @@ User invokes `/dotclaude:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`
 │    - Implement checklist items                          │
 │    - Create test cases                                  │
 ├─────────────────────────────────────────────────────────┤
-│ 5. Invoke code-validator Agent                          │
-│    - Check PLAN checklist                               │
-│    - Verify TEST implementation                         │
-│    - Run quality checks (ruff/ty/pytest etc.)           │
+│ 5. Invoke code-validator Agent (single invocation)      │
+│    - Pass: worktree_path, coder namespace, phase_id     │
+│    - Pass: PLAN path, TEST path, GLOBAL path            │
+│    - Validator manages validate-fix loop internally     │
+│    - Validator returns final PASS/FAIL result           │
 ├─────────────────────────────────────────────────────────┤
-│ 6. Validation Loop                                      │
-│    - If fail: Coder fixes (max 3 attempts)              │
-│    - If still fail: skip and report                     │
+│ 6. Process Validator Result                             │
+│    - PASS: proceed to commit (code + documents)         │
+│    - FAIL: phase already marked SKIPPED by validator    │
 ├─────────────────────────────────────────────────────────┤
 │ 7. On Success                                           │
-│    - git add, commit (with user permission)             │
+│    - git add (code files + PLAN + GLOBAL + TEST docs)   │
+│    - git commit (with user permission)                  │
 │    - Report completion                                  │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -73,27 +75,36 @@ User invokes `/dotclaude:code [phase]` where phase is like `1`, `2`, `3A`, `3.5`
 
 After Coder completes implementation:
 
-1. **MUST** invoke code-validator agent
-2. **MUST** wait for validation result
-3. **MUST** ensure checklist updates are complete before commit
+1. **MUST** invoke code-validator agent with full context (worktree path, coder namespace, document paths)
+2. **MUST** wait for final validation result (validator manages retries internally)
+3. **MUST** ensure validator has updated PLAN checklist, GLOBAL status, and TEST results before commit
+4. **MUST** include updated documents in the commit (not just code files)
 
 ### Validation Loop
+
+The code-validator manages the entire validate-fix cycle internally.
+The orchestrator (this command) invokes the validator ONCE and receives the final result.
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │ Coder completes implementation                          │
 │         ↓                                               │
-│ Invoke code-validator                                   │
+│ Invoke code-validator (SINGLE invocation)               │
+│   - Passes: worktree_path, coder namespace,             │
+│     phase_id, document paths                            │
 │         ↓                                               │
-│ Validation passed? ──NO──→ Coder fixes (attempt N/3)   │
-│         │                         ↓                     │
-│        YES                  Retry validation            │
-│         ↓                         │                     │
-│ code-validator updates:           │                     │
-│   - PHASE_{k}_PLAN.md checklist   │                     │
-│   - GLOBAL.md phase status        │                     │
-│         ↓                         │                     │
-│ Proceed to commit ←───────────────┘                     │
+│ code-validator internally:                              │
+│   ┌──────────────────────────────────────────────┐      │
+│   │ Validate → FAIL? → Invoke coder for fix      │      │
+│   │     ↑                    ↓                   │      │
+│   │     └──── Re-validate ←──┘ (max 3 attempts)  │      │
+│   └──────────────────────────────────────────────┘      │
+│         ↓                                               │
+│ code-validator returns final result:                    │
+│   - PASS: documents updated (PLAN, GLOBAL, TEST)        │
+│   - FAIL: phase marked SKIPPED in GLOBAL                │
+│         ↓                                               │
+│ Orchestrator commits or skips based on result           │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -101,10 +112,14 @@ After Coder completes implementation:
 
 Before `git add` and `git commit`:
 
-- [ ] code-validator invoked and completed
-- [ ] All items in PHASE_{k}_PLAN.md checked off
-- [ ] GLOBAL.md phase status updated to "Complete"
-- [ ] Quality checks passed (linter, type check, tests)
+- [ ] code-validator invoked with full context and completed (final result received)
+- [ ] All items in PHASE_{k}_PLAN.md checked off (by validator)
+- [ ] GLOBAL.md phase status updated to "Complete" (by validator)
+- [ ] Quality checks passed or marked N/A (by validator, auto-detected per project)
+- [ ] git add includes: changed code files
+- [ ] git add includes: {working_directory}/{subject}/PHASE_{k}_PLAN_{keyword}.md
+- [ ] git add includes: {working_directory}/{subject}/GLOBAL.md
+- [ ] git add includes: {working_directory}/{subject}/PHASE_{k}_TEST.md (if modified)
 
 **DO NOT commit if any item above is unchecked.**
 
@@ -149,6 +164,8 @@ git worktree remove ../subject-3C
 ```
 
 ## Coder Selection
+
+Task tool namespace: `dotclaude:coders:coder-{language}` (maps to `agents/coders/{language}.md`)
 
 | Language/Framework | Agent |
 |-------------------|-------|
@@ -200,7 +217,7 @@ Execute all phases without user intervention.
 
 ### Prerequisites
 
-- Planning documents exist in `{working_directory}/{subject}/`
+- Planning documents exist in `{working_directory}/{doc_dir}/`
 - GLOBAL.md contains Phase Overview table (recommended)
 - All PHASE_*_PLAN_*.md files present
 
@@ -234,12 +251,14 @@ Execute all phases without user intervention.
 │ 5. Continue Until All Phases Complete                       │
 ├─────────────────────────────────────────────────────────────┤
 │ 6. Error Handling                                           │
-│    - On phase failure after 3 retries: mark SKIPPED         │
+│    - Validator handles retries internally (max 3)           │
+│    - On validator FAIL: phase already marked SKIPPED        │
 │    - Continue to next phase (do NOT halt)                   │
-│    - Record all issues for final report                     │
+│    - Record validator report for final summary              │
 ├─────────────────────────────────────────────────────────────┤
 │ 7. Auto-Commit                                              │
 │    - Commit after each successful phase                     │
+│    - Include: code files + PLAN + GLOBAL + TEST documents   │
 │    - Message: feat({subject}): complete PHASE_{k}           │
 ├─────────────────────────────────────────────────────────────┤
 │ 8. Generate Comprehensive Report                            │
@@ -253,7 +272,7 @@ Execute all phases without user intervention.
 
 **Primary: Parse GLOBAL.md**
 
-1. Read `{working_directory}/{subject}/GLOBAL.md`
+1. Read `{working_directory}/{doc_dir}/GLOBAL.md`
 2. Locate "Phase Overview" table (`| Phase |`)
 3. Extract each row: phase_id, description, status, dependencies
 4. Parse dependencies: `"Phase 1, 2"` → `["1", "2"]`
@@ -261,7 +280,7 @@ Execute all phases without user intervention.
 
 **Fallback: File System Scan**
 
-1. Glob for `{working_directory}/{subject}/PHASE_*_PLAN_*.md`
+1. Glob for `{working_directory}/{doc_dir}/PHASE_*_PLAN_*.md`
 2. Extract phase_id from filename: `PHASE_(\d+[A-Z]?)_PLAN_`
 3. Infer dependencies:
    - Sequential: `PHASE_X` depends on `PHASE_{X-1}`

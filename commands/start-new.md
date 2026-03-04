@@ -27,10 +27,11 @@ working_directory: {resolved_value}
 base_branch: {resolved_value}
 language: {resolved_value}
 worktree_path: ../{project_name}-{type}-{keyword}
+doc_dir: {doc_dir}
 -->
 ```
 
-Downstream commands read this metadata to resolve `{working_directory}`, `{worktree_path}`, and other config values. If they cannot find SPEC.md, they fall back to default values (`worktree_path` defaults to `.`).
+Downstream commands read this metadata to resolve `{working_directory}`, `{worktree_path}`, `{doc_dir}`, and other config values. If they cannot find SPEC.md, they fall back to default values (`worktree_path` defaults to `.`, `doc_dir` defaults to `{subject}`).
 
 ## Language
 
@@ -145,7 +146,7 @@ Store the target_version for:
 Verification checks:
 1. Run `git worktree list` and confirm `../{project_name}-{type}-{keyword}` appears in the output
 2. Run `git branch --show-current` and confirm the current branch is `{type}/{keyword}` (NOT main, NOT master)
-3. Confirm the working directory `../{project_name}-{type}-{keyword}/{working_directory}/{subject}` exists
+3. Confirm the working directory `../{project_name}-{type}-{keyword}/{working_directory}/{doc_dir}` exists
 
 If ANY check fails:
 ```
@@ -180,7 +181,7 @@ If revision needed: iterate with TechnicalWriter via Task tool
 
 **Step 4: Commit SPEC.md**
 ```bash
-git add {working_directory}/{subject}/SPEC.md
+git add {working_directory}/{doc_dir}/SPEC.md
 git commit -m "docs: add SPEC.md for {subject}"
 ```
 
@@ -207,12 +208,12 @@ Call AskUserQuestion tool:
    - If on main: HALT and report "Work branch not created. Create branch before proceeding."
 
 2. **[UNCONDITIONAL] SPEC.md Check**:
-   - File `{working_directory}/{subject}/SPEC.md` must exist
+   - File `{working_directory}/{doc_dir}/SPEC.md` must exist
    - If missing: HALT and report "SPEC.md not found. Create SPEC.md before design phase."
 
 3. **[UNCONDITIONAL] SPEC.md Committed Check**:
    - SPEC.md must be committed (not just staged)
-   - Run: `git log --oneline -1 -- {working_directory}/{subject}/SPEC.md`
+   - Run: `git log --oneline -1 -- {working_directory}/{doc_dir}/SPEC.md`
    - If no commit found: HALT and report "SPEC.md not committed. Commit SPEC.md before design phase."
 
 4. **[UNCONDITIONAL] Worktree Check**:
@@ -231,7 +232,7 @@ If ANY check fails: HALT workflow immediately and report error to user. There ar
 ```
 Task tool -> Designer
   Input:
-    spec_path: "{working_directory}/{subject}/SPEC.md"
+    spec_path: "{working_directory}/{doc_dir}/SPEC.md"
   Output: architecture decisions, phase breakdown
 ```
 
@@ -241,13 +242,13 @@ Task tool -> TechnicalWriter
   Input:
     document_type: "DESIGN"
     designer_output: {Designer results}
-    target_dir: "{working_directory}/{subject}/"
+    target_dir: "{working_directory}/{doc_dir}/"
   Output: GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md
 ```
 
 **Step 8: Commit Design Documents**
 ```bash
-git add {working_directory}/{subject}/*.md
+git add {working_directory}/{doc_dir}/*.md
 git commit -m "docs: add design documents for {subject}"
 ```
 
@@ -267,7 +268,7 @@ For sequential phase:
 Task tool -> Coder
   Input:
     phase_id: "{k}"
-    plan_path: "{working_directory}/{subject}/PHASE_{k}_PLAN_*.md"
+    plan_path: "{working_directory}/{doc_dir}/PHASE_{k}_PLAN_*.md"
   Output: implementation, files changed
 
 Task tool -> code-validator
@@ -434,13 +435,13 @@ After executing any workflow step involving TechnicalWriter, Designer, Coder, or
 ```
 Invoke Task tool (subagent_type: "dotclaude:technical-writer")
   Subagent completed successfully
-Output created: claude_works/{subject}/SPEC.md
+Output created: claude_works/{doc_dir}/SPEC.md
 ```
 
 **Incorrect Pattern** (direct file operations):
 ```
 Read(agents/technical-writer.md)
-Write(claude_works/{subject}/SPEC.md)
+Write(claude_works/{doc_dir}/SPEC.md)
 ```
 
 If you see the incorrect pattern, STOP and revise your approach to use Task tool delegation.
@@ -474,7 +475,7 @@ Follow the template structure from your agent definition.
 Task(
   subagent_type="dotclaude:technical-writer",
   prompt="""
-Create SPEC.md document at: claude_works/{subject}/SPEC.md
+Create SPEC.md document at: claude_works/{doc_dir}/SPEC.md
 
 Include these sections:
 - Overview: {Brief description from user requirements}
@@ -501,7 +502,7 @@ Create design documents based on Designer output:
 Designer Output Summary:
 {paste Designer's architecture decisions and phase breakdown}
 
-Target Directory: claude_works/{subject}/
+Target Directory: claude_works/{doc_dir}/
 
 Create documents according to complexity:
 - Simple tasks (1-2 phases): Single combined DESIGN.md
@@ -545,7 +546,7 @@ Follow the DOCS_UPDATE role instructions from your agent definition.
 
 **Prerequisites Verification** (Step 6 Checkpoint):
 - Current branch is NOT main/master
-- SPEC.md exists at claude_works/{subject}/SPEC.md
+- SPEC.md exists at claude_works/{doc_dir}/SPEC.md
 - SPEC.md is committed (not just staged)
 
 If any prerequisite fails, HALT and report error. Do NOT proceed to Designer invocation.
@@ -559,7 +560,7 @@ Task(
 ## Task: Analyze SPEC and Create Design
 
 ### Input
-SPEC path: claude_works/{subject}/SPEC.md
+SPEC path: claude_works/{doc_dir}/SPEC.md
 
 ### Your Tasks
 1. Read and analyze the SPEC.md
@@ -597,13 +598,13 @@ Collect Designer output and pass it to TechnicalWriter for document creation (St
 
 ```
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase {phase_id}
 
 ### Input
 Phase ID: {phase_id}
-PLAN path: claude_works/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+PLAN path: claude_works/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
 
 ### Your Tasks
 1. Read the PLAN document completely
@@ -636,7 +637,7 @@ Then invoke multiple Coder agents in a SINGLE message (parallel execution):
 ```
 # Call 1
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase 3A (Parallel Branch)
 
@@ -645,7 +646,7 @@ CRITICAL: Execute all operations in worktree: ../{project_name}-{type}-{keyword}
 
 ### Input
 Phase ID: 3A
-PLAN path: claude_works/{subject}/PHASE_3A_PLAN_{keyword}.md
+PLAN path: claude_works/{doc_dir}/PHASE_3A_PLAN_{keyword}.md
 
 ### Your Tasks
 [Same as sequential, but all operations in worktree path]
@@ -654,7 +655,7 @@ PLAN path: claude_works/{subject}/PHASE_3A_PLAN_{keyword}.md
 
 # Call 2
 Task(
-  subagent_type="dotclaude:coder-{detected_language}",
+  subagent_type="dotclaude:coders:coder-{detected_language}",
   prompt="""
 ## Task: Implement Phase 3B (Parallel Branch)
 
@@ -692,41 +693,34 @@ git worktree remove ../{project_name}-{type}-{keyword}-3C
 Task(
   subagent_type="dotclaude:code-validator",
   prompt="""
-## Task: Validate Phase {phase_id} Implementation
+## Task: Validate and Fix Phase {phase_id} Implementation
 
-### Input
+### Context
+Worktree Path: {worktree_path}
+Coder Agent Namespace: dotclaude:coders:coder-{detected_language}
 Phase ID: {phase_id}
-PLAN path: claude_works/{subject}/PHASE_{phase_id}_PLAN_{keyword}.md
+PLAN path: claude_works/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
 (Read this file to extract the completion checklist)
 
-### Your Tasks
-1. Extract completion checklist from PLAN document
-2. Verify each checklist item:
-   - Files created/modified as specified
-   - Functionality implemented correctly
-   - Code follows project conventions
-3. Run quality checks:
-   - Build passes (if applicable)
-   - No linting errors
-   - No type errors (TypeScript projects)
-4. Report validation result: PASS or FAIL with details
+### Document Paths (relative to worktree)
+PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
+TEST: {working_directory}/{doc_dir}/PHASE_{phase_id}_TEST.md
+GLOBAL: {working_directory}/{doc_dir}/GLOBAL.md
 
-### Output Format
-```yaml
-status: "PASS" | "FAIL"
-phase_id: "{phase_id}"
-checklist_results:
-  - item: "Checklist item description"
-    status: "COMPLETE" | "INCOMPLETE"
-    notes: "Details if incomplete"
-quality_checks:
-  build: "PASS" | "FAIL" | "N/A"
-  lint: "PASS" | "FAIL" | "N/A"
-  types: "PASS" | "FAIL" | "N/A"
-issues:
-  - "Description of any issues found"
-recommendation: "COMMIT" | "RETRY" | "SKIP"
-```
+### Your Authority
+You manage the ENTIRE validate-fix loop for this phase:
+1. Run validation (checklist + quality checks)
+2. If FAIL: invoke the coder agent (via Task tool using the namespace above) with fix instructions
+3. Re-validate after coder fix (max 3 total attempts)
+4. On final SUCCESS: update PLAN checklist, GLOBAL phase status, TEST results
+5. On 3x FAIL: mark phase as SKIPPED in GLOBAL, document unresolved errors
+
+### Important Rules
+- Use {worktree_path} to resolve ALL file paths
+- Pass {worktree_path} to the coder agent in fix prompts
+- Update documents ONLY after final successful validation (not during retries)
+- Auto-detect quality tools from project config files
+- Return final status: PASS or FAIL with comprehensive report
 
 Follow validation procedures from your agent definition.
 """
@@ -735,31 +729,21 @@ Follow validation procedures from your agent definition.
 
 **After code-validator Completes**:
 
-Based on validation result:
-- **PASS**: Commit the phase
+The code-validator manages the entire validate-fix cycle internally.
+The orchestrator receives only the final result.
+
+Based on the final validation result:
+- **PASS (recommendation: COMMIT)**: Commit the phase (all code files + updated documents)
   ```bash
-  git add {changed_files}
+  git add {changed_code_files}
+  git add {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
+  git add {working_directory}/{doc_dir}/GLOBAL.md
+  git add {working_directory}/{doc_dir}/PHASE_{phase_id}_TEST.md
   git commit -m "feat/fix: implement phase {phase_id} - {brief_description}"
   ```
-- **FAIL + retry_count < 3**: Call Coder again with feedback from validator
-- **FAIL + retry_count >= 3**: Mark phase as SKIPPED, record error, continue to next phase
+- **FAIL (recommendation: SKIP)**: Phase already marked as SKIPPED in GLOBAL.md by the validator. Record error and continue to next phase.
 
-**Retry Loop Pattern**:
-```
-attempt = 0
-while attempt < 3:
-  coder_result = invoke_coder(phase_id)
-  validator_result = invoke_code_validator(phase_id)
-  if validator_result.status == "PASS":
-    commit_phase()
-    break
-  attempt += 1
-
-if validator_result.status != "PASS":
-  mark_phase_skipped()
-  record_error(validator_result.issues)
-  # Continue to next phase
-```
+There is NO orchestrator-level retry loop. The validator handles all retries internally.
 
 ---
 
@@ -821,12 +805,12 @@ Parse GLOBAL.md Phase Overview table:
 # All execute simultaneously
 
 <Task tool call 1>
-  subagent_type: "dotclaude:coder-{detected_language}"
+  subagent_type: "dotclaude:coders:coder-{detected_language}"
   prompt: "Execute PHASE_3A in worktree ../{project_name}-{type}-{keyword}-3A"
 </Task tool call 1>
 
 <Task tool call 2>
-  subagent_type: "dotclaude:coder-{detected_language}"
+  subagent_type: "dotclaude:coders:coder-{detected_language}"
   prompt: "Execute PHASE_3B in worktree ../{project_name}-{type}-{keyword}-3B"
 </Task tool call 2>
 ```
@@ -907,11 +891,11 @@ branch: "{type}/{keyword}"
 scope_executed: "Design -> Code -> Docs"
 integration_method: "merge" | "pr" | "none"
 init:
-  spec_path: "{working_directory}/{subject}/SPEC.md"
+  spec_path: "{working_directory}/{doc_dir}/SPEC.md"
   spec_approved: true
   target_version: "X.Y.Z"
 design:
-  global_path: "{working_directory}/{subject}/GLOBAL.md"
+  global_path: "{working_directory}/{doc_dir}/GLOBAL.md"
   phases: ["1", "2", "3A", "3B", "3C", "3.5", "4"]
 code:
   phases:
@@ -957,7 +941,7 @@ After all steps in the chain complete, display summary:
 | 4 | Integration | MERGE / PR / SKIPPED |
 
 ## Files Changed
-- {working_directory}/{subject}/*.md
+- {working_directory}/{doc_dir}/*.md
 - [implementation files...]
 - CHANGELOG.md
 
@@ -974,7 +958,7 @@ After all steps in the chain complete, display summary:
 3. Merge PR after approval
 
 **If integration was "none" (design-only):**
-1. Review design documents in `{working_directory}/{subject}/`
+1. Review design documents in `{working_directory}/{doc_dir}/`
 2. When ready to implement: re-run `/dotclaude:start-new` with broader scope
 3. Or manually proceed: `/dotclaude:code`, `/dotclaude:merge`
 ```
