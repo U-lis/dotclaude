@@ -25,11 +25,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Edge case handling: empty results message, all-configured notification
 - Design documentation for version-file-auto-detect feature (`claude_works/version-file-auto-detect/SPEC.md`, `claude_works/version-file-auto-detect/GLOBAL.md`, `claude_works/version-file-auto-detect/PHASE_1_PLAN_AUTO_DETECT_SUGGEST.md`)
 
+### Fixed
+
+- Code > validate > checklist > commit loop not functioning during code implementation phase — coder agent namespace was incorrect (`dotclaude:coder-{lang}` instead of `dotclaude:coders:coder-{lang}`), orchestrator retry loop was pseudo-code only, per-phase commits excluded planning documents, and quality tools were not auto-detected ([#57](https://github.com/U-lis/dotclaude/issues/57))
+
 ### Changed
 
 - Documentation directory path references updated from `{working_directory}/{subject}/` to `{working_directory}/{doc_dir}/` across 12 command and agent files: `start-new.md`, `_init-common.md`, `code.md`, `design.md`, `update-docs.md`, `validate-spec.md`, `init-feature.md`, `init-bugfix.md`, `init-refactor.md`, `designer.md`, `spec-validator.md`, `README.md`
 - `/dotclaude:configure` command restructured from individual sequential questions to multi-question batch: Settings 1-3 (Language, Working Directory, Base Branch) are now presented as a single `AskUserQuestion` call with a `questions` array, allowing users to review and edit all basic settings at once instead of answering one at a time. Version Files (Setting 4) remains a separate interactive workflow due to its search/add/remove complexity. ([#55](https://github.com/U-lis/dotclaude/issues/55))
 - `check_version` and `auto_update` settings removed from `/dotclaude:configure` command — configure now manages 4 settings (Language, Working Directory, Base Branch, Version Files) instead of 6
+- code-validator agent now manages the entire validate-fix cycle internally (validator self-loop) instead of orchestrator-mediated retry — validator invokes coder via Task tool, runs quality checks, updates planning documents, and returns final result
+- Quality tool detection is now auto-detected from project configuration files (package.json, pyproject.toml, Cargo.toml, svelte.config.js) with graceful N/A fallback for missing tools
+- Per-phase commits now include updated PHASE_PLAN, GLOBAL, and PHASE_TEST documents alongside code files
+- Orchestrator (`start-new.md`) simplified to single code-validator invocation per phase (no orchestrator-level retry loop)
+- `/dotclaude:code` command aligned with validator-managed loop pattern, expanded pre-commit checklist, and worktree context passing
 
 ## [0.3.1] - 2026-02-03
 
