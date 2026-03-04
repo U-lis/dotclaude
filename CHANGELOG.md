@@ -16,6 +16,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Git log-based date detection to determine original creation date for existing directories
   - Bulk migration script for renaming legacy `{subject}` directories to `{yyyy_mm_dd}-{subject}` format
 - "Directory Naming Convention" section in README.md documenting the `{doc_dir}` variable and naming format
+- "Auto-detect and suggest" sub-action in `/dotclaude:configure` Setting 4 (Version Files) for automatic discovery of version files in the project
+  - Scans all 7 known version files from the `tagging.md` auto-detection table (`CHANGELOG.md`, `package.json`, `pyproject.toml`, `Cargo.toml`, `pom.xml`, `.claude-plugin/plugin.json`, `.claude-plugin/marketplace.json`)
+  - Displays scan results in a table showing file name, detected version, regex pattern, and status (`New - can add`, `Already configured`, `Configured but missing`)
+  - Suggests adding newly discovered files that are not yet configured
+  - Suggests removing configured files that no longer exist on disk
+  - Follows existing Add/Remove workflow rules (empty-list auto-detect override warning, CHANGELOG.md mandatory and cannot be removed)
+  - Edge case handling: empty results message, all-configured notification
+- Design documentation for version-file-auto-detect feature (`claude_works/version-file-auto-detect/SPEC.md`, `claude_works/version-file-auto-detect/GLOBAL.md`, `claude_works/version-file-auto-detect/PHASE_1_PLAN_AUTO_DETECT_SUGGEST.md`)
 
 ### Changed
 

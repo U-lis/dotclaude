@@ -131,7 +131,7 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 
 #### Version Files
 
-When `version_files` is empty (default), `/dotclaude:tagging` auto-detects common version files in the project (e.g., `package.json`, `pyproject.toml`, `Cargo.toml`, `.claude-plugin/plugin.json`). To override, configure explicit `{path, pattern}` entries where `pattern` is a regex with a capture group for the version string. `CHANGELOG.md` is always included regardless of configuration. Use `/dotclaude:configure` (Setting 4) to manage version files interactively.
+When `version_files` is empty (default), `/dotclaude:tagging` auto-detects common version files in the project (e.g., `package.json`, `pyproject.toml`, `Cargo.toml`, `.claude-plugin/plugin.json`). To override, configure explicit `{path, pattern}` entries where `pattern` is a regex with a capture group for the version string. `CHANGELOG.md` is always included regardless of configuration. Use `/dotclaude:configure` (Setting 4) to manage version files interactively -- the "Auto-detect and suggest" option scans the project for all 7 known version file types, shows their status, and lets you add or remove entries in one step.
 
 ## Commands & Core Workflow
 
