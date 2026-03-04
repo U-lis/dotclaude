@@ -31,7 +31,8 @@ After gathering requirements (or using pre-filled values from GitHub issue), cre
    - Worktree naming rule: `{project_name}-{type}-{keyword}` (e.g., `dotclaude-feature-user-auth`)
 4. **Verify worktree creation**: Run `ls ../{project_name}-{type}-{keyword}` and confirm the directory exists. If the directory does not exist, the worktree creation failed -- report the error immediately. Do NOT silently fall back to `git checkout -b`.
 5. Change into worktree directory: `cd ../{project_name}-{type}-{keyword}`
-6. Create project directory: `mkdir -p {working_directory}/{subject}`
+6. Generate doc_dir: `DOC_DIR="$(date +%Y_%m_%d)-{subject}"` (local timezone)
+7. Create project directory: `mkdir -p {working_directory}/{doc_dir}`
 
 ### Naming Examples
 
@@ -280,3 +281,48 @@ Analysis phases can be partially skipped if:
 | Simple change (< 10 lines estimate) | Step D can be minimal |
 
 When skipping, document in SPEC.md: "Analysis skipped: {reason}"
+
+---
+
+## Migration: Existing Directories
+
+For directories created before the `{doc_dir}` date-prefix convention, use `git log` to detect the original creation date and rename.
+
+### Detection Method
+
+To find the creation date of an existing directory:
+```bash
+# Get the first commit that created files in the directory
+git log --diff-filter=A --format="%ai" -- {working_directory}/{old_directory_name}/SPEC.md | tail -1
+```
+
+### Rename Pattern
+
+```bash
+# Example: rename "auth" to "2026_01_15-auth"
+CREATION_DATE=$(git log --diff-filter=A --format="%Y_%m_%d" -- {working_directory}/auth/SPEC.md | tail -1)
+mv {working_directory}/auth {working_directory}/${CREATION_DATE}-auth
+```
+
+### Bulk Migration
+
+For all existing date-less directories:
+```bash
+for dir in {working_directory}/*/; do
+  dirname=$(basename "$dir")
+  # Skip if already has date prefix (matches YYYY_MM_DD- pattern)
+  if [[ "$dirname" =~ ^[0-9]{4}_[0-9]{2}_[0-9]{2}- ]]; then
+    continue
+  fi
+  CREATION_DATE=$(git log --diff-filter=A --format="%Y_%m_%d" -- "$dir/SPEC.md" | tail -1)
+  if [ -n "$CREATION_DATE" ]; then
+    mv "$dir" "{working_directory}/${CREATION_DATE}-${dirname}"
+  fi
+done
+```
+
+### Notes
+
+- Migration is OPTIONAL. Existing directories continue to work.
+- New directories created via `_init-common.md` automatically use the date-prefix convention.
+- The SPEC.md metadata `doc_dir` field is only present in newly created directories.
