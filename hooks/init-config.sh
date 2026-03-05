@@ -13,8 +13,6 @@ if [ ! -f "$GLOBAL_CONFIG" ]; then
 {
   "language": "en_US",
   "working_directory": ".dc_workspace",
-  "check_version": true,
-  "auto_update": false,
   "base_branch": "main"
 }
 EOF
