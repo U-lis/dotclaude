@@ -42,14 +42,33 @@ The `--prefill <text>` argument value is received as the conversation body. This
 
 ### Step 2: Sensitive Data Filtering
 
-Apply sensitive-data filters to `prefill_body` before any extraction or routing.
+Apply sensitive-data filters to `prefill_body` before any extraction or routing (per NFR-1). The full regex pattern table, replacement markers, and application order are defined in `commands/_prefill-filters.md`; this step references that file rather than inlining the patterns.
 
-**TBD: Phase 4** -- See `commands/_prefill-filters.md` for the regex pattern table and application order. Phase 4 will populate this section with:
-- The actual filter reference linkage to `commands/_prefill-filters.md`
-- The invocation order and pass-through semantics
-- The output variable `filtered_prefill_body` that downstream Steps consume
+**Procedure**:
 
-For Phase 2 (current), this step is a **no-op placeholder**. Treat `filtered_prefill_body = prefill_body` (passthrough) and proceed to Step 2.5 with the body unmodified. This is acceptable because Scenario 1 of the Phase 2 manual verification does not include sensitive content.
+1. **Reference**: Read `commands/_prefill-filters.md` for the 7-row pattern table (Filter Patterns section) and the 7-step application order (Application Order section).
+2. **Apply**: Apply each pattern to `prefill_body` in the order specified by `_prefill-filters.md`. Replace matches with the category-specific marker shown in that file (e.g., `[REDACTED:API_KEY]`, `[REDACTED:JWT]`, `[REDACTED:EMAIL]`, `[REDACTED:PHONE]`, `[REDACTED:CC]`, `Bearer [REDACTED]`, `password=[REDACTED]`).
+3. **Output variable**: Store the filtered result as `filtered_prefill_body`. From this point onward, all downstream steps (Step 2.5, Step 3, Step 4, Step 5) operate on `filtered_prefill_body` — they do NOT read `prefill_body`.
+4. **Pass-through (no-op) on empty/clean input**: If `prefill_body` is empty (already handled by Step 1) or if no pattern matched, `filtered_prefill_body == prefill_body` (byte-for-byte). Proceed to Step 2.5 unchanged. No SPEC.md "Notes" disclosure is added.
+
+**Redaction Notice (metadata flow)**:
+
+If any pattern matched (i.e., redaction occurred), record the categories matched and their per-category counts. Forward this metadata to the downstream init-xxx so the SPEC.md "Notes" subsection can include a redaction disclosure. Format consumed by the TechnicalWriter at SPEC.md drafting time:
+
+```markdown
+## Notes
+
+The prefill content was filtered for sensitive data before extraction:
+- API keys: 1 redaction
+- Email addresses: 2 redactions
+- (etc.)
+
+The original unfiltered content is not preserved.
+```
+
+Disclosure carries category labels and counts only — never the original masked content. If no pattern matched, this "Notes" subsection is OMITTED entirely.
+
+**No-preservation guarantee**: The original unfiltered `prefill_body` is NOT preserved anywhere in working documents, SPEC.md, or git commits. Only `filtered_prefill_body` flows downstream from this step.
 
 ---
 

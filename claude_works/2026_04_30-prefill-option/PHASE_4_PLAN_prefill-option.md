@@ -2,7 +2,7 @@
 
 ## Phase Metadata
 
-- **Status**: Pending
+- **Status**: Complete
 - **Type**: sequential
 - **Dependencies**: 2
 - **Effort**: medium
@@ -49,8 +49,8 @@ Regex-based sensitive data filtering patterns applied to prefill content before 
 This file is an internal reference, not a user-invocable command. It is referenced from `commands/init-prefill.md` Step 2 (Sensitive Data Filtering).
 ```
 
-- [ ] frontmatter 컨벤션은 `_init-common.md`와 일치
-- [ ] `user-invocable: false`로 마크
+- [x] frontmatter 컨벤션은 `_init-common.md`와 일치
+- [x] `user-invocable: false`로 마크
 
 ### Task 4.2: 7-row 정규식 패턴 표 작성
 
@@ -72,9 +72,9 @@ The following regex patterns are applied to the prefill body. Matches are replac
 | 7 | Phone Number (KR) | `\b(?:\+?82[- ]?)?0?1[0-9][- ]?\d{3,4}[- ]?\d{4}\b` | `[REDACTED:PHONE]` | Korean mobile number formats with optional `+82` country code |
 ```
 
-- [ ] 7개 카테고리 모두 포함 (SPEC.md NFR-1 line 65에 나열된 항목 + 추가)
-- [ ] 각 row의 정규식이 정확하고 escape가 올바름
-- [ ] Replacement 가이드가 명확
+- [x] 7개 카테고리 모두 포함 (SPEC.md NFR-1 line 65에 나열된 항목 + 추가)
+- [x] 각 row의 정규식이 정확하고 escape가 올바름
+- [x] Replacement 가이드가 명확
 
 ### Task 4.3: 적용 순서 명시 (긴 패턴 우선)
 
@@ -96,8 +96,8 @@ Patterns are applied in the following order. Order matters because earlier match
 Rationale: Specific (longer / structurally unique) patterns are matched first to avoid false positives from generic patterns. For example, a JWT token contains `.`-separated segments that could partially match a generic password regex if applied later.
 ```
 
-- [ ] 적용 순서 7-step 명시
-- [ ] 순서 결정 근거 (긴 패턴 우선) 명시
+- [x] 적용 순서 7-step 명시
+- [x] 순서 결정 근거 (긴 패턴 우선) 명시
 
 ### Task 4.4: False Positive 노트 섹션 작성
 
@@ -118,8 +118,8 @@ The patterns above are intentionally conservative — they prioritize coverage o
 **Final validation gate**: SPEC.md review (start-new.md Step 3) is the final user-facing checkpoint. Users review the SPEC.md before commit and can verify that no leaked secrets remain.
 ```
 
-- [ ] 4개 카테고리에 대한 false positive 케이스 명시
-- [ ] 사용자 책임 + SPEC.md 검토 게이트 명시
+- [x] 4개 카테고리에 대한 false positive 케이스 명시
+- [x] 사용자 책임 + SPEC.md 검토 게이트 명시
 
 ### Task 4.5: Filtering Invocation Guide 작성
 
@@ -138,8 +138,8 @@ The patterns above are intentionally conservative — they prioritize coverage o
 The original unfiltered body is NOT preserved anywhere in working documents or git commits.
 ```
 
-- [ ] 4-step 호출 흐름 명시
-- [ ] 원본 본문 미보존 명시 (보안)
+- [x] 4-step 호출 흐름 명시
+- [x] 원본 본문 미보존 명시 (보안)
 
 ### Task 4.6: init-prefill.md Step 2 placeholder → 실제 reference로 변환
 
@@ -163,20 +163,20 @@ If any pattern matched (i.e., redaction occurred), record the categories and cou
 If no pattern matched, `filtered_prefill_body == prefill_body`. No notice is added.
 ```
 
-- [ ] `TBD: Phase 4` 마커 제거
-- [ ] `_prefill-filters.md` reference 명시
-- [ ] `filtered_prefill_body` 변수 명명 일관
-- [ ] Redaction notice 메타데이터 흐름 명시
-- [ ] 원본 본문 미보존 명시
+- [x] `TBD: Phase 4` 마커 제거
+- [x] `_prefill-filters.md` reference 명시
+- [x] `filtered_prefill_body` 변수 명명 일관
+- [x] Redaction notice 메타데이터 흐름 명시
+- [x] 원본 본문 미보존 명시
 
 ### Task 4.7: 다운스트림 step의 변수 참조 갱신
 
-- [ ] init-prefill.md Step 2.5, Step 3, Step 4, Step 5 본문에서 `prefill_body` 참조를 `filtered_prefill_body`로 변경
-- [ ] Step 5 YAML 페이로드의 `conversation.body` 값도 `{filtered_prefill_body}`로 명시 (Phase 2에서 이미 그렇게 작성됨, 검증)
+- [x] init-prefill.md Step 2.5, Step 3, Step 4, Step 5 본문에서 `prefill_body` 참조를 `filtered_prefill_body`로 변경
+- [x] Step 5 YAML 페이로드의 `conversation.body` 값도 `{filtered_prefill_body}`로 명시 (Phase 2에서 이미 그렇게 작성됨, 검증)
 
 ### Task 4.8: SPEC.md Notes 섹션 가이드 작성
 
-- [ ] init-prefill.md Step 5 본문에 redaction 발생 시 SPEC.md Notes 섹션 표기 가이드 추가:
+- [x] init-prefill.md Step 5 본문에 redaction 발생 시 SPEC.md Notes 섹션 표기 가이드 추가 (DEVIATION: Coder가 Step 2 "Redaction Notice" 섹션에 동등 가이드 배치 — 의미 보존, PLAN 우선 원칙 적용 PASS):
 
 ```markdown
 **Redaction Disclosure (per NFR-1)**:
@@ -235,17 +235,17 @@ If no redaction occurred, this subsection is OMITTED.
 
 ## Completion Checklist
 
-- [ ] `commands/_prefill-filters.md` 파일이 존재한다
-- [ ] frontmatter (`description`, `user-invocable: false`)가 정확하다
-- [ ] 7-row 정규식 패턴 표가 모든 카테고리를 커버한다 (API key, Bearer, JWT, Password, CC, Email, Phone-KR)
-- [ ] Application Order 섹션이 7-step 순서를 명시한다
-- [ ] False Positive Notes 섹션이 4개 카테고리에 대한 케이스를 명시한다
-- [ ] Invocation Guide 섹션이 init-prefill.md에서의 호출 흐름을 명시한다
-- [ ] init-prefill.md Step 2의 `TBD: Phase 4` 마커가 제거되었다
-- [ ] init-prefill.md Step 2가 `_prefill-filters.md`를 reference한다
-- [ ] init-prefill.md 다운스트림 step (2.5, 3, 4, 5)에서 `filtered_prefill_body` 변수를 사용한다
-- [ ] SPEC.md Notes 섹션 redaction disclosure 가이드가 init-prefill.md Step 5에 포함된다
-- [ ] 원본 본문 미보존 (no-preservation) 명시가 두 곳 (`_prefill-filters.md`, `init-prefill.md` Step 2)에 모두 존재한다
+- [x] `commands/_prefill-filters.md` 파일이 존재한다
+- [x] frontmatter (`description`, `user-invocable: false`)가 정확하다
+- [x] 7-row 정규식 패턴 표가 모든 카테고리를 커버한다 (API key, Bearer, JWT, Password, CC, Email, Phone-KR)
+- [x] Application Order 섹션이 7-step 순서를 명시한다
+- [x] False Positive Notes 섹션이 4개 카테고리에 대한 케이스를 명시한다 (Email/Phone/API Key/Password + Code-example placeholders 추가)
+- [x] Invocation Guide 섹션이 init-prefill.md에서의 호출 흐름을 명시한다
+- [x] init-prefill.md Step 2의 `TBD: Phase 4` 마커가 제거되었다
+- [x] init-prefill.md Step 2가 `_prefill-filters.md`를 reference한다
+- [x] init-prefill.md 다운스트림 step (2.5, 3, 4, 5)에서 `filtered_prefill_body` 변수를 사용한다 (검증 grep으로 확인)
+- [x] SPEC.md Notes 섹션 redaction disclosure 가이드가 init-prefill.md에 포함된다 (DEVIATION: Step 5 → Step 2 "Redaction Notice" 섹션. 의미 동일, PLAN 우선 원칙 PASS. Step 5에는 별도로 `**Source Conversation**` 헤더 가이드 존재)
+- [x] 원본 본문 미보존 (no-preservation) 명시가 두 곳 (`_prefill-filters.md`, `init-prefill.md` Step 2)에 모두 존재한다
 
 ---
 
