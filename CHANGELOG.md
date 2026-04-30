@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `model` frontmatter field on 9 invocable agents, pinning each agent's preferred Claude model ([#65](https://github.com/U-lis/dotclaude/issues/65)):
+  - `claude-opus-4-7`: `designer`, `coders/python`, `coders/javascript`, `coders/rust`, `coders/sql`, `coders/svelte`
+  - `claude-sonnet-4-6`: `technical-writer`, `code-validator`, `spec-validator`
+  - `agents/coders/_base.md` is unchanged (shared rules document, not directly invoked)
+  - Caller-supplied `model` arguments continue to override the agent default
+- `docs/AGENT_MODEL_GUIDE.md`: decision matrix and 4-step resolution order for assigning Claude models to agents; includes current assignment table and procedure for adding new agents
+
+### Changed
+
+- `README.md`: added cross-reference link to `docs/AGENT_MODEL_GUIDE.md` in the Overview section
+- `docs/ARCHITECTURE.md`: added cross-reference link to `docs/AGENT_MODEL_GUIDE.md`
+
 ## [0.4.0] - 2026-03-04
 
 ### Added
