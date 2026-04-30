@@ -48,7 +48,7 @@
 | 2 | init-prefill.md 신규 작성 (핵심 라우터: work_type 감지 + pre_filled 추출) | sequential | Complete | 1 | large |
 | 3 | FR-9: GitHub URL Detection & Resolution flow | sequential | Complete | 2 | medium |
 | 4 | NFR-1: 민감정보 필터링 규칙 (`_prefill-filters.md` + Step 2 연결) | sequential | Complete | 2 | medium |
-| 5 | 통합 검증 및 문서 정합성 점검 (plugin manifest 등록 포함) | sequential | Pending | 3, 4 | small |
+| 5 | 통합 검증 및 문서 정합성 점검 (plugin manifest 등록 포함) | sequential | Complete | 3, 4 | small |
 
 **Notes**:
 - Parallel phase 없음. 모든 phase는 sequential 의존을 가진다.
