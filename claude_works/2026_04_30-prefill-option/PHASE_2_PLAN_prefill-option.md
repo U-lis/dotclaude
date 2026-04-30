@@ -2,7 +2,7 @@
 
 ## Phase Metadata
 
-- **Status**: Pending
+- **Status**: Complete
 - **Type**: sequential
 - **Dependencies**: 1
 - **Effort**: large
@@ -387,19 +387,19 @@ The downstream init-feature.md / init-bugfix.md / init-refactor.md uses the exis
 
 ## Completion Checklist
 
-- [ ] `commands/init-prefill.md` 파일이 존재한다
-- [ ] frontmatter (`description`, `user-invocable: false`)가 정확하다
-- [ ] Language 섹션이 init-github-issue.md line 9-14와 동일한 문구로 포함된다
-- [ ] Step 1 (Prefill Input Reception)이 빈 본문 폴백 흐름을 명시한다
-- [ ] Step 2 (Sensitive Data Filtering)가 Phase 4 placeholder로 작성되어 있다
-- [ ] Step 2.5 (GitHub URL Detection & Resolution)가 Phase 3 placeholder로 작성되어 있다
-- [ ] Step 3 (Work Type Detection)이 키워드 분석 + AskUserQuestion 분기를 포함한다
-- [ ] Step 4 (Context Extraction)이 3개 heuristic 표 (feature/bugfix/refactor)를 모두 포함한다
-- [ ] Step 5 (Route to Init File)가 3개 work_type에 대한 YAML 페이로드를 모두 명시한다
-- [ ] Step 5의 YAML 페이로드 키가 init-feature/bugfix/refactor.md line 22-31과 1:1 일치한다
-- [ ] Step 5 본문에 SPEC.md 헤더 `**Source Conversation**: prefill` 표기 가이드가 포함된다
-- [ ] `commands/start-new.md` Step 0의 placeholder가 실제 `Skill("dotclaude:init-prefill")` 호출로 치환되었다
-- [ ] start-new.md Step 0의 분기 매트릭스 4-row는 unchanged이다 (description만 정밀화 가능)
+- [x] `commands/init-prefill.md` 파일이 존재한다
+- [x] frontmatter (`description`, `user-invocable: false`)가 정확하다
+- [x] Language 섹션이 init-github-issue.md line 9-14와 동일한 문구로 포함된다
+- [x] Step 1 (Prefill Input Reception)이 빈 본문 폴백 흐름을 명시한다
+- [x] Step 2 (Sensitive Data Filtering)가 Phase 4 placeholder로 작성되어 있다
+- [x] Step 2.5 (GitHub URL Detection & Resolution)가 Phase 3 placeholder로 작성되어 있다
+- [x] Step 3 (Work Type Detection)이 키워드 분석 + AskUserQuestion 분기를 포함한다
+- [x] Step 4 (Context Extraction)이 3개 heuristic 표 (feature/bugfix/refactor)를 모두 포함한다
+- [x] Step 5 (Route to Init File)가 3개 work_type에 대한 YAML 페이로드를 모두 명시한다
+- [x] Step 5의 YAML 페이로드 키가 init-feature/bugfix/refactor.md line 22-31과 1:1 일치한다
+- [x] Step 5 본문에 SPEC.md 헤더 `**Source Conversation**: prefill` 표기 가이드가 포함된다
+- [x] `commands/start-new.md` Step 0의 placeholder가 실제 `Skill("dotclaude:init-prefill")` 호출로 치환되었다
+- [x] start-new.md Step 0의 분기 매트릭스 4-row는 unchanged이다 (description만 정밀화 가능)
 
 ---
 

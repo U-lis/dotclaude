@@ -117,15 +117,18 @@ The orchestrator inspects two kinds of inputs:
   /dotclaude:start-new --prefill "context body" https://github.com/U-lis/dotclaude/issues/13
   ```
 
-#### Phase 1 Placeholder for `init-prefill`
+#### Delegation Contract for `init-prefill`
 
-> **NOTE (Phase 1 → Phase 2 migration)**:
-> At Phase 1 application time, `commands/init-prefill.md` does **not yet exist**.
-> If a user invokes `--prefill` (rows 2 or 3 of the branch matrix above) immediately after Phase 1 lands, the orchestrator MUST emit the following error message and halt the workflow:
->
-> > "init-prefill command is not yet available. This feature is currently in development (target version 0.5.0). Use /dotclaude:start-new without --prefill for now, or wait for the 0.5.0 release."
->
-> This placeholder is replaced with the actual `Skill("dotclaude:init-prefill")` invocation in **Phase 2** of the prefill-option work plan. The "URL only" and "neither" rows are unaffected by this placeholder and continue to route as documented.
+When the branch matrix resolves to row 2 (`--prefill` only) or row 3 (URL + `--prefill` simultaneously), the orchestrator delegates execution to `commands/init-prefill.md` via `Skill("dotclaude:init-prefill")`. The delegation passes the following context variables:
+
+| Context Variable | Source | Set on Row 2 | Set on Row 3 |
+|------------------|--------|--------------|--------------|
+| `prefill_body` | value of the `--prefill` flag (already-quoted text) | Yes (required) | Yes (required) |
+| `url_reference` | positional GitHub Issue/PR URL matching the URL regex | `null` (no positional URL) | the matched URL string |
+
+`init-prefill.md` Step 1 receives these inputs verbatim. Subsequent stages (Step 2.5 URL resolution per FR-9, Step 2 sensitive-data filtering, Step 3 work-type detection, Step 4 context extraction, Step 5 routing to `init-feature` / `init-bugfix` / `init-refactor`) are owned by `init-prefill.md` and are not re-implemented here.
+
+If `init-prefill.md` halts via its Step 1 empty-body fallback (i.e., `prefill_body` is empty or whitespace-only after trimming), control returns to **Step 1: Work Type Selection** of this `start-new.md` workflow. The orchestrator MUST NOT treat this as an error.
 
 ---
 
