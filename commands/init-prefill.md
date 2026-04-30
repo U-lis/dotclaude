@@ -55,22 +55,128 @@ For Phase 2 (current), this step is a **no-op placeholder**. Treat `filtered_pre
 
 ### Step 2.5: GitHub URL Detection & Resolution
 
-Detect GitHub Issue/PR URLs in the prefill body or from the `url_reference` context variable, then resolve them per FR-9.
+Detect GitHub Issue/PR URLs from either the `url_reference` context variable (passed by `start-new.md` Step 0) or by regex-scanning `filtered_prefill_body`, then resolve them per FR-9.
 
-**TBD: Phase 3** -- Phase 3 will populate this section with:
-- URL regex detection (`https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+`) applied to both `url_reference` and `filtered_prefill_body`
-- Two scenarios:
-  - **Scenario A**: positional URL argument arrived alongside `--prefill` (i.e., `url_reference` is non-null at entry to Step 1)
-  - **Scenario B**: URL is embedded inside the prefill body itself
-- `gh` CLI fetch invocation to retrieve issue/PR title, body, labels, milestone
-- `AskUserQuestion` with 4 options (Merge / URL Override / URL Ignore / Cancel) per AD-4 of DESIGN
-- Fallback handling on `gh` fetch failure (treat URL as a literal reference, continue with prefill body only)
+**URL Detection Regex** (identical across `start-new.md` Step 0, this step, and SPEC.md FR-9):
 
-For Phase 2 (current), this step is a **no-op placeholder**. Behavior:
-- `url_reference` (if any) is preserved as a literal string and passed through to Step 5's `conversation.url_reference` field unchanged.
-- No `gh` call is made.
-- No `AskUserQuestion` is issued at this stage.
-- Execution proceeds to Step 3 with `filtered_prefill_body` unmodified.
+```
+https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+
+```
+
+The regex captures:
+
+- Group 1 (`issues|pull`): URL kind. `issues` -> issue; `pull` -> pull request.
+- The `{owner}`, `{repo}`, and `{number}` substrings are extracted from the matched URL string itself by parsing the path segments after `https://github.com/`.
+
+This step has two scenarios for finding the URL, then a shared fetch / resolution flow.
+
+#### Scenario A: Positional URL Argument
+
+If `url_reference` is non-null (i.e., `start-new.md` Step 0 row 3 forwarded a positional GitHub URL alongside `--prefill`):
+
+1. Skip the body regex scan (Scenario B). The URL has already been resolved by Step 0.
+2. Treat `url_reference` as the primary external context source.
+3. Proceed directly to **URL Fetch** below.
+
+#### Scenario B: URL Embedded in Prefill Body
+
+If `url_reference` is null at entry:
+
+1. Scan `filtered_prefill_body` for the URL regex above.
+2. **No match**: skip Step 2.5 entirely. Set `url_resolution = null` (no URL involved). Proceed to Step 3.
+3. **Single match**: set `url_reference = <matched URL>`. Proceed to **URL Fetch**.
+4. **Multiple matches**: use the first match as `url_reference`. Preserve the remaining matches as `additional_url_references` (a plain list of strings); they are NOT fetched and remain inline in the body. The final SPEC.md inherits them as plain links.
+
+#### URL Fetch
+
+Use the `gh` CLI to fetch the URL content. The invocation pattern mirrors `init-github-issue.md` Step 2 (line 42-49) so that downstream context extraction can reuse the same JSON shape.
+
+1. Parse `url_reference` to extract `owner`, `repo`, `number`, and `kind` (`issues` or `pull`).
+2. Dispatch by `kind`:
+
+```bash
+# kind == "issues"
+gh issue view {number} --repo {owner}/{repo} --json title,body,labels,milestone
+
+# kind == "pull"
+gh pr view {number} --repo {owner}/{repo} --json title,body,labels,milestone
+```
+
+3. Always pass `--repo {owner}/{repo}` derived from the URL itself (NOT the current worktree's repo). This handles cross-repo URLs correctly. Same pattern as `init-github-issue.md` Step 2 line 44.
+4. On success: store the parsed JSON object as `url_fetch_result`. Proceed to **User Resolution Choice**.
+
+#### Fetch Failure Handling (per FR-9 last clause and AD-6)
+
+If the `gh` CLI fetch fails for any reason (`gh` not installed, not authenticated, 404, 403, network error, malformed JSON):
+
+1. Notify the user via an information message in the configured language (no `AskUserQuestion`):
+
+   ```
+   GitHub URL fetch failed: {error_summary}.
+   Proceeding with prefill content only; the URL is preserved as a plain reference in SPEC.md.
+   ```
+
+2. Set:
+   - `url_fetch_result = null`
+   - `url_resolution = "fallback_no_fetch"`
+   - `url_reference` remains the original URL string (for SPEC.md header preservation per FR-6).
+3. Skip the **User Resolution Choice** step entirely (do NOT call `AskUserQuestion`).
+4. Proceed to Step 3 with `filtered_prefill_body` unchanged.
+
+**Retry Policy** (AD-6): Single attempt, immediate fallback on failure. Retry policy refinement is deferred to a follow-up issue.
+
+#### User Resolution Choice
+
+If `url_fetch_result` is non-null, ask the user how to combine the URL-derived context with the prefill body using `AskUserQuestion`:
+
+```
+Question: "GitHub URL detected ({url_reference}). How should it be combined with the prefill content?"
+Header:   "URL Resolution"
+Options:
+  - { label: "Merge (recommended)",
+      description: "Combine URL extraction with prefill. On key conflict, prefill wins." }
+  - { label: "URL Override",
+      description: "Use URL extraction; on key conflict, URL wins (overrides prefill)." }
+  - { label: "URL Ignore",
+      description: "Use prefill only; preserve URL as a plain reference link in SPEC.md." }
+  - { label: "Cancel",
+      description: "Discard prefill entirely and fall back to the normal init flow." }
+multiSelect: false
+```
+
+**Default**: "Merge (recommended)" -- presented as the first option per AD-4. This is the same default referenced in SPEC.md FR-9: when the user explicitly passed `--prefill`, prefill is the primary input and URL is the secondary context.
+
+#### Option Handling
+
+Each user selection sets `url_resolution` and triggers the corresponding follow-up:
+
+| User Selection | `url_resolution` | Behavior |
+|----------------|------------------|----------|
+| Merge (recommended) | `merge_prefill_priority` | Apply `init-github-issue.md` Step 4 Deep Body Analysis (line 129-168) to `url_fetch_result.body` to produce `url_pre_filled`. Merge into the prefill-derived `pre_filled` (Step 4 output) with **prefill keys taking priority on conflict**. Step 3 keyword analysis runs on `filtered_prefill_body + url_fetch_result.body` concatenated for higher accuracy. |
+| URL Override | `merge_url_priority` | Same as above, but **URL keys take priority on conflict**. |
+| URL Ignore | `ignore_url` | Discard `url_fetch_result`. Keep `url_reference` as a plain link only; it appears in `conversation.url_reference` for SPEC.md header but contributes no `pre_filled` data. Step 3 runs on `filtered_prefill_body` only. |
+| Cancel | `cancel_prefill` | Halt this `init-prefill` execution. Return control to `start-new.md` Step 1 (Work Type Selection). The user is then prompted: "Would you like to start from the GitHub Issue instead?" If yes, `start-new.md` Step 1 routes to `init-github-issue` with `url_reference` as the issue input. |
+
+After the option is applied, set `url_resolution` and proceed to Step 3 (Work Type Detection) with the resolved context state.
+
+#### Output State
+
+After Step 2.5 completes (or is skipped because no URL was present), the following variables are defined and consumed by Step 3, Step 4, and Step 5:
+
+| Variable | Value When No URL | Value When URL Resolved |
+|----------|-------------------|-------------------------|
+| `url_reference` | `null` | the original URL string |
+| `url_fetch_result` | `null` | parsed `gh` JSON object, or `null` if fetch failed |
+| `url_resolution` | `null` | one of `merge_prefill_priority`, `merge_url_priority`, `ignore_url`, `fallback_no_fetch`, `cancel_prefill` |
+| `additional_url_references` | `[]` | list of additional matched URLs (Scenario B only) |
+
+#### Edge Cases
+
+- **Multiple URLs in body**: The first regex match wins for fetch. Remaining matches are preserved in body text as plain links (no fetch, no `AskUserQuestion` per additional URL).
+- **URL inside code block or quoted text**: The regex still matches inside fenced code blocks or quotes. This is intentional for v0.5.0; refinement is deferred.
+- **Pull request URL written as `/pull/`**: The regex group `(issues|pull)` correctly matches `/pull/`. `gh pr view` is invoked, NOT `gh issue view`. (GitHub URLs use the singular `/pull/` form even though the API surface and `gh pr` are plural.)
+- **URL points to a different repo than the current worktree**: The fetch invocation uses `--repo {owner}/{repo}` derived from the URL itself, mirroring `init-github-issue.md` Step 2 line 44. Cross-repo references work without additional configuration.
+- **URL references a private repo without access**: Fetch fails with 403/404. Falls into Fetch Failure Handling above (`url_resolution = fallback_no_fetch`).
 
 ---
 
@@ -196,6 +302,7 @@ conversation:
   source: "prefill"           # fixed literal value
   body: "{filtered_prefill_body}"
   url_reference: "{url_reference or null}"  # populated by Step 2.5 result; null when no URL was passed
+  url_resolution: "{url_resolution or null}"  # one of merge_prefill_priority / merge_url_priority / ignore_url / fallback_no_fetch; null when no URL was present
 ```
 
 **Feature** (`init-feature.md`) -- full payload:
@@ -205,6 +312,7 @@ conversation:
   source: "prefill"
   body: "{filtered_prefill_body}"
   url_reference: "{url_reference or null}"
+  url_resolution: "{url_resolution or null}"
 
 pre_filled:
   goal: "{extracted or null}"
@@ -226,6 +334,7 @@ conversation:
   source: "prefill"
   body: "{filtered_prefill_body}"
   url_reference: "{url_reference or null}"
+  url_resolution: "{url_resolution or null}"
 
 pre_filled:
   symptoms: "{extracted or null}"
@@ -245,6 +354,7 @@ conversation:
   source: "prefill"
   body: "{filtered_prefill_body}"
   url_reference: "{url_reference or null}"
+  url_resolution: "{url_resolution or null}"
 
 pre_filled:
   target: "{extracted or null}"
@@ -271,16 +381,20 @@ The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` uses th
 
 3. **Target Version**: Always run `start-new.md` Step 2.6 (no milestone is available from prefill, so `target_version` is always `null` here).
 
-4. **SPEC.md Header** (FR-6): The downstream TechnicalWriter, when drafting SPEC.md, MUST include the following lines based on the `conversation` block of the context:
-   - **Always** when `conversation.source == "prefill"`: include the line
-     `**Source Conversation**: prefill`
-     in the SPEC.md header section.
-   - **Conditionally** when `conversation.url_reference` is non-null AND the user did NOT select "URL Ignore" in Step 2.5: ALSO include
-     `**Source Issue**: {conversation.url_reference}`
-     immediately after the `**Source Conversation**` line.
-   - When `conversation.source != "prefill"` (i.e., direct init or `init-github-issue` path), the existing behavior of `init-github-issue.md` line 258-259 (`**Source Issue**: {issue_url}`) applies and `**Source Conversation**` is omitted.
+4. **SPEC.md Header** (FR-6 and FR-9): The downstream TechnicalWriter, when drafting SPEC.md, MUST include header lines according to `url_resolution` produced by Step 2.5. The `conversation` block (passed via the YAML payload below) carries `source`, `url_reference`, and `url_resolution`.
 
-This SPEC.md header guidance is consumed by the TechnicalWriter at SPEC.md drafting time. The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` files themselves do NOT need to be modified to support this; the TechnicalWriter receives the `conversation` block as part of its context payload and applies the rule above.
+   | `url_resolution` | SPEC.md Header Lines |
+   |------------------|----------------------|
+   | `null` (no URL was present) | `**Source Conversation**: prefill` |
+   | `merge_prefill_priority` | `**Source Conversation**: prefill`<br>`**Source Issue**: {url_reference}` |
+   | `merge_url_priority` | `**Source Conversation**: prefill`<br>`**Source Issue**: {url_reference}` |
+   | `ignore_url` | `**Source Conversation**: prefill`<br>`**Source Issue**: {url_reference} (reference only)` |
+   | `fallback_no_fetch` | `**Source Conversation**: prefill`<br>`**Source Issue**: {url_reference} (fetch failed)` |
+   | `cancel_prefill` | (not applicable -- this case halts before Step 5) |
+
+   When `conversation.source != "prefill"` (i.e., direct init or `init-github-issue` path), the existing behavior of `init-github-issue.md` line 258-259 (`**Source Issue**: {issue_url}`) applies and `**Source Conversation**` is omitted.
+
+This SPEC.md header guidance is consumed by the TechnicalWriter at SPEC.md drafting time. The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` files themselves do NOT need to be modified to support this; the TechnicalWriter receives the `conversation` block (including `url_resolution`) as part of its context payload and applies the rule above.
 
 **Field Mapping per Work Type**:
 

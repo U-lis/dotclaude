@@ -2,7 +2,7 @@
 
 ## Phase Metadata
 
-- **Status**: Pending
+- **Status**: Complete
 - **Type**: sequential
 - **Dependencies**: 2
 - **Effort**: medium
@@ -34,16 +34,16 @@ Phase 2에서 placeholder로 작성한 `init-prefill.md`의 "Step 2.5: GitHub UR
 
 ### Task 3.1: URL 정규식 명시
 
-- [ ] init-prefill.md Step 2.5 섹션 도입부에 정규식 명시:
+- [x] init-prefill.md Step 2.5 섹션 도입부에 정규식 명시:
   ```
   GitHub Issue/PR URL regex: `https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+`
   ```
-- [ ] SPEC.md FR-9 line 50과 동일한 정규식 사용 (정합성)
-- [ ] Phase 1에서 `start-new.md` Step 0가 사용한 정규식과도 동일
+- [x] SPEC.md FR-9 line 50과 동일한 정규식 사용 (정합성)
+- [x] Phase 1에서 `start-new.md` Step 0가 사용한 정규식과도 동일
 
 ### Task 3.2: Scenario A - Positional URL Argument 분기 작성
 
-- [ ] init-prefill.md Step 2.5에 Scenario A 처리 작성:
+- [x] init-prefill.md Step 2.5에 Scenario A 처리 작성:
 
 ```markdown
 **Scenario A: Positional URL Argument**
@@ -55,7 +55,7 @@ If `url_reference` is non-null (passed from `start-new.md` Step 0 when both URL 
 
 ### Task 3.3: Scenario B - URL Embedded in Prefill Body 분기 작성
 
-- [ ] init-prefill.md Step 2.5에 Scenario B 처리 작성:
+- [x] init-prefill.md Step 2.5에 Scenario B 처리 작성:
 
 ```markdown
 **Scenario B: URL Embedded in Prefill Body**
@@ -69,7 +69,7 @@ If `url_reference` is null:
 
 ### Task 3.4: URL Fetch 작성 (init-github-issue.md Step 2 패턴 reference)
 
-- [ ] init-prefill.md Step 2.5에 fetch 동작 작성:
+- [x] init-prefill.md Step 2.5에 fetch 동작 작성:
 
 ```markdown
 **URL Fetch**:
@@ -92,7 +92,7 @@ Store the JSON result as `url_fetch_result`.
 
 ### Task 3.5: Fetch 실패 처리 작성 (AD-6 준수)
 
-- [ ] init-prefill.md Step 2.5에 fetch 실패 처리 작성:
+- [x] init-prefill.md Step 2.5에 fetch 실패 처리 작성:
 
 ```markdown
 **Fetch Failure Handling** (per SPEC.md FR-9 last clause and AD-6):
@@ -109,7 +109,7 @@ If the `gh` CLI fetch fails (any reason: not installed, not authenticated, 404, 
 
 ### Task 3.6: AskUserQuestion 4-옵션 작성 (AD-4 default = Merge)
 
-- [ ] init-prefill.md Step 2.5에 사용자 옵션 제시 작성:
+- [x] init-prefill.md Step 2.5에 사용자 옵션 제시 작성:
 
 ```markdown
 **User Resolution Choice**:
@@ -130,7 +130,7 @@ If `url_fetch_result` is non-null, ask the user how to combine the URL-derived c
 
 ### Task 3.7: 옵션별 후속 처리 의사코드 작성
 
-- [ ] init-prefill.md Step 2.5에 옵션별 처리 작성:
+- [x] init-prefill.md Step 2.5에 옵션별 처리 작성:
 
 ```markdown
 **Option Handling**:
@@ -147,7 +147,7 @@ After the option is applied, set `url_resolution` and proceed to Step 3 (Work Ty
 
 ### Task 3.8: SPEC.md 헤더 표기 가이드 갱신
 
-- [ ] init-prefill.md Step 5 본문에 URL 처리 결과별 SPEC.md 헤더 표기 가이드 갱신:
+- [x] init-prefill.md Step 5 본문에 URL 처리 결과별 SPEC.md 헤더 표기 가이드 갱신:
 
 ```markdown
 **SPEC.md Header (per FR-6 and FR-9)**:
@@ -165,17 +165,17 @@ The downstream init-xxx writes the SPEC.md header. Include the following based o
 
 ### Task 3.9: start-new.md Step 0 분기 표 description 정밀화
 
-- [ ] Phase 1에서 작성한 4-row 분기 매트릭스 표의 "URL + --prefill 동시" row를 다음과 같이 정밀화:
+- [x] Phase 1에서 작성한 4-row 분기 매트릭스 표의 "URL + --prefill 동시" row를 다음과 같이 정밀화:
 
 | ARGUMENTS Form | Detection Rule | Action |
 |----------------|----------------|--------|
 | URL + `--prefill` 동시 | 위치 인자에 URL 정규식 매칭 AND `--prefill` 플래그 존재 | `Skill("dotclaude:init-prefill")` 호출 (URL을 `url_reference` 컨텍스트 변수로 함께 전달). FR-9 Scenario A는 init-prefill.md Step 2.5에서 처리하며, 사용자에게 4-옵션(병합/URL 우선/URL 무시/취소)을 제시한다. |
 
-- [ ] 다른 3-row는 unchanged
+- [x] 다른 3-row는 unchanged
 
 ### Task 3.10: Edge Case 보강
 
-- [ ] init-prefill.md Step 2.5 끝부분에 edge case 노트 추가:
+- [x] init-prefill.md Step 2.5 끝부분에 edge case 노트 추가:
 
 ```markdown
 **Edge Cases**:
@@ -232,18 +232,18 @@ def merge_prefilled(prefill_pre_filled, url_pre_filled, url_resolution):
 
 ## Completion Checklist
 
-- [ ] init-prefill.md Step 2.5의 `TBD: Phase 3` 마커가 제거되었다
-- [ ] URL regex `https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+`가 명시되어 있다
-- [ ] Scenario A (positional URL arg) 분기가 작성되어 있다
-- [ ] Scenario B (URL in body) 분기가 작성되어 있다
-- [ ] gh CLI fetch 호출 패턴이 init-github-issue.md Step 2 line 42-49와 일치한다 (issues / pull 분기 포함)
-- [ ] Fetch 실패 처리가 명시되어 있다 (1회 시도, 즉시 폴백, 사용자 알림)
-- [ ] AskUserQuestion이 4-옵션을 제공한다 (Merge / URL Override / URL Ignore / Cancel)
-- [ ] Default 옵션이 "Merge (recommended)"로 명시되어 있다 (AD-4)
-- [ ] 옵션별 후속 처리 (`url_resolution` 값별 동작)가 표로 명시되어 있다
-- [ ] SPEC.md 헤더 표기 가이드가 `url_resolution` 5가지 케이스를 모두 커버한다
-- [ ] start-new.md Step 0 분기 표 "URL + --prefill 동시" row description이 정밀화되었다
-- [ ] Edge case 노트가 포함되어 있다 (multiple URLs, code block, /pull/ vs /pulls/, cross-repo)
+- [x] init-prefill.md Step 2.5의 `TBD: Phase 3` 마커가 제거되었다 (verified: commands/init-prefill.md:56-181 — TBD 마커 부재 확인)
+- [x] URL regex `https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+`가 명시되어 있다 (commands/init-prefill.md:62-64)
+- [x] Scenario A (positional URL arg) 분기가 작성되어 있다 (commands/init-prefill.md:73-79)
+- [x] Scenario B (URL in body) 분기가 작성되어 있다 (commands/init-prefill.md:81-88)
+- [x] gh CLI fetch 호출 패턴이 init-github-issue.md Step 2 line 42-49와 일치한다 (commands/init-prefill.md:97-103, issues/pull 분기 모두 포함)
+- [x] Fetch 실패 처리가 명시되어 있다 (commands/init-prefill.md:108-126, 1회 시도/즉시 폴백/사용자 알림)
+- [x] AskUserQuestion이 4-옵션을 제공한다 (commands/init-prefill.md:135-144, Merge/URL Override/URL Ignore/Cancel)
+- [x] Default 옵션이 "Merge (recommended)"로 명시되어 있다 (commands/init-prefill.md:147, AD-4 reference)
+- [x] 옵션별 후속 처리 (`url_resolution` 값별 동작)가 표로 명시되어 있다 (commands/init-prefill.md:153-158)
+- [x] SPEC.md 헤더 표기 가이드가 `url_resolution` 5가지 케이스를 모두 커버한다 (commands/init-prefill.md:386-393, null/merge_prefill_priority/merge_url_priority/ignore_url/fallback_no_fetch/cancel_prefill)
+- [x] start-new.md Step 0 분기 표 "URL + --prefill 동시" row description이 정밀화되었다 (commands/start-new.md:80, init-prefill 위임 + 4-옵션 + 폴백 명시)
+- [x] Edge case 노트가 포함되어 있다 (commands/init-prefill.md:175-179, multiple URLs/code block/`/pull/` vs `/pulls/`/cross-repo/private repo)
 
 ---
 
