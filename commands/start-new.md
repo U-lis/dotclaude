@@ -61,6 +61,74 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 
 ---
 
+### Step 0: Argument Parsing
+
+Before entering the 13-Step Workflow, parse `ARGUMENTS` to detect routing inputs.
+This step is applied **once, immediately before Step 1 (Work Type Selection)**, and decides whether to enter the standard interactive flow or to delegate to a prefill-aware entry point.
+
+The orchestrator inspects two kinds of inputs:
+
+- **Positional argument**: a single GitHub Issue/PR URL matching the regex `https://github\.com/[^/]+/[^/]+/(issues|pull)/\d+`
+- **Flag**: `--prefill <text>` carrying free-form conversation context
+
+#### Branch Matrix
+
+| ARGUMENTS Form | Detection Rule | Action |
+|----------------|----------------|--------|
+| URL only (GitHub Issue/PR URL) | The positional argument matches `https://github\.com/[^/]+/[^/]+/(issues\|pull)/\d+` AND the `--prefill` flag is absent | Invoke `Skill("dotclaude:init-github-issue")`. Pass the URL as the issue input. |
+| `--prefill` only | The `--prefill` flag is present AND no positional argument matches the GitHub URL regex | Invoke `Skill("dotclaude:init-prefill")`. Pass the body text as the value of the `--prefill` argument. |
+| URL + `--prefill` simultaneously | A positional argument matches the GitHub URL regex AND the `--prefill` flag is present | Invoke `Skill("dotclaude:init-prefill")`. Pass both the URL and the prefill body as additional context (FR-9 Scenario A; the URL is resolved inside `init-prefill`'s Step 2.5). |
+| neither (empty arguments) | No positional argument AND no `--prefill` flag | Proceed to the existing **Step 1: Work Type Selection**. No change in behavior. |
+
+**Row-by-row notes**:
+
+- **URL only**: This is the legacy GitHub Issue entry path. The orchestrator does not show the Work Type selection question because `init-github-issue` infers `work_type` from issue content.
+- **`--prefill` only**: The orchestrator delegates to `init-prefill`, which auto-detects `work_type` from the conversation body and populates each `init-xxx`'s `pre_filled` block.
+- **URL + `--prefill` simultaneously**: Both inputs are forwarded to `init-prefill`. The default merge policy is **"merge, prefill takes precedence"** (see DESIGN AD-4). `init-prefill` Step 2.5 fetches the URL, presents an `AskUserQuestion` with merge/override/ignore/cancel options, and proceeds based on the user's choice.
+- **neither (empty)**: Behavior is identical to the pre-`--prefill` orchestrator. The user is asked to choose a Work Type via `AskUserQuestion` (Step 1).
+
+#### Argument Quoting Rules
+
+`--prefill` carries free-form text and MUST be quoted on the command line. Otherwise the shell tokenizes the body and only the first word is captured, which silently misroutes the branch matrix above.
+
+- **Single-line body**: wrap the body in double quotes.
+  ```
+  /dotclaude:start-new --prefill "User wants a write-permission request feature"
+  ```
+
+- **Multi-line body**: prefer a HEREDOC so newlines and shell metacharacters are preserved.
+  ```bash
+  /dotclaude:start-new --prefill "$(cat <<'EOF'
+  Symptom: login fails with 500 on stale sessions.
+  Repro:
+    1. Sign in
+    2. Wait 24h
+    3. Refresh the dashboard
+  Expected cause: stale JWT not refreshed
+  EOF
+  )"
+  ```
+
+- **Risk if quotes are omitted**: when the user writes `--prefill body without quotes`, only `body` is captured as the flag value and `without quotes` is interpreted as additional positional arguments. The branch matrix then evaluates to an unintended row (often falling through to the "neither" branch or, worse, a malformed positional argument). The orchestrator MUST surface this as a hard error rather than silently routing.
+
+- **Order is irrelevant**: when both a URL and `--prefill` are supplied, their order on the command line does not affect routing. Both of the following resolve to the "URL + `--prefill` simultaneously" row:
+  ```
+  /dotclaude:start-new https://github.com/U-lis/dotclaude/issues/13 --prefill "context body"
+  /dotclaude:start-new --prefill "context body" https://github.com/U-lis/dotclaude/issues/13
+  ```
+
+#### Phase 1 Placeholder for `init-prefill`
+
+> **NOTE (Phase 1 → Phase 2 migration)**:
+> At Phase 1 application time, `commands/init-prefill.md` does **not yet exist**.
+> If a user invokes `--prefill` (rows 2 or 3 of the branch matrix above) immediately after Phase 1 lands, the orchestrator MUST emit the following error message and halt the workflow:
+>
+> > "init-prefill command is not yet available. This feature is currently in development (target version 0.5.0). Use /dotclaude:start-new without --prefill for now, or wait for the 0.5.0 release."
+>
+> This placeholder is replaced with the actual `Skill("dotclaude:init-prefill")` invocation in **Phase 2** of the prefill-option work plan. The "URL only" and "neither" rows are unaffected by this placeholder and continue to route as documented.
+
+---
+
 ## 13-Step Workflow
 
 ### INIT PHASE
