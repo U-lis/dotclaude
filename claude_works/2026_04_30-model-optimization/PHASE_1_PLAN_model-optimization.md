@@ -165,38 +165,38 @@ Run the following checks from the worktree root:
 ## Completion Checklist
 
 Frontmatter edits — top-level (4):
-- [ ] `agents/designer.md` has `model: claude-opus-4-7` between `name:` and `description:`
-- [ ] `agents/technical-writer.md` has `model: claude-sonnet-4-6` between `name:` and `description:`
-- [ ] `agents/code-validator.md` has `model: claude-sonnet-4-6` between `name:` and `description:`
-- [ ] `agents/spec-validator.md` has `model: claude-sonnet-4-6` between `name:` and `description:`
+- [x] `agents/designer.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/designer.md:3
+- [x] `agents/technical-writer.md` has `model: claude-sonnet-4-6` between `name:` and `description:` — Verified in agents/technical-writer.md:3
+- [x] `agents/code-validator.md` has `model: claude-sonnet-4-6` between `name:` and `description:` — Verified in agents/code-validator.md:3
+- [x] `agents/spec-validator.md` has `model: claude-sonnet-4-6` between `name:` and `description:` — Verified in agents/spec-validator.md:3
 
 Frontmatter edits — coders/ (5):
-- [ ] `agents/coders/python.md` has `model: claude-opus-4-7` between `name:` and `description:`
-- [ ] `agents/coders/javascript.md` has `model: claude-opus-4-7` between `name:` and `description:`
-- [ ] `agents/coders/rust.md` has `model: claude-opus-4-7` between `name:` and `description:`
-- [ ] `agents/coders/sql.md` has `model: claude-opus-4-7` between `name:` and `description:`
-- [ ] `agents/coders/svelte.md` has `model: claude-opus-4-7` between `name:` and `description:`
+- [x] `agents/coders/python.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/coders/python.md:3
+- [x] `agents/coders/javascript.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/coders/javascript.md:3
+- [x] `agents/coders/rust.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/coders/rust.md:3
+- [x] `agents/coders/sql.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/coders/sql.md:3
+- [x] `agents/coders/svelte.md` has `model: claude-opus-4-7` between `name:` and `description:` — Verified in agents/coders/svelte.md:3
 
 Exclusion confirmed:
-- [ ] `agents/coders/_base.md` does NOT contain a `model:` line
+- [x] `agents/coders/_base.md` does NOT contain a `model:` line — Confirmed (grep count: 0)
 
 Guide creation:
-- [ ] `docs/AGENT_MODEL_GUIDE.md` exists
-- [ ] Section 3.2 (Supported Identifiers) lists exactly 3 model identifiers
-- [ ] Section 3.3 (Decision Matrix) has at least 5 rows
-- [ ] Section 3.4 (Resolution Order) lists all 4 steps and cites `https://code.claude.com/docs/en/sub-agents`
-- [ ] Section 3.5 (Current Assignments) mirrors the SPEC mapping table
-- [ ] Section 3.6 (How to Add a New Agent) instructs that shared/included files must NOT declare `model:`
-- [ ] Section 3.7 (Haiku Status) documents Haiku as supported-but-unassigned in v0.5.0
+- [x] `docs/AGENT_MODEL_GUIDE.md` exists — 5000 bytes
+- [x] Section 3.2 (Supported Identifiers) lists exactly 3 model identifiers — opus-4-7, sonnet-4-6, haiku-4-5-20251001
+- [x] Section 3.3 (Decision Matrix) has at least 5 rows — 6 rows verified
+- [x] Section 3.4 (Resolution Order) lists all 4 steps and cites `https://code.claude.com/docs/en/sub-agents` — Verified
+- [x] Section 3.5 (Current Assignments) mirrors the SPEC mapping table — 10 rows (9 agents + _base.md)
+- [x] Section 3.6 (How to Add a New Agent) instructs that shared/included files must NOT declare `model:` — Verified
+- [x] Section 3.7 (Haiku Status) documents Haiku as supported-but-unassigned in v0.5.0 — Verified
 
 Cross-references:
-- [ ] `README.md` contains a link to `docs/AGENT_MODEL_GUIDE.md`
-- [ ] `docs/ARCHITECTURE.md` mentions and links to the guide
+- [x] `README.md` contains a link to `docs/AGENT_MODEL_GUIDE.md` — Verified: "Agent Model Selection Guide" link present
+- [x] `docs/ARCHITECTURE.md` mentions and links to the guide — Verified: links to ./AGENT_MODEL_GUIDE.md
 
 Verification:
-- [ ] `git grep -l '^model:' agents/` returns exactly 9 files
-- [ ] All 9 `model:` values are exactly one of the two assigned identifiers (no typos)
-- [ ] All modified agent files still have valid YAML frontmatter (opens with `---`, closes with `---`)
+- [x] `git grep -l '^model:' agents/` returns exactly 9 files — Count confirmed: 9
+- [x] All 9 `model:` values are exactly one of the two assigned identifiers (no typos) — Unique values: {claude-opus-4-7, claude-sonnet-4-6}
+- [x] All modified agent files still have valid YAML frontmatter (opens with `---`, closes with `---`) — All 9 files verified
 
 ## Notes
 

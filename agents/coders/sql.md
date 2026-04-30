@@ -1,5 +1,6 @@
 ---
 name: coder-sql
+model: claude-opus-4-7
 description: SQL and database specialist with schema design, query optimization, and migration expertise.
 ---
 

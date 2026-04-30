@@ -1,5 +1,6 @@
 ---
 name: designer
+model: claude-opus-4-7
 description: Transform SPEC into detailed implementation plans with architecture decisions and phase decomposition.
 ---
 

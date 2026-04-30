@@ -37,7 +37,7 @@ All FRs (FR-1 through FR-6) are delivered in one phase. The work is small, seque
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | Add `model:` to 9 invocable agent frontmatters; create `docs/AGENT_MODEL_GUIDE.md`; update README and ARCHITECTURE cross-references | Not Started | None |
+| 1 | Add `model:` to 9 invocable agent frontmatters; create `docs/AGENT_MODEL_GUIDE.md`; update README and ARCHITECTURE cross-references | Complete | None |
 
 ## File Structure
 

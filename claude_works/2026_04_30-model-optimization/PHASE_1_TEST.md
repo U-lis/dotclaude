@@ -22,15 +22,15 @@ git grep -c '^model:' agents/
 ```
 Expected: each of the 9 files reports `1`. `agents/coders/_base.md` reports `0` (or is absent from output).
 
-- [ ] TC-1.1: `agents/designer.md` contains exactly one `^model:` line
-- [ ] TC-1.2: `agents/technical-writer.md` contains exactly one `^model:` line
-- [ ] TC-1.3: `agents/code-validator.md` contains exactly one `^model:` line
-- [ ] TC-1.4: `agents/spec-validator.md` contains exactly one `^model:` line
-- [ ] TC-1.5: `agents/coders/python.md` contains exactly one `^model:` line
-- [ ] TC-1.6: `agents/coders/javascript.md` contains exactly one `^model:` line
-- [ ] TC-1.7: `agents/coders/rust.md` contains exactly one `^model:` line
-- [ ] TC-1.8: `agents/coders/sql.md` contains exactly one `^model:` line
-- [ ] TC-1.9: `agents/coders/svelte.md` contains exactly one `^model:` line
+- [x] TC-1.1: `agents/designer.md` contains exactly one `^model:` line
+- [x] TC-1.2: `agents/technical-writer.md` contains exactly one `^model:` line
+- [x] TC-1.3: `agents/code-validator.md` contains exactly one `^model:` line
+- [x] TC-1.4: `agents/spec-validator.md` contains exactly one `^model:` line
+- [x] TC-1.5: `agents/coders/python.md` contains exactly one `^model:` line
+- [x] TC-1.6: `agents/coders/javascript.md` contains exactly one `^model:` line
+- [x] TC-1.7: `agents/coders/rust.md` contains exactly one `^model:` line
+- [x] TC-1.8: `agents/coders/sql.md` contains exactly one `^model:` line
+- [x] TC-1.9: `agents/coders/svelte.md` contains exactly one `^model:` line
 
 ### TC-2: Frontmatter values match mapping table (string equality)
 
@@ -48,7 +48,7 @@ Each `model:` value is checked by exact string equality. Trailing whitespace is 
 | TC-2.8 | `agents/coders/sql.md` | `model: claude-opus-4-7` |
 | TC-2.9 | `agents/coders/svelte.md` | `model: claude-opus-4-7` |
 
-- [ ] TC-2.1 through TC-2.9 all pass
+- [x] TC-2.1 through TC-2.9 all pass
 
 ### TC-3: `_base.md` exclusion confirmed
 
@@ -60,7 +60,7 @@ grep -c '^model:' agents/coders/_base.md
 ```
 Expected: `0`.
 
-- [ ] TC-3: `agents/coders/_base.md` contains zero `^model:` lines
+- [x] TC-3: `agents/coders/_base.md` contains zero `^model:` lines
 
 ### TC-4: YAML frontmatter remains parsable
 
@@ -71,15 +71,15 @@ For each of the 9 modified files, the frontmatter block must still:
 - Contain the new `model:` line between `name:` and `description:`.
 - Use spaces only (no tabs); no blank lines inside the block.
 
-- [ ] TC-4.1: `agents/designer.md` frontmatter opens and closes with `---`, has `name:`, `model:`, `description:` in that order
-- [ ] TC-4.2: `agents/technical-writer.md` — same structural check
-- [ ] TC-4.3: `agents/code-validator.md` — same structural check
-- [ ] TC-4.4: `agents/spec-validator.md` — same structural check
-- [ ] TC-4.5: `agents/coders/python.md` — same structural check
-- [ ] TC-4.6: `agents/coders/javascript.md` — same structural check
-- [ ] TC-4.7: `agents/coders/rust.md` — same structural check
-- [ ] TC-4.8: `agents/coders/sql.md` — same structural check
-- [ ] TC-4.9: `agents/coders/svelte.md` — same structural check
+- [x] TC-4.1: `agents/designer.md` frontmatter opens and closes with `---`, has `name:`, `model:`, `description:` in that order
+- [x] TC-4.2: `agents/technical-writer.md` — same structural check
+- [x] TC-4.3: `agents/code-validator.md` — same structural check
+- [x] TC-4.4: `agents/spec-validator.md` — same structural check
+- [x] TC-4.5: `agents/coders/python.md` — same structural check
+- [x] TC-4.6: `agents/coders/javascript.md` — same structural check
+- [x] TC-4.7: `agents/coders/rust.md` — same structural check
+- [x] TC-4.8: `agents/coders/sql.md` — same structural check
+- [x] TC-4.9: `agents/coders/svelte.md` — same structural check
 
 ### TC-5: Aggregate count of `model:` lines under `agents/`
 
@@ -89,7 +89,7 @@ git grep -l '^model:' agents/ | wc -l
 ```
 Expected: `9`.
 
-- [ ] TC-5: Aggregate count is exactly 9; covers FR-1 fully
+- [x] TC-5: Aggregate count is exactly 9; covers FR-1 fully
 
 ### TC-6: All `model:` values are within the supported identifier set
 
@@ -105,30 +105,30 @@ model: claude-opus-4-7
 model: claude-sonnet-4-6
 ```
 
-- [ ] TC-6: Unique value set matches expected; no typos; no aliases like `opus`/`sonnet`
+- [x] TC-6: Unique value set matches expected; no typos; no aliases like `opus`/`sonnet`
 
 ### TC-7: `docs/AGENT_MODEL_GUIDE.md` exists and is non-empty
 
-- [ ] TC-7.1: File `docs/AGENT_MODEL_GUIDE.md` exists
-- [ ] TC-7.2: File size is non-zero
+- [x] TC-7.1: File `docs/AGENT_MODEL_GUIDE.md` exists
+- [x] TC-7.2: File size is non-zero
 
 ### TC-8: Guide contains all required sections
 
 Inspect `docs/AGENT_MODEL_GUIDE.md` and confirm presence of section content for each of:
 
-- [ ] TC-8.1: Title and purpose statement (Section 3.1)
-- [ ] TC-8.2: Supported model identifiers — exactly 3 entries listed (Section 3.2)
-- [ ] TC-8.3: Decision matrix — at least 5 rows (Section 3.3)
-- [ ] TC-8.4: Resolution order — 4 numbered steps including `CLAUDE_CODE_SUBAGENT_MODEL` (Section 3.4)
-- [ ] TC-8.5: Resolution order section cites `https://code.claude.com/docs/en/sub-agents`
-- [ ] TC-8.6: Current assignments table mirrors the SPEC mapping (Section 3.5)
-- [ ] TC-8.7: How-to-add-a-new-agent section instructs that shared/included files must NOT declare `model:` (Section 3.6)
-- [ ] TC-8.8: Haiku status section states Haiku is supported-but-unassigned in v0.5.0 (Section 3.7)
+- [x] TC-8.1: Title and purpose statement (Section 3.1)
+- [x] TC-8.2: Supported model identifiers — exactly 3 entries listed (Section 3.2)
+- [x] TC-8.3: Decision matrix — at least 5 rows (Section 3.3) — 6 rows verified
+- [x] TC-8.4: Resolution order — 4 numbered steps including `CLAUDE_CODE_SUBAGENT_MODEL` (Section 3.4)
+- [x] TC-8.5: Resolution order section cites `https://code.claude.com/docs/en/sub-agents`
+- [x] TC-8.6: Current assignments table mirrors the SPEC mapping (Section 3.5)
+- [x] TC-8.7: How-to-add-a-new-agent section instructs that shared/included files must NOT declare `model:` (Section 3.6)
+- [x] TC-8.8: Haiku status section states Haiku is supported-but-unassigned in v0.5.0 (Section 3.7)
 
 ### TC-9: README.md cross-references the guide
 
-- [ ] TC-9.1: `README.md` contains a link whose target resolves to `docs/AGENT_MODEL_GUIDE.md`
-- [ ] TC-9.2: The link has descriptive label text (not a bare URL); contributor can find it via a "documentation" or "guide" related section
+- [x] TC-9.1: `README.md` contains a link whose target resolves to `docs/AGENT_MODEL_GUIDE.md`
+- [x] TC-9.2: The link has descriptive label text (not a bare URL); contributor can find it via a "documentation" or "guide" related section
 
 Verification (one possible command):
 ```
@@ -138,7 +138,7 @@ Expected: at least one match.
 
 ### TC-10: docs/ARCHITECTURE.md cross-references the guide
 
-- [ ] TC-10.1: `docs/ARCHITECTURE.md` contains a link or textual reference resolving to `AGENT_MODEL_GUIDE.md`
+- [x] TC-10.1: `docs/ARCHITECTURE.md` contains a link or textual reference resolving to `AGENT_MODEL_GUIDE.md`
 
 Verification (one possible command):
 ```
@@ -150,10 +150,10 @@ Expected: at least one match.
 
 The following files MUST NOT be modified in this phase. A `git diff` against the base branch must show no changes for any of them.
 
-- [ ] TC-11.1: `agents/coders/_base.md` is unchanged
-- [ ] TC-11.2: `CHANGELOG.md` is unchanged
-- [ ] TC-11.3: `.claude-plugin/plugin.json` is unchanged
-- [ ] TC-11.4: `.claude-plugin/marketplace.json` is unchanged
+- [x] TC-11.1: `agents/coders/_base.md` is unchanged
+- [x] TC-11.2: `CHANGELOG.md` is unchanged
+- [x] TC-11.3: `.claude-plugin/plugin.json` is unchanged
+- [x] TC-11.4: `.claude-plugin/marketplace.json` is unchanged
 
 ## FR Coverage Mapping
 
