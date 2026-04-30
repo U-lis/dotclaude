@@ -33,7 +33,7 @@ Python coder 에이전트의 `agents/coders/python.md` instruction에 Alembic mi
 
 | Phase | 설명 | Status | 선행조건 |
 |-------|------|--------|----------|
-| 1 | `agents/coders/python.md` 에 `## Migration Workflow` 섹션 (4개 하위 섹션 포함) 추가 | Pending | SPEC.md 승인 완료 |
+| 1 | `agents/coders/python.md` 에 `## Migration Workflow` 섹션 (4개 하위 섹션 포함) 추가 | Complete | SPEC.md 승인 완료 |
 
 ## File Structure
 

@@ -107,13 +107,13 @@ See `agents/coders/sql.md` Migration Patterns section (lines 125-151) and Safe M
 
 ## Completion Checklist / 완료 체크리스트
 
-- [ ] **C-1**: `agents/coders/python.md` L72와 L73 사이에 `## Migration Workflow` 헤더 삽입 (이전/이후 섹션 경계 유지 확인)
-- [ ] **C-2**: `### Autogenerate-First Principle` 작성 완료 (FR-1 만족)
-- [ ] **C-3**: `### Validation Checklist (3 Steps)` 작성 완료 (FR-2 만족, EC-1/EC-3 흡수)
-- [ ] **C-4**: `### Manual Edits (Reference: sql.md)` 작성 완료 (FR-3 만족, EC-2 흡수, sql.md L125-151 참조 표기 정확)
-- [ ] **C-5**: `### Local DB Verification` 작성 완료 (FR-4 만족, EC-4/EC-5 흡수)
-- [ ] **C-6**: markdown 구조 수동 점검 - heading hierarchy (`##` -> `###`), code fence 닫힘, table 정렬, 빈 줄 spacing
-- [ ] **C-7**: 다른 coder agent (`agents/coders/sql.md`, 기존 `agents/coders/python.md` 의 다른 섹션) 와 톤/형식 일관성 셀프 리뷰
+- [x] **C-1**: `agents/coders/python.md` L72와 L73 사이에 `## Migration Workflow` 헤더 삽입 (이전/이후 섹션 경계 유지 확인) — verified at python.md:73
+- [x] **C-2**: `### Autogenerate-First Principle` 작성 완료 (FR-1 만족) — verified at python.md:77-87
+- [x] **C-3**: `### Validation Checklist (3 Steps)` 작성 완료 (FR-2 만족, EC-1/EC-3 흡수) — verified at python.md:89-106
+- [x] **C-4**: `### Manual Edits (Reference: sql.md)` 작성 완료 (FR-3 만족, EC-2 흡수, sql.md L125-151 참조 표기 정확) — verified at python.md:108-117
+- [x] **C-5**: `### Local DB Verification` 작성 완료 (FR-4 만족, EC-4/EC-5 흡수) — verified at python.md:119-142
+- [x] **C-6**: markdown 구조 수동 점검 - heading hierarchy (`##` -> `###`), code fence 닫힘, table 정렬, 빈 줄 spacing — 4 fences in section (even), 1 `##` + 4 `###`, no level skip
+- [x] **C-7**: 다른 coder agent (`agents/coders/sql.md`, 기존 `agents/coders/python.md` 의 다른 섹션) 와 톤/형식 일관성 셀프 리뷰 — 명령형 톤("사용한다", "확인한다"), bash 주석 형식 일관
 
 ## Edge Case Mapping / 엣지 케이스 흡수 매핑
 
@@ -145,10 +145,10 @@ See `agents/coders/sql.md` Migration Patterns section (lines 125-151) and Safe M
 
 ## Definition of Done / 완료 기준
 
-- [ ] C-1 ~ C-7 체크리스트 모두 통과
-- [ ] `PHASE_1_TEST.md` 의 Manual Review Checklist 및 Structural Lint 모두 통과
-- [ ] `agents/coders/sql.md` 가 본 작업으로 인해 변경되지 않음 (`git diff agents/coders/sql.md` 가 empty)
-- [ ] `agents/coders/python.md` 의 기존 섹션(L1-72, 기존 L73 이후) 내용이 변경되지 않고 유지됨
+- [x] C-1 ~ C-7 체크리스트 모두 통과
+- [x] `PHASE_1_TEST.md` 의 Manual Review Checklist 및 Structural Lint 모두 통과
+- [x] `agents/coders/sql.md` 가 본 작업으로 인해 변경되지 않음 (`git diff agents/coders/sql.md` 가 empty)
+- [x] `agents/coders/python.md` 의 기존 섹션(L1-72, 기존 L73 이후) 내용이 변경되지 않고 유지됨 — 0 deletions in diff
 
 ## Notes / 특이사항
 
