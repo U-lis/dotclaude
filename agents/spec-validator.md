@@ -1,5 +1,6 @@
 ---
 name: spec-validator
+model: claude-sonnet-4-6
 description: Validate consistency across all planning documents (SPEC, GLOBAL, PLAN, TEST).
 ---
 

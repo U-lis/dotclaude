@@ -52,3 +52,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   └── check-validation-complete.sh  # Validation completion checker
 └── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```
+
+## Agent Models
+
+Each agent file under `agents/` declares a `model:` field in its YAML frontmatter specifying the Claude model used when the agent is invoked. Agent model assignments are documented in [AGENT_MODEL_GUIDE.md](./AGENT_MODEL_GUIDE.md).

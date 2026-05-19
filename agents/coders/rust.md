@@ -1,5 +1,6 @@
 ---
 name: coder-rust
+model: claude-opus-4-7
 description: Rust systems programming specialist with memory safety, async Rust, and CLI tool expertise.
 ---
 

@@ -12,7 +12,7 @@ This repository provides a structured workflow for software development using sp
 - Language-specific coding standards
 - **Orchestrator-managed workflow** from init to merge
 
-For the full project structure, see [Architecture](docs/ARCHITECTURE.md).
+For the full project structure, see [Architecture](docs/ARCHITECTURE.md). For model selection criteria across agents, see the [Agent Model Selection Guide](docs/AGENT_MODEL_GUIDE.md) — criteria for assigning Claude models to agents.
 
 ## Getting Started
 

@@ -1,5 +1,6 @@
 ---
 name: technical-writer
+model: claude-sonnet-4-6
 description: Create structured documentation (SPEC, GLOBAL, PLAN, TEST, CHANGELOG, README) following strict formats.
 ---
 

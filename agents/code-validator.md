@@ -1,5 +1,6 @@
 ---
 name: code-validator
+model: claude-sonnet-4-6
 description: Verify code implementation against plan checklists and run language-specific quality checks.
 ---
 

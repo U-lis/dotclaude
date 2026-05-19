@@ -1,5 +1,6 @@
 ---
 name: coder-python
+model: claude-opus-4-7
 description: Python development specialist with FastAPI, SQLAlchemy, and async pattern expertise.
 ---
 

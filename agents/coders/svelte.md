@@ -1,5 +1,6 @@
 ---
 name: coder-svelte
+model: claude-opus-4-7
 description: Svelte 5 and SvelteKit frontend development specialist with runes syntax and component architecture.
 ---
 

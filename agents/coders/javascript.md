@@ -1,5 +1,6 @@
 ---
 name: coder-javascript
+model: claude-opus-4-7
 description: JavaScript/TypeScript development specialist with Node.js, ES6+, and async pattern expertise.
 ---
 
