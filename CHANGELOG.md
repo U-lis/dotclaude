@@ -20,11 +20,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Validation Checklist (3 Steps): verify intended changes are reflected, verify no unintended changes are missed, identify items requiring manual handling
   - Manual Edits: references `agents/coders/sql.md` Migration Patterns (lines 125-151) for SQL-level patterns when manual revision edits are needed
   - Local DB Verification: bidirectional verification with `alembic upgrade head` and `alembic downgrade -1` to confirm reversibility before commit
+- `--prefill` option for `/dotclaude:start-new` command that uses GP agent's prior conversation context as initialization input, eliminating redundant Q&A when the user has already discussed the work with Claude ([#13](https://github.com/U-lis/dotclaude/issues/13))
+  - Step 0 argument parsing branch matrix in `start-new.md` that classifies invocation into 4 modes: no-args, prefill-only (`--prefill`), github-only (`<url>`), and both (`--prefill <url>`)
+  - `init-prefill.md` core router command that auto-detects `work_type` (feature/bugfix/refactor) from conversation context and extracts a `pre_filled` YAML payload mapped to the corresponding init command's question fields, then delegates to `init-feature` / `init-bugfix` / `init-refactor` with skip-on-prefilled semantics
+  - GitHub URL + `--prefill` co-input resolution flow (FR-9): when both are provided, fetches the issue via `gh issue view`, summarizes it, asks the user via `AskUserQuestion` whether to merge issue context with conversation context or use only one source, then proceeds with the chosen merge strategy
+  - `_prefill-filters.md` sensitive data filter module (NFR-1) that scans conversation context and pre-filled YAML for 7 sensitive data categories (API keys, passwords, JWT tokens, private keys, OAuth secrets, database connection strings, personal access tokens) before passing to downstream init commands
+  - Phase 5 integration validation documentation covering end-to-end scenarios across all 4 invocation modes
+- Design documentation for the prefill-option feature (`SPEC.md`, `GLOBAL.md`, `PHASE_1`-`PHASE_5_PLAN`, `PHASE_*_TEST.md`)
 
 ### Changed
 
 - `README.md`: added cross-reference link to `docs/AGENT_MODEL_GUIDE.md` in the Overview section
 - `docs/ARCHITECTURE.md`: added cross-reference link to `docs/AGENT_MODEL_GUIDE.md`
+- `commands/start-new.md` argument processing layer restructured: Step 0 (argument parsing) is now a dedicated branch matrix that routes to 4 distinct invocation modes before entering the existing Step 1 work type selection. Existing no-args behavior is preserved unchanged for backward compatibility.
 
 ## [0.4.0] - 2026-03-04
 

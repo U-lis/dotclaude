@@ -76,11 +76,19 @@ See the [Configuration](#configuration) section below for available settings and
 # 7. Asks post-completion integration (Direct Merge or Create PR)
 # 8. Returns final summary
 
+# Reuse current conversation context as initialization input (skip redundant Q&A):
+/dotclaude:start-new --prefill
+
+# Combine prefill with a GitHub issue URL (asks how to merge the two sources):
+/dotclaude:start-new --prefill https://github.com/owner/repo/issues/123
+
 # After merge, create version tag (verifies version consistency, pushes automatically):
 /dotclaude:tagging
 # Or specify version explicitly:
 /dotclaude:tagging 0.3.0
 ```
+
+**Note**: `--prefill` automatically detects the work type from the conversation, extracts pre-filled answers, and skips matching questions. Sensitive data (API keys, passwords, JWT tokens, etc.) is filtered before being passed to init commands.
 
 ### Manual Execution (Bypass Orchestrator)
 
@@ -142,7 +150,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | Command | Description |
 |---------|-------------|
 | `/dotclaude:configure` | Interactive configuration management |
-| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow |
+| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow. Supports `--prefill` to reuse prior conversation context and a GitHub issue URL argument |
 | `/dotclaude:design` | Transform SPEC into implementation plan |
 | `/dotclaude:validate-spec` | Validate document consistency (optional) |
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
