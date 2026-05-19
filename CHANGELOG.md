@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.5.0] - 2026-05-19
 
 ### Added
 
@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `agents/coders/_base.md` is unchanged (shared rules document, not directly invoked)
   - Caller-supplied `model` arguments continue to override the agent default
 - `docs/AGENT_MODEL_GUIDE.md`: decision matrix and 4-step resolution order for assigning Claude models to agents; includes current assignment table and procedure for adding new agents
+- `## Migration Workflow` section in python coder agent (`agents/coders/python.md`) defining the Alembic schema migration workflow ([#62](https://github.com/U-lis/dotclaude/issues/62))
+  - Autogenerate-First Principle: `alembic revision --autogenerate -m "..."` is the default starting command for all schema migrations
+  - Validation Checklist (3 Steps): verify intended changes are reflected, verify no unintended changes are missed, identify items requiring manual handling
+  - Manual Edits: references `agents/coders/sql.md` Migration Patterns (lines 125-151) for SQL-level patterns when manual revision edits are needed
+  - Local DB Verification: bidirectional verification with `alembic upgrade head` and `alembic downgrade -1` to confirm reversibility before commit
 
 ### Changed
 
