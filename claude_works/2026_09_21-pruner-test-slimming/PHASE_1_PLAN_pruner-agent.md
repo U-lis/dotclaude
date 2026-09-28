@@ -81,19 +81,19 @@ Do NOT change any other row or section in `docs/AGENT_MODEL_GUIDE.md`.
 
 ## Completion Checklist
 
-- [ ] `agents/pruner.md` created
-- [ ] Frontmatter: `name: pruner` on its own line
-- [ ] Frontmatter: `model: claude-sonnet-4-6` on its own line
-- [ ] Frontmatter: `tools: Read, Grep, Glob, Bash` on its own line
-- [ ] Body contains both "Doc Mode" and "Code Mode" labeled sections
-- [ ] Criterion 1 text uses AD-6 wording ("branch combinations" phrase present)
-- [ ] All 7 criteria listed in the body
-- [ ] "Nothing to prune" phrase present in at least two places (Doc Mode safeguards, Code Mode safeguards, or Output Format)
-- [ ] "Keep at least one test per behavior" phrase present in at least two places (Doc Mode safeguards and Code Mode safeguards)
-- [ ] "Never suggest logic changes" phrase present
-- [ ] Forbidden Actions section lists `sed -i`, `git reset --hard`, and `git stash`
-- [ ] Output Format table has columns: Location, Kind, Reason, Pinned production line, Notes
-- [ ] `docs/AGENT_MODEL_GUIDE.md` Current Assignments table has a row matching `agents/pruner.md`
+- [x] `agents/pruner.md` created: Verified at agents/pruner.md
+- [x] Frontmatter: `name: pruner` on its own line: Verified at agents/pruner.md:2
+- [x] Frontmatter: `model: claude-sonnet-4-6` on its own line: Verified at agents/pruner.md:3
+- [x] Frontmatter: `tools: Read, Grep, Glob, Bash` on its own line: Verified at agents/pruner.md:5
+- [x] Body contains both "Doc Mode" and "Code Mode" labeled sections: Verified at agents/pruner.md:29,39
+- [x] Criterion 1 text uses AD-6 wording ("branch combinations" phrase present): Verified at agents/pruner.md:52 (verbatim match with AD-6)
+- [x] All 7 criteria listed in the body: Verified at agents/pruner.md:52-73
+- [x] "Nothing to prune" phrase present in at least two places (Doc Mode safeguards, Code Mode safeguards, or Output Format): Verified (3 occurrences)
+- [x] "Keep at least one test per behavior" phrase present in at least two places (Doc Mode safeguards and Code Mode safeguards): Verified at agents/pruner.md:36,48
+- [x] "Never suggest logic changes" phrase present: Verified at agents/pruner.md:91
+- [x] Forbidden Actions section lists `sed -i`, `git reset --hard`, and `git stash`: Verified at agents/pruner.md:80,89,88
+- [x] Output Format table has columns: Location, Kind, Reason, Pinned production line, Notes: Verified at agents/pruner.md:101
+- [x] `docs/AGENT_MODEL_GUIDE.md` Current Assignments table has a row matching `agents/pruner.md`: Verified at docs/AGENT_MODEL_GUIDE.md:49
 
 ## Notes
 

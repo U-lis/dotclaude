@@ -18,19 +18,19 @@ All paths are relative to the worktree root: `/home/ulismoon/Documents/dotclaude
 
 Verification layer: grep checks (file content)
 
-- [ ] B-1.1: `name: pruner` appears exactly once at a line start in the frontmatter
+- [x] B-1.1: `name: pruner` appears exactly once at a line start in the frontmatter
   ```bash
   grep -c '^name: pruner$' agents/pruner.md
   ```
   Expected: `1`
 
-- [ ] B-1.2: `model: claude-sonnet-4-6` appears exactly once at a line start
+- [x] B-1.2: `model: claude-sonnet-4-6` appears exactly once at a line start
   ```bash
   grep -c '^model: claude-sonnet-4-6$' agents/pruner.md
   ```
   Expected: `1`
 
-- [ ] B-1.3: `tools: Read, Grep, Glob, Bash` appears exactly once at a line start
+- [x] B-1.3: `tools: Read, Grep, Glob, Bash` appears exactly once at a line start
   ```bash
   grep -c '^tools: Read, Grep, Glob, Bash$' agents/pruner.md
   ```
@@ -40,7 +40,7 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep checks (file content)
 
-- [ ] B-2.1: Doc Mode and Code Mode sections both present
+- [x] B-2.1: Doc Mode and Code Mode sections both present
   ```bash
   grep -cE 'Doc Mode|Code Mode' agents/pruner.md
   ```
@@ -50,7 +50,7 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep checks (file content)
 
-- [ ] B-3.1: "branch combinations" phrase present (AD-6 verbatim language)
+- [x] B-3.1: "branch combinations" phrase present (AD-6 verbatim language)
   ```bash
   grep -ci 'branch combinations' agents/pruner.md
   ```
@@ -60,13 +60,13 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep checks (file content)
 
-- [ ] B-4.1: "Nothing to prune" appears at least twice (Doc Mode and Code Mode safeguards, plus Output Format)
+- [x] B-4.1: "Nothing to prune" appears at least twice (Doc Mode and Code Mode safeguards, plus Output Format)
   ```bash
   grep -c 'Nothing to prune' agents/pruner.md
   ```
   Expected: `>=2`
 
-- [ ] B-4.2: "Keep at least one test per behavior" appears at least twice (Doc Mode and Code Mode safeguards)
+- [x] B-4.2: "Keep at least one test per behavior" appears at least twice (Doc Mode and Code Mode safeguards)
   ```bash
   grep -c 'Keep at least one test per behavior' agents/pruner.md
   ```
@@ -76,7 +76,7 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep checks (file content)
 
-- [ ] B-5.1: "Never suggest logic changes" present
+- [x] B-5.1: "Never suggest logic changes" present
   ```bash
   grep -c 'Never suggest logic changes' agents/pruner.md
   ```
@@ -86,7 +86,7 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep checks (file content)
 
-- [ ] B-6.1: `sed -i`, `git reset --hard`, and `git stash` all appear (inside Forbidden Actions section)
+- [x] B-6.1: `sed -i`, `git reset --hard`, and `git stash` all appear (inside Forbidden Actions section)
   ```bash
   grep -cE 'sed -i|git reset --hard|git stash' agents/pruner.md
   ```
@@ -96,7 +96,7 @@ Verification layer: grep checks (file content)
 
 Verification layer: grep check (file content)
 
-- [ ] B-7.1: Row for `agents/pruner.md` present in AGENT_MODEL_GUIDE
+- [x] B-7.1: Row for `agents/pruner.md` present in AGENT_MODEL_GUIDE
   ```bash
   grep -F 'agents/pruner.md' docs/AGENT_MODEL_GUIDE.md
   ```
@@ -106,7 +106,7 @@ Verification layer: grep check (file content)
 
 Verification layer: git diff
 
-- [ ] B-8.1: Only `agents/pruner.md` (new) and `docs/AGENT_MODEL_GUIDE.md` changed
+- [x] B-8.1: Only `agents/pruner.md` (new) and `docs/AGENT_MODEL_GUIDE.md` changed
   ```bash
   git diff main --name-only
   ```
