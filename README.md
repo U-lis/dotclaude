@@ -179,8 +179,9 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 |-------|------|
 | Designer | Technical architecture and phase decomposition |
 | TechnicalWriter | Structured documentation |
-| spec-validator | Document consistency validation |
-| code-validator | Code quality + plan verification |
+| spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
+| code-validator | Code quality + plan verification, with post-PASS pruning pass |
+| pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
 | Coders | Language-specific implementation |
 
 Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.
