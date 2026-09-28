@@ -40,13 +40,13 @@ All documents in `{working_directory}/{doc_dir}/` folder:
 
 ### Plan-Test Alignment
 - [ ] Each PHASE_{k}_PLAN has corresponding PHASE_{k}_TEST
-- [ ] All checklist items in PLAN have test cases in TEST
-- [ ] Test coverage target (≥ 70%) is achievable with defined test cases
+- [ ] Each behavior introduced in PLAN maps to at least one Behaviors to Verify entry in TEST (report missing ones; do not add test cases)
+- [ ] Test coverage reported (reference only; not a pass/fail gate)
 
 ### Completeness
-- [ ] No missing edge cases
-- [ ] Error handling scenarios covered
-- [ ] Boundary conditions addressed
+- [ ] Behavior coverage is reported (informational only; spec-validator MUST NOT add test cases and MUST NOT instruct TechnicalWriter to add test cases)
+
+**spec-validator MUST NOT add test cases and MUST NOT instruct TechnicalWriter to add test cases. Missing behavior coverage is reported as informational only.**
 
 ### Consistency
 - [ ] No contradictory requirements
@@ -105,6 +105,7 @@ All documents in `{working_directory}/{doc_dir}/` folder:
 ## Validation Passed
 - [ ] Requirements fully covered
 - [ ] Plan-Test aligned
+- [ ] Coverage reported (reference only)
 - [ ] No contradictions
 - [ ] Dependencies correct
 ```

@@ -41,7 +41,7 @@ SPEC.md defines the authoritative requirements. When writing SPEC.md:
 | `SPEC.md` | Requirements specification (What) - functional/non-functional requirements, constraints |
 | `GLOBAL.md` | Global context - architecture, API design, data model, phase overview/status |
 | `PHASE_{k}_PLAN_{keyword}.md` | Phase implementation plan - detailed instructions, checklist |
-| `PHASE_{k}_TEST.md` | Phase test cases - target coverage ≥ 70% |
+| `PHASE_{k}_TEST.md` | Phase test cases - coverage 70% is a reference figure, not a gate |
 | `PHASE_{k}.5_PLAN_MERGE.md` | Merge plan for parallel phases |
 
 ### Other Documents
@@ -166,16 +166,11 @@ Special considerations
 # Phase {k}: Test Cases
 
 ## Test Coverage Target
-≥ 70%
+Coverage 70% is a REFERENCE figure, not a pass/fail gate.
 
-## Unit Tests
-### {Component/Function}
-- [ ] Test case 1: ...
-- [ ] Test case 2: ...
+## Behaviors to Verify
+- **Behavior**: {description} | **Layer**: unit | integration | endpoint | scenario
 
-## Integration Tests
-- [ ] ...
-
-## Edge Cases
-- [ ] ...
+## Edge Cases Actually Applicable to This Phase
+{only edge cases real for this phase; omit if none}
 ```

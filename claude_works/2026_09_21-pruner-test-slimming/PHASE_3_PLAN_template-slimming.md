@@ -156,17 +156,17 @@ Do NOT modify any other content in `commands/validate-spec.md`.
 
 ## Completion Checklist
 
-- [ ] `templates/PHASE_TEST.md`: `70%` appears at most once, only in the reference-figure sentence
-- [ ] `templates/PHASE_TEST.md`: per-function unit slot patterns removed (no `Function/Method` or `#### {Function` headings)
-- [ ] `templates/PHASE_TEST.md`: generic edge cases catalog removed (no "Empty input", "Network failure", "Database error", "Timeout", "Maximum size", "Minimum size", "Input sanitization", "Authentication required", "Authorization enforced")
-- [ ] `templates/PHASE_TEST.md`: "reference figure" or "not a pass/fail gate" phrase present
-- [ ] `agents/technical-writer.md` line 44: no `≥ 70%` or `>= 70%`
-- [ ] `agents/technical-writer.md` PHASE_TEST structure block (~lines 163-181): no `≥ 70%` or `>= 70%`
-- [ ] `agents/spec-validator.md`: no `≥ 70%` or `>= 70%`
-- [ ] `agents/spec-validator.md`: "MUST NOT add test cases" present
-- [ ] `agents/spec-validator.md`: "No missing edge cases" removed
-- [ ] `commands/validate-spec.md` line 63: no `≥ 70%` or `>= 70%`
-- [ ] `commands/validate-spec.md`: "No missing edge cases" removed or reworded to informational
+- [x] `templates/PHASE_TEST.md`: `70%` appears at most once, only in the reference-figure sentence — verified in templates/PHASE_TEST.md:5
+- [x] `templates/PHASE_TEST.md`: per-function unit slot patterns removed (no `Function/Method` or `#### {Function` headings) — grep count 0
+- [x] `templates/PHASE_TEST.md`: generic edge cases catalog removed (no "Empty input", "Network failure", "Database error", "Timeout", "Maximum size", "Minimum size", "Input sanitization", "Authentication required", "Authorization enforced") — grep count 0
+- [x] `templates/PHASE_TEST.md`: "reference figure" or "not a pass/fail gate" phrase present — verified in templates/PHASE_TEST.md:5
+- [x] `agents/technical-writer.md` line 44: no `≥ 70%` or `>= 70%` — verified in agents/technical-writer.md:44
+- [x] `agents/technical-writer.md` PHASE_TEST structure block (~lines 163-181): no `≥ 70%` or `>= 70%` — grep count 0
+- [x] `agents/spec-validator.md`: no `≥ 70%` or `>= 70%` — grep count 0
+- [x] `agents/spec-validator.md`: "MUST NOT add test cases" present — verified in agents/spec-validator.md:47,49
+- [x] `agents/spec-validator.md`: "No missing edge cases" removed — grep count 0
+- [x] `commands/validate-spec.md` line 63: no `≥ 70%` or `>= 70%` — verified in commands/validate-spec.md:63
+- [x] `commands/validate-spec.md`: "No missing edge cases" removed or reworded to informational — grep count 0
 
 ## Notes
 
