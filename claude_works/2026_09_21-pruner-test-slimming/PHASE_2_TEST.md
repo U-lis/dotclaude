@@ -18,7 +18,7 @@ All paths are relative to the worktree root: `/home/ulismoon/Documents/dotclaude
 
 Verification layer: grep checks
 
-- [ ] B-1.1: `dotclaude:pruner` appears in code-validator, start-new, design, and prune files
+- [x] B-1.1: `dotclaude:pruner` appears in code-validator, start-new, design, and prune files
   ```bash
   grep -n 'dotclaude:pruner' agents/code-validator.md commands/start-new.md commands/design.md commands/prune.md
   ```
@@ -28,7 +28,7 @@ Verification layer: grep checks
 
 Verification layer: grep check
 
-- [ ] B-2.1: "EXCLUDED from the max-3 retry budget" present in code-validator
+- [x] B-2.1: "EXCLUDED from the max-3 retry budget" present in code-validator
   ```bash
   grep -c 'EXCLUDED from the max-3 retry budget' agents/code-validator.md
   ```
@@ -38,7 +38,7 @@ Verification layer: grep check
 
 Verification layer: grep check
 
-- [ ] B-3.1: `mktemp -d` present in code-validator Post-PASS Pruning Pass section
+- [x] B-3.1: `mktemp -d` present in code-validator Post-PASS Pruning Pass section
   ```bash
   grep -c 'mktemp -d' agents/code-validator.md
   ```
@@ -48,7 +48,7 @@ Verification layer: grep check
 
 Verification layer: grep check (manual review of each hit)
 
-- [ ] B-4.1: Every match of `git stash` or `git reset --hard` in code-validator is inside the "FORBIDDEN" sentence of the Post-PASS Pruning Pass section — not elsewhere as an instruction
+- [x] B-4.1: Every match of `git stash` or `git reset --hard` in code-validator is inside the "FORBIDDEN" sentence of the Post-PASS Pruning Pass section — not elsewhere as an instruction
   ```bash
   grep -nE 'git stash|git reset --hard' agents/code-validator.md
   ```
@@ -58,7 +58,7 @@ Verification layer: grep check (manual review of each hit)
 
 Verification layer: grep check
 
-- [ ] B-5.1: `Test coverage: {X}%` still present exactly once
+- [x] B-5.1: `Test coverage: {X}%` still present exactly once
   ```bash
   grep -c 'Test coverage: {X}%' agents/code-validator.md
   ```
@@ -68,7 +68,7 @@ Verification layer: grep check
 
 Verification layer: grep check
 
-- [ ] B-6.1: `/dotclaude:prune` present in README
+- [x] B-6.1: `/dotclaude:prune` present in README
   ```bash
   grep -n '/dotclaude:prune' README.md
   ```
@@ -78,7 +78,7 @@ Verification layer: grep check
 
 Verification layer: git diff
 
-- [ ] B-7.1: No changes to `commands/code.md`
+- [x] B-7.1: No changes to `commands/code.md`
   ```bash
   git diff main -- commands/code.md | wc -l
   ```
@@ -88,14 +88,14 @@ Verification layer: git diff
 
 Verification layer: git diff + read
 
-- [ ] B-8.1: `git diff main -- README.md` shows only the command-table row addition; the 13-Step Workflow table block is byte-identical to main
+- [x] B-8.1: `git diff main -- README.md` shows only the command-table row addition; the 13-Step Workflow table block is byte-identical to main
   Read the README 13-Step Workflow table and confirm it is unchanged. The only diff in README.md is the new `/dotclaude:prune` row in the command table.
 
 ### B-9: `commands/start-new.md` code-validator invocation is unchanged (FR-2b scope guard)
 
 Verification layer: read check
 
-- [ ] B-9.1: The code-validator invocation prompt at ~lines 750-816 of `commands/start-new.md` is unchanged
+- [x] B-9.1: The code-validator invocation prompt at ~lines 750-816 of `commands/start-new.md` is unchanged
   Read `commands/start-new.md` lines 750-816 and confirm no pruner-related changes there (pruner sub-flow is in Step 7 only, not in the code-validator invocation block).
 
 ## FR / NFR Coverage Mapping

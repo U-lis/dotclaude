@@ -97,7 +97,7 @@ No runtime data model changes. All changes are Markdown documents (`agents/*.md`
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
 | 1 | Create `agents/pruner.md`; update `docs/AGENT_MODEL_GUIDE.md` (Current Assignments row) | Complete | None |
-| 2 | Create `commands/prune.md`; edit `agents/code-validator.md`, `commands/design.md`, `commands/start-new.md`, `README.md` | Pending | Phase 1 (pruner must exist before integrations reference it) |
+| 2 | Create `commands/prune.md`; edit `agents/code-validator.md`, `commands/design.md`, `commands/start-new.md`, `README.md` | Complete | Phase 1 (pruner must exist before integrations reference it) |
 | 3 | Edit `templates/PHASE_TEST.md` (rewrite), `agents/technical-writer.md`, `agents/spec-validator.md`, `commands/validate-spec.md` | Pending | None (independent of Phase 1 and 2; run after Phase 2 for clean commit history) |
 
 ## File Structure

@@ -157,20 +157,20 @@ Do NOT change any other row. Do NOT change the 13-Step Workflow table (~lines 23
 
 ## Completion Checklist
 
-- [ ] `agents/code-validator.md` contains `dotclaude:pruner` reference in the Post-PASS Pruning Pass section
-- [ ] `agents/code-validator.md` contains "EXCLUDED from the max-3 retry budget"
-- [ ] `agents/code-validator.md` contains `mktemp -d` (backup directory creation)
-- [ ] `agents/code-validator.md`: `git stash` and `git reset --hard` appear ONLY inside the "FORBIDDEN" sentence of the Post-PASS Pruning Pass section (not elsewhere as instructions)
-- [ ] `agents/code-validator.md` line 225 (`Test coverage: {X}%`) is unchanged
-- [ ] `commands/design.md` contains `dotclaude:pruner` reference; visible step numbers 1–5 unchanged
-- [ ] `commands/start-new.md` contains `dotclaude:pruner` reference inside Step 7; Step numbers unchanged
-- [ ] `commands/start-new.md` code-validator invocation (~lines 750-816) unchanged
-- [ ] `commands/prune.md` created with `dotclaude:pruner` invocation
-- [ ] `commands/prune.md` documents all 5 AD-7 resolution steps
-- [ ] `commands/prune.md` covers edge cases #6, #7, #8, #9
-- [ ] `README.md` contains `/dotclaude:prune` in command table
-- [ ] `README.md` 13-Step Workflow table is byte-identical to main (only the command-table row changed)
-- [ ] `commands/code.md` is unchanged (verify: `git diff main -- commands/code.md | wc -l` = 0)
+- [x] `agents/code-validator.md` contains `dotclaude:pruner` reference in the Post-PASS Pruning Pass section — verified at agents/code-validator.md:216
+- [x] `agents/code-validator.md` contains "EXCLUDED from the max-3 retry budget" — verified at agents/code-validator.md:233
+- [x] `agents/code-validator.md` contains `mktemp -d` (backup directory creation) — verified at agents/code-validator.md:221
+- [x] `agents/code-validator.md`: `git stash` and `git reset --hard` appear ONLY inside the "FORBIDDEN" sentence of the Post-PASS Pruning Pass section — verified at agents/code-validator.md:234 only
+- [x] `agents/code-validator.md` line 225 (`Test coverage: {X}%`) is unchanged — verified (grep count=1)
+- [x] `commands/design.md` contains `dotclaude:pruner` reference; visible step numbers 1–5 unchanged — verified at commands/design.md:42
+- [x] `commands/start-new.md` contains `dotclaude:pruner` reference inside Step 7; Step numbers unchanged — verified at commands/start-new.md:322
+- [x] `commands/start-new.md` code-validator invocation (~lines 750-816) unchanged — verified (no pruner refs in that block)
+- [x] `commands/prune.md` created with `dotclaude:pruner` invocation — verified at commands/prune.md:53
+- [x] `commands/prune.md` documents all 5 AD-7 resolution steps — verified (table rows 1, 2, 3a, 3b, 4, 5)
+- [x] `commands/prune.md` covers edge cases #6, #7, #8, #9 — verified in Edge Cases section
+- [x] `README.md` contains `/dotclaude:prune` in command table — verified at README.md:163
+- [x] `README.md` 13-Step Workflow table is byte-identical to main (only the command-table row changed) — verified (git diff shows only 1 added line)
+- [x] `commands/code.md` is unchanged (verify: `git diff main -- commands/code.md | wc -l` = 0) — verified (0)
 
 ## Notes
 

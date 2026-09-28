@@ -38,6 +38,16 @@ User invokes `/dotclaude:design` after SPEC.md is ready.
 │    - Create PHASE_{k}_PLAN_{keyword}.md for each phase  │
 │    - Create PHASE_{k}_TEST.md for each phase            │
 │    - Create PHASE_{k}.5_PLAN_MERGE.md if parallel phases│
+│    - Call pruner (doc mode, see agents/pruner.md):      │
+│      Task(subagent_type="dotclaude:pruner",             │
+│           prompt="Mode: doc. Targets: PHASE_*_TEST.md   │
+│           + PHASE_*_PLAN_*.md")                         │
+│      Zero candidates → proceed to step 4                │
+│      ≥1 candidate → Task(                               │
+│        subagent_type="dotclaude:technical-writer",      │
+│        prompt="Apply pruner doc-mode report to          │
+│        PHASE_*_TEST.md and PHASE_*_PLAN_*.md; keep      │
+│        ≥1 test per behavior") → proceed to step 4       │
 ├─────────────────────────────────────────────────────────┤
 │ 4. Commit Documents                                     │
 │    - git add {working_directory}/{doc_dir}/*.md                │

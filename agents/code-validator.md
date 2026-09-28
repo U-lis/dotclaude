@@ -154,8 +154,8 @@ npm test  # or: vitest
 │ │   - Check TEST cases implementation                      │ │
 │ └──────────────────────────┬─────────────────────────────┘ │
 │                            │                                 │
-│                     Passed? ─── YES ──→ Go to Document       │
-│                            │            Update (Step 3)      │
+│                     Passed? ─── YES ──→ Post-PASS Pruning    │
+│                            │            Pass, then Step 3    │
 │                           NO                                 │
 │                            │                                 │
 │                   attempt < 3?                               │
@@ -206,6 +206,32 @@ npm test  # or: vitest
 - Each error report to the coder must include: file path, line number (if available), error message, and a specific fix suggestion
 - The coder fix prompt must include `{worktree_path}` so the coder operates in the correct directory
 - If all 3 attempts fail, update GLOBAL.md phase status to "Skipped" and return a FAIL report with all unresolved issues
+
+### Post-PASS Pruning Pass
+
+Internal sub-step between the GREEN exit of the loop and Step 3 (Document Update). It does not change the step numbering visible to the orchestrator. Criteria and report format are defined in `agents/pruner.md`.
+
+1. Call the pruner in code mode:
+   ```
+   Task(subagent_type="dotclaude:pruner", prompt="Mode: code. Working dir: {worktree_path}. Phase source files: {list}. Test files: {list}. Primary criteria: 2, 5, 7. Also flag newly introduced violations of criteria 1, 3, 4, 6.")
+   ```
+2. Zero candidates (`Nothing to prune.`) → go to Step 3. This is a valid, non-error result.
+3. ≥1 candidate → back up every uncommitted file and every file named in the report, and record the pre-pruning snapshot:
+   ```bash
+   BACKUP_DIR=$(mktemp -d)
+   # copy every file from `git status --porcelain` AND every file named in the pruner report into $BACKUP_DIR, preserving relative paths
+   git status --porcelain > "$BACKUP_DIR/.status_before"
+   ```
+4. Call the coder to apply the report:
+   ```
+   Task(subagent_type="{coder_namespace}", prompt="Working dir: {worktree_path}. Apply pruner report: delete/merge tests and trim docstrings/comments only. No logic changes, no production code changes, no PLAN checklist changes. Report: {pruner_report}")
+   ```
+5. Out-of-scope guard: compare `git status --porcelain` with the recorded snapshot. Any changed file NOT in the report's file list → treat as revalidation failure.
+6. Single revalidation pass (lint / type check / tests):
+   - GREEN → delete `$BACKUP_DIR`; go to Step 3 with the pruned state.
+   - RED or guard failure → restore all backed-up files from `$BACKUP_DIR`; delete any file that did not exist in the pre-pruning snapshot (new untracked files created by the coder); proceed to Step 3 returning the pre-pruning GREEN result as PASS.
+7. The pruning revalidation is a SINGLE pass. It is EXCLUDED from the max-3 retry budget.
+8. The revert mechanism is file backup/restore only. `git stash`, `git reset --hard`, and `git checkout -- <path>` are FORBIDDEN for this revert purpose.
 
 ## Output Format
 
