@@ -47,7 +47,8 @@ User invokes `/dotclaude:design` after SPEC.md is ready.
 │        subagent_type="dotclaude:technical-writer",      │
 │        prompt="Apply pruner doc-mode report to          │
 │        PHASE_*_TEST.md and PHASE_*_PLAN_*.md; keep      │
-│        ≥1 test per behavior") → proceed to step 4       │
+│        ≥1 test per behavior. Report: {pruner_report}")  │
+│        → proceed to step 4                              │
 ├─────────────────────────────────────────────────────────┤
 │ 4. Commit Documents                                     │
 │    - git add {working_directory}/{doc_dir}/*.md                │

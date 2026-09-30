@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `commands/pr.md`: Test plan no longer copies PHASE_*_TEST.md items or generates generic fallback items; it lists only verification CI does not cover (performed `[x]` / pending `[ ]`) and is omitted when empty ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - `templates/PHASE_TEST.md`: replaced per-function unit-slot / per-scenario integration-slot / generic edge-cases list format with behavior-list + layer-assignment format; generic edge-cases list (empty input, invalid type, network failure, etc.) removed — only edge cases that actually apply to the phase are listed; reduced from 142 to 32 lines ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - Coverage target 70% demoted from pass/fail gate to reference note in `templates/PHASE_TEST.md`, `agents/technical-writer.md`, `agents/spec-validator.md`, and `commands/validate-spec.md` ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - `agents/spec-validator.md`: spec-validator no longer adds tests or instructs TechnicalWriter to add test cases; missing behavior coverage is reported only; general completeness items that encouraged test inflation removed or softened ([#76](https://github.com/U-lis/dotclaude/issues/76))

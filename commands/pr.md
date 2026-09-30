@@ -46,7 +46,6 @@ To generate rich PR body content, detect available design documents before compo
    - No SPEC.md → fallback for Summary and Resolves
    - No GLOBAL.md → skip supplementary Summary context
    - No PHASE_*_PLAN.md → fallback for Changes descriptions
-   - No PHASE_*_TEST.md → fallback for Test plan items
 
 5. If the resolved `working_directory` path does not exist, treat as no design docs and use git-based fallback for all sections.
 
@@ -89,14 +88,13 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
         - If PHASE_*_PLAN.md exists: derive description from plan instructions mentioning the file
         - Fallback: derive description from commit messages that touch the file (`git log {base_branch}..HEAD -- {file_path} --oneline`)
       - Format as markdown list: `- \`{file_path}\`: {description}`
-   e. Generate Test plan:
-      - If PHASE_*_TEST.md files exist: extract checkbox items from Unit Tests, Integration Tests, Edge Cases sections
-      - If multiple PHASE_*_TEST.md files exist: aggregate items from all files, deduplicate
-      - Fallback: generate minimal test items:
-        - "Verify {primary change} works correctly"
-        - "Verify no regressions in {affected area}"
+   e. Generate Test plan (only verification CI does not cover):
+      - `[x]` items: manual / e2e / real-environment checks already performed, with their result, taken from the current session context
+      - `[ ]` items: checks still pending before merge or deploy
+      - Do NOT copy items from PHASE_*_TEST.md (automated tests already run in CI) and do NOT generate generic items. Never invent a check that was not performed.
+      - Nothing to list → omit the Test plan section
    f. Append attribution footer: `Generated with [Claude Code](https://claude.com/claude-code)`
-   g. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan -> Attribution
+   g. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Attribution
 10. Resolve label from branch prefix:
     -> feature/ -> "enhancement", bugfix/ -> "bug", refactor/ -> "refactoring"
     -> Check label exists: gh label list --search "{label}"
@@ -138,8 +136,8 @@ Resolves #{N}
 - `{file_path_2}`: {description derived from PHASE_*_PLAN or commit messages}
 
 ## Test plan
-- [ ] {test item from PHASE_*_TEST.md}
-- [ ] {test item from PHASE_*_TEST.md}
+- [x] {verification performed outside CI, with result}
+- [ ] {check pending before merge/deploy}
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
@@ -156,8 +154,8 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - `{file_path}`: {derived from commit messages touching this file}
 
 ## Test plan
-- [ ] Verify {primary change} works correctly
-- [ ] Verify no regressions in {affected area}
+- [x] {verification performed outside CI, with result}
+- [ ] {check pending before merge/deploy}
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
@@ -167,7 +165,7 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - **Resolves line**: Include `Resolves #N` ONLY when SPEC.md contains `GitHub Issue Number` metadata. Omit the line entirely otherwise.
 - **Summary**: Limit to 1-5 bullet points. If source material is longer, condense to the most important points.
 - **Changes**: List only files that appear in `git diff --stat`. Do not list files that were not modified. Each entry provides a meaningful description of what changed in that file.
-- **Test plan**: Minimum 2 items, maximum 10 items. Prioritize the most important test cases if source material has more than 10.
+- **Test plan**: Only verification CI does not cover (performed or pending). Maximum 10 items. Omit the section when there is nothing to list.
 - **Attribution footer**: Always present, always the last line of the PR body.
 
 ## Milestone
@@ -213,14 +211,13 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 9 | Milestone creation fails | Warn + continue without milestone |
 | 10 | Label creation fails | Warn + continue without label |
 | 11 | Unknown branch prefix | Skip label, no error |
-| 12 | No SPEC.md exists (manual PR outside dotclaude workflow) | Fall back to git log-based Summary and Changes; generate minimal Test plan |
+| 12 | No SPEC.md exists (manual PR outside dotclaude workflow) | Fall back to git log-based Summary and Changes |
 | 13 | No GLOBAL.md exists (design step skipped) | Skip supplementary context in Summary; use SPEC.md or commits only |
-| 14 | No PHASE_*_TEST.md exists | Generate minimal Test plan from implementation scope (2 generic items) |
+| 14 | No non-CI verification performed or pending | Omit the Test plan section |
 | 15 | SPEC.md exists but has no Overview section | Fall back to git log for Summary |
-| 16 | Multiple PHASE_*_TEST.md files exist | Aggregate test items from all test files, deduplicate |
-| 17 | Empty commit log (no commits ahead of base) | Show "No changes detected" in Summary; empty Changes table |
-| 18 | Very long commit history (50+ commits) | Summarize by grouping related changes; limit Summary to 5 bullet points |
-| 19 | SPEC.md has working_directory but directory does not exist | Treat as no design docs; use git-based fallback |
+| 16 | Empty commit log (no commits ahead of base) | Show "No changes detected" in Summary; empty Changes table |
+| 17 | Very long commit history (50+ commits) | Summarize by grouping related changes; limit Summary to 5 bullet points |
+| 18 | SPEC.md has working_directory but directory does not exist | Treat as no design docs; use git-based fallback |
 
 ## Safety
 
