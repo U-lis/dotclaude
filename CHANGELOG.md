@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - On re-validation failure: pruning changes are reverted via backup/restore and the previous GREEN result is returned as PASS
   - The single re-validation pass is outside the code-validator retry budget (3-attempt loop is unaffected)
 - `/dotclaude:prune [target]` command (`commands/prune.md`): report-only, applies no changes ([#76](https://github.com/U-lis/dotclaude/issues/76))
-  - No argument: analyzes uncommitted diff (`git diff HEAD`); exits with "nothing to analyze" when diff is empty
+  - No argument: analyzes uncommitted diff (`git diff HEAD`) plus untracked files; exits with "nothing to analyze" when there are no changes
   - Phase id argument (`1`, `3A`, `3.5`): analyzes that phase's changes; falls back to doc mode when no code exists yet for that phase
   - Ticket arguments: GitHub PR (`#N` or URL) → `gh pr diff`; GitHub issue → connected PR or branch diff vs `base_branch`; Jira key (`ABC-123`) → branch containing key vs `base_branch`; reports error and exits when no branch or PR is found
   - Applying the report always requires a separate explicit user instruction

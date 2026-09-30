@@ -247,8 +247,8 @@ Internal sub-step between the GREEN exit of the loop and Step 3 (Document Update
 ...
 
 ## Test Verification
-- [x] All {N} test cases implemented
-- [x] Test coverage: {X}%
+- [x] All {N} behaviors in PHASE_{k}_TEST.md verified
+- Test coverage (reference only, not a gate): {X}%
 
 ## Quality Checks
 - [x] Linter: Passed

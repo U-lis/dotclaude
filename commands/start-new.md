@@ -325,7 +325,7 @@ Task(subagent_type="dotclaude:pruner",
 If zero candidates ("Nothing to prune."): proceed to Step 8.
 If ≥1 candidate:
   Task(subagent_type="dotclaude:technical-writer",
-       prompt="Apply pruner doc-mode report to PHASE_*_TEST.md and PHASE_*_PLAN_*.md in {target_dir}. Keep ≥1 test per behavior (edge case #10). Report: {pruner_report}")
+       prompt="Apply pruner doc-mode report to PHASE_*_TEST.md and PHASE_*_PLAN_*.md in {target_dir}. Keep ≥1 test per behavior. Report: {pruner_report}")
   Then proceed to Step 8.
 ```
 

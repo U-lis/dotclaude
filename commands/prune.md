@@ -29,7 +29,7 @@ Evaluate in order; the first match wins. Path arguments are not supported.
 
 | # | Argument | Mode | Action |
 |---|----------|------|--------|
-| 1 | None | Code | `git diff HEAD` (staged + unstaged); empty diff → print "Nothing to analyze." and exit |
+| 1 | None | Code | `git diff HEAD` (staged + unstaged) plus untracked files (`git ls-files --others --exclude-standard`); no changes → print "Nothing to analyze." and exit |
 | 2 | Phase id (`^\d+[A-Z]?$` or `^\d+\.\d+$`) | Code (Doc if no code yet) | That phase's changes; if the phase has no code yet → doc mode on `PHASE_{k}_TEST.md` + `PHASE_{k}_PLAN_*.md` |
 | 3a | GitHub PR URL, or `#N` resolving to a PR | Code | `gh pr diff N` |
 | 3b | GitHub issue URL, or `#N` resolving to an issue | Code | Linked PR or branch → diff vs `base_branch` |
@@ -58,7 +58,7 @@ Present the pruner report per the Language section. `Nothing to prune.` is a val
 
 ## Edge Cases
 
-- **#6 No argument + empty diff**: print "Nothing to analyze." and exit immediately; do not call the pruner.
+- **#6 No argument + no changes** (empty `git diff HEAD` and no untracked files): print "Nothing to analyze." and exit immediately; do not call the pruner.
 - **#7 Argument disambiguation**: phase id = `^\d+[A-Z]?$` or `^\d+\.\d+$`; GitHub = PR/issue URL or `#N` (type resolved via `gh api`); Jira key = `^[A-Z][A-Z0-9]+-\d+$`. A bare number (e.g., `12`) is a phase id, not a GitHub number.
 - **#8 Ticket with no linked branch or PR**: report the error and exit. Never guess a branch or PR.
 - **#9 Report-only**: this command never edits files. Applying candidates requires a separate, explicit user instruction.
