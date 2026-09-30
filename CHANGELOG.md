@@ -22,7 +22,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Absorbed into the existing design commit step; no new orchestrator-visible step added
 - Post-PASS Pruning Pass in `agents/code-validator.md` ([#76](https://github.com/U-lis/dotclaude/issues/76)):
   - After validation PASS, pruner (code mode) is called once
-  - When candidates exist, code-validator invokes coder to apply them (test deletion/merge and docstring/comment reduction only; no logic changes); followed by a single re-validation pass to confirm suite stays GREEN
+  - When candidates exist, code-validator invokes coder to apply test deletion/merge in test files only; followed by a single re-validation pass (full Step 1: PLAN checklist, behavior coverage, quality checks)
+  - Criterion 5 (docstring/comment) candidates and candidates in non-test files are not applied; they are listed in the PASS report for manual review
+  - Out-of-scope guard: any change to a non-test file or an unlisted test file fails the pass (status diff for previously clean files, `cmp` against backup for previously modified files)
   - On re-validation failure: pruning changes are reverted via backup/restore and the previous GREEN result is returned as PASS
   - The single re-validation pass is outside the code-validator retry budget (3-attempt loop is unaffected)
 - `/dotclaude:prune [target]` command (`commands/prune.md`): report-only, applies no changes ([#76](https://github.com/U-lis/dotclaude/issues/76))

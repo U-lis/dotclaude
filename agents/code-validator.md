@@ -211,27 +211,32 @@ npm test  # or: vitest
 
 Internal sub-step between the GREEN exit of the loop and Step 3 (Document Update). It does not change the step numbering visible to the orchestrator. Criteria and report format are defined in `agents/pruner.md`.
 
-1. Call the pruner in code mode:
+Only test files are changed by this pass. A test file is a path matching the project's test conventions (e.g., `tests/`, `test_*.py`, `*_test.py`, `*.test.ts`, `*.spec.ts`); every other file is a non-test file, including source files with inline test modules (e.g., Rust `#[cfg(test)]`). Criterion 5 (docstring/comment) candidates and candidates located in non-test files are never applied; they are listed in the PASS report.
+
+1. Collect the phase files. Phase code is uncommitted at this point, so `git status --porcelain --untracked-files=all` lists them. Split into test files and source files, then call the pruner in code mode:
    ```
-   Task(subagent_type="dotclaude:pruner", prompt="Mode: code. Working dir: {worktree_path}. Phase source files: {list}. Test files: {list}. Primary criteria: 2, 5, 7. Also flag newly introduced violations of criteria 1, 3, 4, 6.")
+   Task(subagent_type="dotclaude:pruner", prompt="Mode: code. Working dir: {worktree_path}. Behaviors: {test_path}. Phase source files: {list}. Test files: {list}. Primary criteria: 2, 5, 7. Also flag newly introduced violations of criteria 1, 3, 4, 6. Keep ≥1 test per behavior listed in {test_path}.")
    ```
-2. Zero candidates (`Nothing to prune.`) → go to Step 3. This is a valid, non-error result.
-3. ≥1 candidate → back up every uncommitted file and every file named in the report, and record the pre-pruning snapshot:
+2. No applicable candidates (`Nothing to prune.`, or only criterion 5 / non-test-file candidates) → go to Step 3. This is a valid, non-error result.
+3. ≥1 applicable candidate → back up every file from `git status --porcelain --untracked-files=all` and every test file named in the report, preserving relative paths:
    ```bash
    BACKUP_DIR=$(mktemp -d)
-   # copy every file from `git status --porcelain` AND every file named in the pruner report into $BACKUP_DIR, preserving relative paths
-   git status --porcelain > "$BACKUP_DIR/.status_before"
+   git status --porcelain --untracked-files=all > "$BACKUP_DIR/.status_before"
    ```
-4. Call the coder to apply the report:
+4. Call the coder with the applicable candidates only:
    ```
-   Task(subagent_type="{coder_namespace}", prompt="Working dir: {worktree_path}. Apply pruner report: delete/merge tests and trim docstrings/comments only. No logic changes, no production code changes, no PLAN checklist changes. Report: {pruner_report}")
+   Task(subagent_type="{coder_namespace}", prompt="Working dir: {worktree_path}. Apply these pruner candidates: delete/merge tests in the listed test files only. Do not modify any other file. Candidates: {applicable_candidates}")
    ```
-5. Out-of-scope guard: compare `git status --porcelain` with the recorded snapshot. Any changed file NOT in the report's file list → treat as revalidation failure.
-6. Single revalidation pass (lint / type check / tests):
-   - GREEN → delete `$BACKUP_DIR`; go to Step 3 with the pruned state.
-   - RED or guard failure → restore all backed-up files from `$BACKUP_DIR`; delete any file that did not exist in the pre-pruning snapshot (new untracked files created by the coder); proceed to Step 3 returning the pre-pruning GREEN result as PASS.
+5. Out-of-scope guard. Fail if any of these holds:
+   - `git status --porcelain --untracked-files=all` lists a path not in `.status_before` and not a report-named test file (catches changes to files that were clean before).
+   - A backed-up file that is not a report-named test file differs from its backup (`cmp -s`) or was deleted (catches changes to files that were already modified before).
+6. Single revalidation pass: re-run the full Step 1 (PLAN checklist, behaviors in `{test_path}` still covered, lint / type check / tests).
+   - PASS → delete `$BACKUP_DIR`; go to Step 3 with the pruned state.
+   - FAIL or guard failure → revert, then proceed to Step 3 returning the pre-pruning GREEN result as PASS:
+     - Backed-up files → restore from `$BACKUP_DIR`.
+     - Paths not in `.status_before` and not backed up (clean before): tracked → `git show HEAD:<path> > <path>`; untracked (created by the coder) → delete.
 7. The pruning revalidation is a SINGLE pass. It is EXCLUDED from the max-3 retry budget.
-8. The revert mechanism is file backup/restore only. `git stash`, `git reset --hard`, and `git checkout -- <path>` are FORBIDDEN for this revert purpose.
+8. The revert mechanism is file backup/restore only (plus `git show HEAD:<path>` for files that were clean before). `git stash`, `git reset --hard`, and `git checkout -- <path>` are FORBIDDEN for this revert purpose.
 
 ## Output Format
 
@@ -254,6 +259,11 @@ Internal sub-step between the GREEN exit of the loop and Step 3 (Document Update
 - [x] Linter: Passed
 - [x] Type Check: Passed
 - [x] Tests: {N} passed, 0 failed
+
+## Pruning
+- Applied: {N} test candidates (or: none / reverted — {reason})
+- Not applied (docstring/comment and non-test-file candidates, for manual review):
+  - `{file:line-range}`: {reason}
 ```
 
 ### Validation Failure (for Coder)
