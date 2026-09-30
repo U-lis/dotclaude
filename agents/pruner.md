@@ -66,6 +66,7 @@ One agent, two modes. The caller states the mode in the prompt (`Mode: doc` or `
    - NOT a deletion candidate: a unit test plus a scenario test coexisting for
      the same feature (as long as the scenario stays within the scope above).
 2. **Would this test fail if a specific production line were deleted?** If not, it is a deletion candidate (e.g., a test that only asserts a mock's return value).
+   A line of checker logic inside a test file (e.g., an AST scanner) that a kept test depends on also counts as a pinned line.
 3. **Do not test existing behavior or inputs that cannot occur in production.**
 4. **Do not create a new test file just to vary one value.**
 5. **Docstrings/comments state only the "why" not readable from code, in 1-5 lines.** Design discussion belongs in the PR body or SPEC.
