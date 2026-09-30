@@ -70,7 +70,7 @@ doc_dir: 2026_09_21-pruner-test-slimming
 
 - [ ] FR-2b: 코드 단계 — 오케스트레이터 플로우 변경 없음. `agents/code-validator.md` 내부 루프에 흡수한다.
   - `commands/code.md` 및 `commands/start-new.md`의 오케스트레이터 플로우는 그대로 유지한다: coder → code-validator → 커밋.
-  - `agents/code-validator.md` 내부 동작: code-validator의 validation PASS 후 pruner(code mode)를 한 번 호출한다. 후보 존재 시 code-validator가 coder를 호출하여 적용(테스트 파일의 테스트 삭제/병합만, 테스트 파일 외 파일 변경 없음)한다. 기준 5(docstring/주석) 후보와 테스트 파일이 아닌 파일의 후보는 적용하지 않고 PASS 리포트에 싣는다. 이후 단일 재검증 패스 실행(code-validator Step 1 전체).
+  - `agents/code-validator.md` 내부 동작: code-validator의 validation PASS 후 pruner(code mode)를 한 번 호출한다. 후보 존재 시 code-validator가 coder를 호출하여 적용(테스트 파일의 테스트 삭제/병합만, 테스트 파일 외 파일 변경 없음)한다. 기준 5(docstring/주석) 후보와 테스트 파일이 아닌 파일의 후보는 적용하지 않고 PASS 리포트에 싣는다. 이후 단일 재검증 패스 실행(PLAN/TEST 체크 + 변경된 테스트 파일만 lint/type/test. 운영 코드 불변이므로 Step 1 전체 스위트 결과가 유효).
   - 수정 대상 파일: `agents/code-validator.md`(내부 동작 설명 및 호출 프롬프트). `commands/code.md` 및 `commands/start-new.md`는 오케스트레이터 흐름 설명 변경 없이 그대로 유지한다.
   - 실패 처리: pruning 적용 후 스위트가 RED가 되고 단일 재검증 패스가 실패하면 → pruning 변경 사항만 되돌리고 이전 GREEN 결과를 PASS로 반환한다(엣지 케이스 #3, #11 참조).
 

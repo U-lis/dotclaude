@@ -22,7 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Absorbed into the existing design commit step; no new orchestrator-visible step added
 - Post-PASS Pruning Pass in `agents/code-validator.md` ([#76](https://github.com/U-lis/dotclaude/issues/76)):
   - After validation PASS, pruner (code mode) is called once
-  - When candidates exist, code-validator invokes coder to apply test deletion/merge in test files only; followed by a single re-validation pass (full Step 1: PLAN checklist, behavior coverage, quality checks)
+  - When candidates exist, code-validator invokes coder to apply test deletion/merge in test files only; followed by a single re-validation pass (PLAN checklist, behavior coverage, and lint / type / tests on the changed test files only)
   - Criterion 5 (docstring/comment) candidates and candidates in non-test files are not applied; they are listed in the PASS report for manual review
   - Out-of-scope guard: any change to a non-test file or an unlisted test file fails the pass (status diff for previously clean files, `cmp` against backup for previously modified files)
   - On re-validation failure: pruning changes are reverted via backup/restore and the previous GREEN result is returned as PASS
@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- `agents/coders/_base.md`: coders run only new/modified tests, including before completion; the full test suite runs once per phase in code-validator Step 1 ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - `commands/pr.md`: Test plan no longer copies PHASE_*_TEST.md items or generates generic fallback items; it lists only verification CI does not cover (performed `[x]` / pending `[ ]`) and is omitted when empty ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - `templates/PHASE_TEST.md`: replaced per-function unit-slot / per-scenario integration-slot / generic edge-cases list format with behavior-list + layer-assignment format; generic edge-cases list (empty input, invalid type, network failure, etc.) removed — only edge cases that actually apply to the phase are listed; reduced from 142 to 32 lines ([#76](https://github.com/U-lis/dotclaude/issues/76))
 - Coverage target 70% demoted from pass/fail gate to reference note in `templates/PHASE_TEST.md`, `agents/technical-writer.md`, `agents/spec-validator.md`, and `commands/validate-spec.md` ([#76](https://github.com/U-lis/dotclaude/issues/76))

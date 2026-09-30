@@ -230,7 +230,7 @@ Only test files are changed by this pass. A test file is a path matching the pro
 5. Out-of-scope guard. Fail if any of these holds:
    - `git status --porcelain --untracked-files=all` lists a path not in `.status_before` and not a report-named test file (catches changes to files that were clean before).
    - A backed-up file that is not a report-named test file differs from its backup (`cmp -s`) or was deleted (catches changes to files that were already modified before).
-6. Single revalidation pass: re-run the full Step 1 (PLAN checklist, behaviors in `{test_path}` still covered, lint / type check / tests).
+6. Single revalidation pass: PLAN checklist and behaviors in `{test_path}` still covered, plus lint / type check / tests on the changed test files only. Production code is unchanged (guaranteed by step 5), so the Step 1 full-suite result still holds.
    - PASS → delete `$BACKUP_DIR`; go to Step 3 with the pruned state.
    - FAIL or guard failure → revert, then proceed to Step 3 returning the pre-pruning GREEN result as PASS:
      - Backed-up files → restore from `$BACKUP_DIR`.
