@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.0] - 2026-09-30
+
+### Added
+
+- `agents/pruner.md`: new report-only pruner agent with two modes (doc mode and code mode) and 7 slimming criteria ([#76](https://github.com/U-lis/dotclaude/issues/76)):
+  - Restricted to read-only tools (`Read`, `Grep`, `Glob`, `Bash` for diff/line counting); never modifies files
+  - Reports deletion/merge candidates (tests) and docstring/comment reduction candidates with explicit reasons; logic changes are never proposed
+  - **Doc mode**: analyzes `PHASE_*_TEST.md` / `PHASE_*_PLAN.md` before any code exists; applies criteria 1, 3, 4, 6 (code-free criteria only)
+  - **Code mode**: analyzes implemented code + tests; applies all 7 criteria, including criterion 2 (mutation-survival check per production line) and criterion 7 (test-line alarm when ≈ 3× logic lines)
+  - Safety in both modes: "nothing to remove" is a valid non-error result; minimum 1 test per behavior is always preserved
+  - Model assignment added to `docs/AGENT_MODEL_GUIDE.md` agent table
+- Pruner (doc mode) integrated into design flow in `commands/design.md` and `commands/start-new.md` Step 7 → Step 8 ([#76](https://github.com/U-lis/dotclaude/issues/76)):
+  - Runs after TechnicalWriter generates PHASE_TEST/PLAN documents, before design commit
+  - When candidates exist, TechnicalWriter applies them; when nothing to remove, proceeds directly to commit
+  - Absorbed into the existing design commit step; no new orchestrator-visible step added
+- Post-PASS Pruning Pass in `agents/code-validator.md` ([#76](https://github.com/U-lis/dotclaude/issues/76)):
+  - After validation PASS, pruner (code mode) is called once
+  - When candidates exist, code-validator invokes coder to apply test deletion/merge in test files only; followed by a single re-validation pass (PLAN checklist, behavior coverage, and lint / type / tests on the changed test files only)
+  - Criterion 5 (docstring/comment) candidates and candidates in non-test files are not applied; they are listed in the PASS report for manual review
+  - Out-of-scope guard: any change to a non-test file or an unlisted test file fails the pass (status diff for previously clean files, `cmp` against backup for previously modified files)
+  - On re-validation failure: pruning changes are reverted via backup/restore and the previous GREEN result is returned as PASS
+  - The single re-validation pass is outside the code-validator retry budget (3-attempt loop is unaffected)
+- `/dotclaude:prune [target]` command (`commands/prune.md`): report-only, applies no changes ([#76](https://github.com/U-lis/dotclaude/issues/76))
+  - No argument: analyzes uncommitted diff (`git diff HEAD`) plus untracked files; exits with "nothing to analyze" when there are no changes
+  - Phase id argument (`1`, `3A`, `3.5`): analyzes that phase's changes; falls back to doc mode when no code exists yet for that phase
+  - Ticket arguments: GitHub PR (`#N` or URL) → `gh pr diff`; GitHub issue → connected PR or branch diff vs `base_branch`; Jira key (`ABC-123`) → branch containing key vs `base_branch`; reports error and exits when no branch or PR is found
+  - Applying the report always requires a separate explicit user instruction
+
+### Changed
+
+- `agents/coders/_base.md`: coders run only new/modified tests, including before completion; the full test suite runs once per phase in code-validator Step 1 ([#76](https://github.com/U-lis/dotclaude/issues/76))
+- `commands/pr.md`: Test plan no longer copies PHASE_*_TEST.md items or generates generic fallback items; it lists only verification CI does not cover (performed `[x]` / pending `[ ]`) and is omitted when empty ([#76](https://github.com/U-lis/dotclaude/issues/76))
+- `templates/PHASE_TEST.md`: replaced per-function unit-slot / per-scenario integration-slot / generic edge-cases list format with behavior-list + layer-assignment format; generic edge-cases list (empty input, invalid type, network failure, etc.) removed — only edge cases that actually apply to the phase are listed; reduced from 142 to 32 lines ([#76](https://github.com/U-lis/dotclaude/issues/76))
+- Coverage target 70% demoted from pass/fail gate to reference note in `templates/PHASE_TEST.md`, `agents/technical-writer.md`, `agents/spec-validator.md`, and `commands/validate-spec.md` ([#76](https://github.com/U-lis/dotclaude/issues/76))
+- `agents/spec-validator.md`: spec-validator no longer adds tests or instructs TechnicalWriter to add test cases; missing behavior coverage is reported only; general completeness items that encouraged test inflation removed or softened ([#76](https://github.com/U-lis/dotclaude/issues/76))
+
 ## [0.5.0] - 2026-05-19
 
 ### Added

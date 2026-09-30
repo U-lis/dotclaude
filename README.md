@@ -160,6 +160,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
+| `/dotclaude:prune [target]` | Analyze current diff or target (phase id / PR / issue / Jira key) and report deletion/merge candidates. Report-only. |
 
 ### Orchestrator
 
@@ -178,8 +179,9 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 |-------|------|
 | Designer | Technical architecture and phase decomposition |
 | TechnicalWriter | Structured documentation |
-| spec-validator | Document consistency validation |
-| code-validator | Code quality + plan verification |
+| spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
+| code-validator | Code quality + plan verification, with post-PASS pruning pass |
+| pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
 | Coders | Language-specific implementation |
 
 Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.

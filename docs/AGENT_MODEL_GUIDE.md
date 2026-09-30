@@ -46,6 +46,7 @@ The table below mirrors the SPEC mapping for v0.5.0. Keep this table in sync whe
 | `agents/technical-writer.md` | `claude-sonnet-4-6` | Template-driven precise writing |
 | `agents/code-validator.md` | `claude-sonnet-4-6` | Checklist-driven validation |
 | `agents/spec-validator.md` | `claude-sonnet-4-6` | Cross-reference consistency analysis |
+| `agents/pruner.md` | `claude-sonnet-4-6` | Checklist-driven pruning analysis (report-only) |
 | `agents/coders/python.md` | `claude-opus-4-7` | Code generation with TDD discipline |
 | `agents/coders/javascript.md` | `claude-opus-4-7` | Code generation with TDD discipline |
 | `agents/coders/rust.md` | `claude-opus-4-7` | Ownership/lifetime reasoning |

@@ -317,6 +317,18 @@ Task tool -> TechnicalWriter
   Output: GLOBAL.md, PHASE_*_PLAN.md, PHASE_*_TEST.md
 ```
 
+After TechnicalWriter completes, run pruner doc mode (criteria in `agents/pruner.md`):
+```
+Task(subagent_type="dotclaude:pruner",
+     prompt="Mode: doc. Working dir: {worktree_path}. Targets: all PHASE_*_TEST.md and PHASE_*_PLAN_*.md in {target_dir}.")
+
+If zero candidates ("Nothing to prune."): proceed to Step 8.
+If ≥1 candidate:
+  Task(subagent_type="dotclaude:technical-writer",
+       prompt="Apply pruner doc-mode report to PHASE_*_TEST.md and PHASE_*_PLAN_*.md in {target_dir}. Keep ≥1 test per behavior. Report: {pruner_report}")
+  Then proceed to Step 8.
+```
+
 **Step 8: Commit Design Documents**
 ```bash
 git add {working_directory}/{doc_dir}/*.md

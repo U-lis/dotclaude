@@ -154,8 +154,8 @@ npm test  # or: vitest
 │ │   - Check TEST cases implementation                      │ │
 │ └──────────────────────────┬─────────────────────────────┘ │
 │                            │                                 │
-│                     Passed? ─── YES ──→ Go to Document       │
-│                            │            Update (Step 3)      │
+│                     Passed? ─── YES ──→ Post-PASS Pruning    │
+│                            │            Pass, then Step 3    │
 │                           NO                                 │
 │                            │                                 │
 │                   attempt < 3?                               │
@@ -207,6 +207,37 @@ npm test  # or: vitest
 - The coder fix prompt must include `{worktree_path}` so the coder operates in the correct directory
 - If all 3 attempts fail, update GLOBAL.md phase status to "Skipped" and return a FAIL report with all unresolved issues
 
+### Post-PASS Pruning Pass
+
+Internal sub-step between the GREEN exit of the loop and Step 3 (Document Update). It does not change the step numbering visible to the orchestrator. Criteria and report format are defined in `agents/pruner.md`.
+
+Only test files are changed by this pass. A test file is a path matching the project's test conventions (e.g., `tests/`, `test_*.py`, `*_test.py`, `*.test.ts`, `*.spec.ts`); every other file is a non-test file, including source files with inline test modules (e.g., Rust `#[cfg(test)]`). Criterion 5 (docstring/comment) candidates and candidates located in non-test files are never applied; they are listed in the PASS report.
+
+1. Collect the phase files. Phase code is uncommitted at this point, so `git status --porcelain --untracked-files=all` lists them. Split into test files and source files, then call the pruner in code mode:
+   ```
+   Task(subagent_type="dotclaude:pruner", prompt="Mode: code. Working dir: {worktree_path}. Behaviors: {test_path}. Phase source files: {list}. Test files: {list}. Primary criteria: 2, 5, 7. Also flag newly introduced violations of criteria 1, 3, 4, 6. Keep ≥1 test per behavior listed in {test_path}.")
+   ```
+2. No applicable candidates (`Nothing to prune.`, or only criterion 5 / non-test-file candidates) → go to Step 3. This is a valid, non-error result.
+3. ≥1 applicable candidate → back up every file from `git status --porcelain --untracked-files=all` and every test file named in the report, preserving relative paths:
+   ```bash
+   BACKUP_DIR=$(mktemp -d)
+   git status --porcelain --untracked-files=all > "$BACKUP_DIR/.status_before"
+   ```
+4. Call the coder with the applicable candidates only:
+   ```
+   Task(subagent_type="{coder_namespace}", prompt="Working dir: {worktree_path}. Apply these pruner candidates: delete/merge tests in the listed test files only. Do not modify any other file. Candidates: {applicable_candidates}")
+   ```
+5. Out-of-scope guard. Fail if any of these holds:
+   - `git status --porcelain --untracked-files=all` lists a path not in `.status_before` and not a report-named test file (catches changes to files that were clean before).
+   - A backed-up file that is not a report-named test file differs from its backup (`cmp -s`) or was deleted (catches changes to files that were already modified before).
+6. Single revalidation pass: PLAN checklist and behaviors in `{test_path}` still covered, plus lint / type check / tests on the changed test files only. Production code is unchanged (guaranteed by step 5), so the Step 1 full-suite result still holds.
+   - PASS → delete `$BACKUP_DIR`; go to Step 3 with the pruned state.
+   - FAIL or guard failure → revert, then proceed to Step 3 returning the pre-pruning GREEN result as PASS:
+     - Backed-up files → restore from `$BACKUP_DIR`.
+     - Paths not in `.status_before` and not backed up (clean before): tracked → `git show HEAD:<path> > <path>`; untracked (created by the coder) → delete.
+7. The pruning revalidation is a SINGLE pass. It is EXCLUDED from the max-3 retry budget.
+8. The revert mechanism is file backup/restore only (plus `git show HEAD:<path>` for files that were clean before). `git stash`, `git reset --hard`, and `git checkout -- <path>` are FORBIDDEN for this revert purpose.
+
 ## Output Format
 
 ### Validation Success
@@ -221,13 +252,18 @@ npm test  # or: vitest
 ...
 
 ## Test Verification
-- [x] All {N} test cases implemented
-- [x] Test coverage: {X}%
+- [x] All {N} behaviors in PHASE_{k}_TEST.md verified
+- Test coverage (reference only, not a gate): {X}%
 
 ## Quality Checks
 - [x] Linter: Passed
 - [x] Type Check: Passed
 - [x] Tests: {N} passed, 0 failed
+
+## Pruning
+- Applied: {N} test candidates (or: none / reverted — {reason})
+- Not applied (docstring/comment and non-test-file candidates, for manual review):
+  - `{file:line-range}`: {reason}
 ```
 
 ### Validation Failure (for Coder)

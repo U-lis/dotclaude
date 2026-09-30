@@ -59,13 +59,11 @@ User invokes `/dotclaude:validate-spec` after design documents are created.
 
 ### Plan-Test Alignment
 - [ ] Each PLAN has corresponding TEST
-- [ ] All checklist items have test cases
-- [ ] Coverage target achievable (≥ 70%)
+- [ ] Each behavior introduced in PLAN maps to at least one Behaviors to Verify entry in TEST (report missing ones; do not add test cases)
+- [ ] Coverage reported (reference only; 70% is not a pass/fail gate)
 
 ### Completeness
-- [ ] No missing edge cases
-- [ ] Error handling covered
-- [ ] Boundary conditions addressed
+- [ ] Behavior coverage reported (informational only; not a blocking check, no test cases are added)
 
 ### Consistency
 - [ ] No contradictions

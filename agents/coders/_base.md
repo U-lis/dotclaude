@@ -54,9 +54,8 @@ The SessionStart hook outputs the configured language (e.g., `[dotclaude] langua
 - If unable to fix after 3 attempts, report to Orchestrator
 
 ### 6. Test Execution
-- During active development: run only new/modified tests (fast iteration)
-- Before phase completion: run full test suite
-- Fix all tests broken by your changes
+- Run only new/modified tests, including before reporting completion
+- The full test suite runs once at phase end in code-validator; fix what it reports
 
 ### 7. Environment Files
 - NEVER modify `.env` directly
