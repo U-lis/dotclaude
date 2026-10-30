@@ -154,11 +154,12 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge` | Merge current branch to base branch |
-| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan) from design docs or git history |
+| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan, Review notes) from design docs or git history |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
 | `/dotclaude:prune [target]` | Analyze current diff or target (phase id / PR / issue / Jira key) and report deletion/merge candidates. Report-only. |
+| `/dotclaude:review [PR URL \| #N]` | Review the current diff on five axes (correctness, scope, safety, maintainability, tests), or triage a PR's review comments (CodeRabbit included) as accept / rebut / ignore, then fix, reply, and resolve the rows you approve |
 
 ### Orchestrator
 
@@ -182,6 +183,7 @@ Shared rules (configuration, commits, limits, the validate-fix loop) are defined
 | spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
 | code-validator | Code quality + plan verification, with post-PASS pruning pass |
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
+| reviewer | Report-only five-axis diff review with Blocker/Major/Minor severity; runs after each phase's validator PASS and once on the full diff before integration |
 | Coders | Language-specific implementation; `coder-generic` is the fallback for languages without a dedicated coder |
 
 Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`. Init creates `{working_directory}/RULES.md` from `templates/RULES.md` when missing; coders and the reviewer read it as the project's coding rules.

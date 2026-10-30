@@ -27,6 +27,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── validate-spec.md         # /dotclaude:validate-spec
 │   ├── purge.md                 # /dotclaude:purge
 │   ├── prune.md                 # /dotclaude:prune (report-only bloat analysis)
+│   ├── review.md                # /dotclaude:review (five-axis diff review, PR comment triage)
 │   ├── init.md                  # Internal: intake, work type, analysis, SPEC draft
 │   └── _prefill-filters.md      # Internal: sensitive data filters for prefill (user-invocable: false)
 ├── agents/                      # Agent definitions (frontmatter-enabled)
@@ -35,6 +36,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── spec-validator.md        # Specification validation
 │   ├── code-validator.md        # Code quality validation
 │   ├── pruner.md                # Report-only bloat analysis
+│   ├── reviewer.md              # Report-only five-axis diff review
 │   └── coders/                  # Language-specific coders
 │       ├── python.md            # Python specialist
 │       ├── javascript.md        # JS/TS specialist
