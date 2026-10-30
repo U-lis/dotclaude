@@ -94,6 +94,20 @@ Check the checklist, every SPEC requirement against the PLAN's Requirements, eve
 Return the report table and one status: PASS (marker created after the documents), PASS-WITH-WARN (no test runner or no linter; documents updated, marker not created, the user must confirm before the commit), or FAIL.
 ```
 
+## reviewer
+
+Phase review (`/dotclaude:code`, after code-validator PASS, changes uncommitted), full-diff review (`/dotclaude:pr`), and `/dotclaude:review` use the same template; `{scope}` says which.
+
+```
+Review {scope: phase {phase_id} (uncommitted changes) | the full branch diff | pull request #{n}}.
+Worktree: {worktree_path}
+Base: {base_branch}   (or Diff source: gh pr diff {n})
+SPEC: {working_directory}/{doc_dir}/SPEC.md (may be absent)
+RULES: {working_directory}/RULES.md (may be absent)
+PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md (phase review) | all PHASE_*_PLAN_*.md in {working_directory}/{doc_dir}/ (full diff)
+Answer all five axes and end with BLOCKERS: n.
+```
+
 ## technical-writer: DOCS_UPDATE
 
 ```
