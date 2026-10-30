@@ -11,8 +11,8 @@ Each call uses the Agent tool with `subagent_type` set to the agent name. The ag
 ```
 Write {worktree_path}/{working_directory}/{doc_dir}/SPEC.md.
 Template: ${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md. Language: {language}.
-Metadata block (first lines of the file):
-  working_directory: ..., base_branch: ..., language: ..., worktree_path: ..., doc_dir: ..., target_version: ..., github_issue: ... (omit if none)
+Metadata block (first lines of the file, see ${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md):
+  working_directory: ..., base_branch: ..., language: ..., worktree_path: ..., doc_dir: ..., target_version: ..., github_issue: ... (omit if none), stage: spec_review, approved_at: null, approved_hash: null, decisions: [], handoff: ""
 Requirements gathered from the user: {answers}
 Analysis results: {related code, conflicts and resolutions, edge cases}
 Include a "Decisions required" section for anything the user still has to choose.
@@ -32,7 +32,7 @@ If something in SPEC is ambiguous, return the questions instead of guessing. You
 Write the design documents in {worktree_path}/{working_directory}/{doc_dir}/ from this designer output:
 {designer output}
 Templates: ${CLAUDE_PLUGIN_ROOT}/templates/GLOBAL.md, PHASE_PLAN.md, PHASE_TEST.md, PHASE_MERGE.md.
-Files: GLOBAL.md, PHASE_{k}_PLAN_{keyword}.md and PHASE_{k}_TEST.md per phase, PHASE_{k}.5_PLAN_MERGE.md per parallel group. English.
+Files: GLOBAL.md, PHASE_{k}_PLAN_{keyword}.md and PHASE_{k}_TEST.md per phase, PHASE_{k}.5_PLAN_MERGE.md per parallel group. English. Each PLAN lists under Requirements the SPEC FR/NFR ids it completes; every SPEC requirement goes to exactly one phase.
 ```
 
 ## pruner (doc mode) and applying its report

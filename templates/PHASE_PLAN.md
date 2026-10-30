@@ -4,6 +4,12 @@
 
 {Clear statement of what this phase accomplishes}
 
+## Requirements
+
+{SPEC items this phase completes; code-validator checks these off in SPEC.md on PASS}
+- FR-{n}
+- NFR-{n}
+
 ---
 
 ## Prerequisites

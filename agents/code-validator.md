@@ -51,6 +51,7 @@ The pruning pass is one attempt and is outside the three-validation budget.
 - PLAN: check off each completed item as `- [x] Item: verified in {file}:{line}`; leave unimplemented items unchecked.
 - GLOBAL.md Phase Overview: set the phase Status to `Complete`.
 - TEST: mark verified behaviors `[x]`, failing ones `[ ]` with the reason.
+- SPEC.md: for each `FR-n`/`NFR-n` listed under the PLAN's Requirements section, change `- [ ] FR-n` to `- [x] FR-n` in SPEC.md. Edit only those checkbox characters; any other change to the SPEC body invalidates its approval hash (Contract: State).
 
 Confirm the files changed on disk before reporting; the orchestrator commits them with the code.
 

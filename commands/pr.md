@@ -75,6 +75,7 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
     -> Check milestone exists: gh api repos/{owner}/{repo}/milestones --jq '.[].title'
     -> If not found: gh api repos/{owner}/{repo}/milestones -f title="{version}" (warn on failure, do not halt)
 12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"] [--milestone "{milestone}"]
+13. If a SPEC.md was found: ${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh stage <spec> pr
 ```
 
 ## PR Title Generation

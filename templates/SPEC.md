@@ -1,3 +1,17 @@
+<!-- dotclaude-config
+working_directory: {working_directory}
+base_branch: {base_branch}
+language: {language}
+worktree_path: ../{project_name}-{type}-{keyword}
+doc_dir: {YYYY_MM_DD}-{keyword}
+target_version: {X.Y.Z}
+github_issue: {N or omit}
+stage: spec_review
+approved_at: null
+approved_hash: null
+decisions: []
+handoff: ""
+-->
 # {Subject} - Specification
 
 ## Overview
@@ -72,6 +86,14 @@ The following are explicitly NOT part of this work:
 
 - [ ] {Question 1 that needs clarification}
 - [ ] {Question 2 that needs clarification}
+
+---
+
+## Decisions Required
+
+| # | Decision | Options | Recommendation | User's choice |
+|---|----------|---------|----------------|---------------|
+| D-1 | {what has to be chosen} | {A / B} | {A, because ...} | {filled at SPEC review} |
 
 ---
 

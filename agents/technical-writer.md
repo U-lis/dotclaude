@@ -10,13 +10,14 @@ You write the work documents other agents and the user read. Shared rules are in
 
 ## SPEC.md
 
-SPEC.md is the source of truth for the work. Capture every requirement discussed, in precise language, numbered `FR-n` and `NFR-n` as checkboxes. Put anything uncertain under Open Questions and anything the user still has to choose under a "Decisions required" section with the options and a recommendation. Start the file with the `dotclaude-config` metadata block the orchestrator gives you. Write SPEC.md in the configured language.
+SPEC.md is the source of truth for the work. Capture every requirement discussed, in precise language, numbered `FR-n` and `NFR-n` as checkboxes. Put anything uncertain under Open Questions and anything the user still has to choose under a "Decisions required" section with the options and a recommendation. Start the file with the `dotclaude-config` metadata block the orchestrator gives you, with `stage: spec_review`, `approved_at: null`, `approved_hash: null`, `decisions: []`, `handoff: ""`. When revising an approved SPEC, edit the body only; the orchestrator re-approves. Write SPEC.md in the configured language.
 
 ## Design documents
 
 From the designer's output, write `GLOBAL.md`, one `PHASE_{k}_PLAN_{keyword}.md` and `PHASE_{k}_TEST.md` per phase, and `PHASE_{k}.5_PLAN_MERGE.md` per parallel group, in English.
 
 - PLAN instructions describe changes ("modify X in Y to do Z") and name files; they do not contain the code, except a short sample for a pattern that cannot be inferred from the codebase.
+- Each PLAN's Requirements section lists the SPEC `FR`/`NFR` ids that phase completes; every SPEC requirement appears in exactly one PLAN.
 - The Completion Checklist holds only items code-validator can verify in code.
 - TEST lists behaviors to verify with a verification layer each; the 70% coverage figure in the template is a reference, not a gate.
 - GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`.

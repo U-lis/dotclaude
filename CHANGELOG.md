@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- SPEC metadata block is the work state ([#83](https://github.com/U-lis/dotclaude/issues/83), closes #15): `stage`, `approved_at`/`approved_hash` (approval = hash of the SPEC body, so stage edits never invalidate it), `decisions`, `handoff`. `hooks/spec-meta.sh` reads and writes the block (`find`, `get`, `set`, `stage`, `approve`, `check-approved`, `handoff`, `decision`); `start-new` resumes from `stage` without re-asking; `design` refuses to start without `check-approved`; code-validator checks off the SPEC `FR`/`NFR` items listed in each PLAN's new Requirements section on PASS. GLOBAL status adds `Blocked`.
 - `scripts/lint-prompts.sh`: static checks for duplicated Language sections, `claude_works` literals, dated model ids, ALL-CAPS emphasis counts, legacy `Task tool` names, stale globs, `${CLAUDE_PLUGIN_ROOT}` path existence, and total prompt size.
 
 ### Removed
