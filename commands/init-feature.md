@@ -6,12 +6,7 @@ user-invocable: false
 
 Instructions for initializing new feature work through requirements gathering and SPEC creation.
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
+Shared rules (language, naming, worktree, limits) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
 
 ## Pre-filled Data Handling
 

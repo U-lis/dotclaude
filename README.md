@@ -18,28 +18,18 @@ For the full project structure, see [Architecture](docs/ARCHITECTURE.md). For mo
 
 ### Install
 
-#### Option 1: Plugin Marketplace (Recommended)
+```bash
+/plugin install dotclaude --marketplace U-lis/dotclaude
+```
 
-Install dotclaude via Claude Code's plugin marketplace:
+Alternatively, add the marketplace first and install in a second step:
 
 ```bash
-# Add the marketplace repository (first time only)
 /plugin marketplace add https://github.com/U-lis/dotclaude
-
-# Install the plugin
 /plugin install dotclaude
 ```
 
-#### Option 2: Manual Installation
-
-For direct control or customization, clone and copy manually:
-
-```bash
-git clone https://github.com/U-lis/dotclaude.git
-cp -r dotclaude/.claude your-project/
-```
-
-**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation). Restart Claude Code after updating to apply changes.
+**Note**: For updates, use `/plugin update dotclaude`. Restart Claude Code after updating to apply changes.
 
 ### Optional: GitHub CLI
 
@@ -132,7 +122,7 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `language` | string | `en_US` | Language for agent conversations and user-facing text. Set via SessionStart hook. Documents remain in English. |
+| `language` | string | `en_US` | User-facing text, SPEC.md, and PR title/body use this language. GLOBAL, PLAN, TEST, CHANGELOG, and README stay English. |
 | `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
 | `base_branch` | string | `main` | Default base branch for git operations |
 | `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
@@ -167,9 +157,11 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 The orchestrator workflow is integrated into `/dotclaude:start-new` command (`commands/start-new.md`):
 
 - **Manages entire workflow** from init to merge
-- **Coordinates subagents** via Task tool
+- **Coordinates subagents** via the Agent tool
 - **Enables parallel execution** for parallel phases
 - **Tracks state** for resumability
+
+Shared rules (configuration, commits, limits, the validate-fix loop) are defined once in `commands/_contract.md`. Other command and agent files reference it instead of restating the rules.
 
 ## Appendix
 
@@ -184,16 +176,16 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
 | Coders | Language-specific implementation |
 
-Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.
+Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`.
 
 Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` command.
 
-### Document Types
+### Hooks
 
-#### Simple Tasks (1-2 phases)
-```
-{working_directory}/{SUBJECT}.md
-```
+- `SessionStart`: `hooks/init-config.sh` creates the global config if missing and prints the configured language.
+- `Stop`: `hooks/check-validation-complete.sh` blocks stopping when `PHASE_*_PLAN` files on the current work branch still have unchecked items. This hook is being reworked in 0.7.0.
+
+### Document Types
 
 #### Directory Naming Convention
 
@@ -211,9 +203,9 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 
 **Note**: `{subject}` continues to be used for branch names and commit messages.
 
-#### Complex Tasks (3+ phases)
+#### Work Directory
 ```
-{working_directory}/{doc_dir}/               # Example: claude_works/2026_02_25-auth/
+{working_directory}/{doc_dir}/               # Example: .dc_workspace/2026_02_25-auth/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
@@ -240,19 +232,19 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 
 | Step | Phase | Description |
 |------|-------|-------------|
-| 1 | Init | Work type selection |
-| 2 | Init | Load init instructions (questions, analysis, target version, branch, SPEC) |
+| 1 | Init | Work type |
+| 2 | Init | Run the init command (questions, analysis, target version, branch, SPEC draft) |
 | 3 | Init | SPEC review |
-| 4 | Init | SPEC commit |
-| 5 | Init | Scope selection |
+| 4 | Init | Commit SPEC.md |
+| 5 | Init | Scope |
 | 6 | Design | Designer analysis |
-| 7 | Design | Document creation via TechnicalWriter |
-| 8 | Design | Design commit |
+| 7 | Design | Document creation via technical-writer |
+| 8 | Design | Commit design documents |
 | 9 | Code | Phase list parsing |
-| 10 | Code | Phase execution (sequential/parallel) |
+| 10 | Code | Phase execution (coder, then code-validator; sequential or parallel) |
 | 11 | Docs | Documentation update |
-| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
-| 13 | Final | Summary return |
+| 12 | Integration | Direct Merge or Create PR |
+| 13 | Final | Summary |
 
 ## License
 

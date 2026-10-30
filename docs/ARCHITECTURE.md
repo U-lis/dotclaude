@@ -13,6 +13,9 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── marketplace.json         # Registry metadata
 │   └── plugin.json              # Plugin configuration
 ├── commands/                    # Self-contained command files
+│   ├── _coder-base.md          # Common coder rules, read by every coder agent
+│   ├── _contract.md             # Internal: single definition of shared rules (user-invocable: false)
+│   ├── _agent-prompts.md        # Internal: prompt templates for agent calls (user-invocable: false)
 │   ├── configure.md             # /dotclaude:configure
 │   ├── start-new.md             # /dotclaude:start-new (entry point + orchestrator)
 │   ├── design.md                # /dotclaude:design
@@ -23,18 +26,21 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── update-docs.md           # /dotclaude:update-docs
 │   ├── validate-spec.md         # /dotclaude:validate-spec
 │   ├── purge.md                 # /dotclaude:purge
+│   ├── prune.md                 # /dotclaude:prune (report-only bloat analysis)
 │   ├── init-feature.md          # Internal: feature init (user-invocable: false)
 │   ├── init-bugfix.md           # Internal: bugfix init (user-invocable: false)
 │   ├── init-refactor.md         # Internal: refactor init (user-invocable: false)
 │   ├── init-github-issue.md     # Internal: GitHub issue init (user-invocable: false)
-│   └── _init-common.md           # Internal: common init workflow (user-invocable: false)
+│   ├── init-prefill.md          # Internal: prefill init (user-invocable: false)
+│   ├── _prefill-filters.md      # Internal: sensitive data filters for prefill (user-invocable: false)
+│   └── _init-common.md          # Internal: common init workflow (user-invocable: false)
 ├── agents/                      # Agent definitions (frontmatter-enabled)
 │   ├── designer.md              # Architecture and planning
 │   ├── technical-writer.md      # Documentation
 │   ├── spec-validator.md        # Specification validation
 │   ├── code-validator.md        # Code quality validation
+│   ├── pruner.md                # Report-only bloat analysis
 │   └── coders/                  # Language-specific coders
-│       ├── _base.md             # Common coder rules
 │       ├── python.md            # Python specialist
 │       ├── javascript.md        # JS/TS specialist
 │       ├── svelte.md            # Svelte specialist
@@ -46,6 +52,9 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── PHASE_PLAN.md
 │   ├── PHASE_TEST.md
 │   └── PHASE_MERGE.md
+├── docs/                        # Project documentation
+│   ├── ARCHITECTURE.md         # This file
+│   └── AGENT_MODEL_GUIDE.md    # Agent model selection
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
 │   ├── init-config.sh           # SessionStart config initializer
@@ -55,4 +64,4 @@ This document shows the project directory structure for dotclaude. For the full 
 
 ## Agent Models
 
-Each agent file under `agents/` declares a `model:` field in its YAML frontmatter specifying the Claude model used when the agent is invoked. Agent model assignments are documented in [AGENT_MODEL_GUIDE.md](./AGENT_MODEL_GUIDE.md).
+Each agent file under `agents/` declares a `model:` field in its YAML frontmatter. The value is a family alias (`opus` or `sonnet`), not a dated model id, so the plugin follows the current model generation. Assignments and selection criteria are in [AGENT_MODEL_GUIDE.md](./AGENT_MODEL_GUIDE.md).

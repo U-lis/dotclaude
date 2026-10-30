@@ -1,114 +1,16 @@
 ---
 description: Transform SPEC into detailed implementation plan using Designer agent. Use after SPEC.md is approved or when user invokes /dotclaude:design.
 ---
-
 # /dotclaude:design
 
-Transform SPEC into detailed implementation plan using Designer agent.
+Turn an approved SPEC.md into design documents. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`; prompt templates in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`.
 
-## Configuration
+Prerequisite: `{working_directory}/{doc_dir}/SPEC.md` exists and is committed, and the current branch is the work branch (Contract: Worktree). Paths come from the SPEC metadata block.
 
-The `{working_directory}` value is read from SPEC.md metadata (written by `/dotclaude:start-new`).
-If SPEC.md is not found, fall back to default: `.dc_workspace`.
+1. Call designer with the SPEC path. If it returns open questions, ask the user and call it again with the answers.
+2. Call technical-writer with the designer output. It writes `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md` and `PHASE_{k}_TEST.md` per phase, and `PHASE_{k}.5_PLAN_MERGE.md` per parallel group.
+3. Call pruner in doc mode on the PLAN and TEST files. If it lists candidates, call technical-writer to apply them (keep at least one test per behavior).
+4. Commit the design documents (Contract: Commits).
+5. Show the user the architecture decisions and the phase table from GLOBAL.md. If the user asks for changes, run steps 1–4 again with the feedback and commit the revised documents.
 
-## Trigger
-
-User invokes `/dotclaude:design` after SPEC.md is ready.
-
-## Prerequisites
-
-- `{working_directory}/{doc_dir}/SPEC.md` exists and is approved
-
-## Workflow
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Read SPEC.md                                         │
-│    - Understand requirements                            │
-│    - Identify technical challenges                      │
-├─────────────────────────────────────────────────────────┤
-│ 2. Invoke Designer Agent                                │
-│    - Analyze architecture options                       │
-│    - Make technical decisions                           │
-│    - Decompose into phases                              │
-│    - Identify parallel opportunities                    │
-├─────────────────────────────────────────────────────────┤
-│ 3. Pass Results to TechnicalWriter                      │
-│    - Create GLOBAL.md                                   │
-│    - Create PHASE_{k}_PLAN_{keyword}.md for each phase  │
-│    - Create PHASE_{k}_TEST.md for each phase            │
-│    - Create PHASE_{k}.5_PLAN_MERGE.md if parallel phases│
-│    - Call pruner (doc mode, see agents/pruner.md):      │
-│      Task(subagent_type="dotclaude:pruner",             │
-│           prompt="Mode: doc. Targets: PHASE_*_TEST.md   │
-│           + PHASE_*_PLAN_*.md")                         │
-│      Zero candidates → proceed to step 4                │
-│      ≥1 candidate → Task(                               │
-│        subagent_type="dotclaude:technical-writer",      │
-│        prompt="Apply pruner doc-mode report to          │
-│        PHASE_*_TEST.md and PHASE_*_PLAN_*.md; keep      │
-│        ≥1 test per behavior. Report: {pruner_report}")  │
-│        → proceed to step 4                              │
-├─────────────────────────────────────────────────────────┤
-│ 4. Commit Documents                                     │
-│    - git add {working_directory}/{doc_dir}/*.md                │
-│    - git commit -m "docs: add design documents"         │
-├─────────────────────────────────────────────────────────┤
-│ 5. Review with User                                     │
-│    - Present design and phase breakdown                 │
-│    - Iterate based on feedback                          │
-└─────────────────────────────────────────────────────────┘
-```
-
-## Designer Agent Responsibilities
-
-### Architecture Decisions
-- Module organization
-- API design
-- Data models
-- Technology choices
-
-### Phase Decomposition
-- Break work into manageable phases
-- Define clear boundaries
-- Identify dependencies
-
-### Parallel Phase Identification
-When phases can run independently:
-- Name as PHASE_{k}A, {k}B, {k}C
-- Plan git worktree strategy
-- Create PHASE_{k}.5 merge plan
-
-## Output Documents
-
-### Simple Tasks (1-2 phases)
-```
-{working_directory}/{SUBJECT}.md
-```
-
-### Complex Tasks (3+ phases)
-```
-{working_directory}/{doc_dir}/
-├── SPEC.md                         (already exists)
-├── GLOBAL.md                       (new)
-├── PHASE_1_PLAN_{keyword}.md       (new)
-├── PHASE_1_TEST.md                 (new)
-├── PHASE_2_PLAN_{keyword}.md       (new)
-├── PHASE_2_TEST.md                 (new)
-...
-```
-
-### With Parallel Phases
-```
-├── PHASE_3A_PLAN_{keyword}.md
-├── PHASE_3A_TEST.md
-├── PHASE_3B_PLAN_{keyword}.md
-├── PHASE_3B_TEST.md
-├── PHASE_3.5_PLAN_MERGE.md         (required)
-```
-
-## Next Steps
-
-After design is approved:
-1. Proceed to `/dotclaude:validate-spec` to verify document consistency
-2. Then `/dotclaude:code [phase]` to start implementation
+Next: `/dotclaude:validate-spec`, then `/dotclaude:code 1`.

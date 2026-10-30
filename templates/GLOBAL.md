@@ -78,18 +78,14 @@
 
 | Phase | Description | Status | Dependencies |
 |-------|-------------|--------|--------------|
-| 1 | {description} | 🔴 Not Started | - |
-| 2 | {description} | 🔴 Not Started | Phase 1 |
-| 3A | {description} | 🔴 Not Started | Phase 2 |
-| 3B | {description} | 🔴 Not Started | Phase 2 |
-| 3.5 | Merge parallel branches | 🔴 Not Started | Phase 3A, 3B |
-| 4 | {description} | 🔴 Not Started | Phase 3.5 |
+| 1 | {description} | Not Started | - |
+| 2 | {description} | Not Started | Phase 1 |
+| 3A | {description} | Not Started | Phase 2 |
+| 3B | {description} | Not Started | Phase 2 |
+| 3.5 | Merge parallel branches | Not Started | Phase 3A, 3B |
+| 4 | {description} | Not Started | Phase 3.5 |
 
-**Status Legend**:
-- 🔴 Not Started
-- 🟡 In Progress
-- 🟢 Complete
-- ⚠️ Blocked
+**Status values**: `Not Started`, `In Progress`, `Complete`, `Skipped` (validation failed after the attempt limit in `_contract.md`; see the phase's validator report).
 
 ---
 
@@ -117,7 +113,7 @@ Phase 1 ──→ Phase 2 ──→ Phase 3A ──┐
 ## Completion Criteria
 
 Overall feature is complete when:
-- [ ] All phases marked 🟢 Complete
+- [ ] All phases marked Complete
 - [ ] All tests passing
 - [ ] Documentation updated
 - [ ] Code reviewed

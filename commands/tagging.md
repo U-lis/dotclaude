@@ -8,7 +8,7 @@ Create git tag based on CHANGELOG.md version and push both commits and tags to r
 
 ## Prerequisites
 
-- On main branch
+- On `base_branch` (resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`, Configuration and Language)
 - CHANGELOG.md exists with version entry
 - Version files are configured in `dotclaude-config.json` OR auto-detectable in project root
 
@@ -18,7 +18,7 @@ If the user provides an explicit version argument (e.g., `/dotclaude:tagging 0.3
 
 If no argument is provided, fall back to auto-detection: parse CHANGELOG.md for the latest `## [X.Y.Z]` entry.
 
-In both cases, the Version Consistency Check MUST pass before proceeding.
+In both cases the version consistency check runs before the tag is created.
 
 ## Version Files Resolution
 
@@ -43,7 +43,7 @@ Each entry has:
 
 ### Resolution Order
 
-1. **Load config**: Read merged config from global (`~/.claude/dotclaude-config.json`) overlaid with local (`<project_root>/.claude/dotclaude-config.json`). Local values override global values.
+1. **Load config** (Contract: Configuration).
 2. **Check `version_files` field**:
    - If the field is **present and non-empty**: use those entries as-is, but ensure a CHANGELOG.md entry exists (append the default CHANGELOG.md entry if missing).
    - If the field is **absent, null, or an empty array**: run auto-detection (see below).
@@ -72,29 +72,6 @@ CHANGELOG.md is **always** included in the version files list. If a user provide
 
 The CHANGELOG.md entry cannot be removed.
 
-### Pseudo-Code for Resolution
-
-```bash
-# 1. Load merged config
-GLOBAL_CONFIG="$HOME/.claude/dotclaude-config.json"
-LOCAL_CONFIG="<project_root>/.claude/dotclaude-config.json"
-
-# Merge: local overrides global
-CONFIG = merge(read_json(GLOBAL_CONFIG), read_json(LOCAL_CONFIG))
-
-# 2. Check version_files field
-if CONFIG.version_files is non-empty array:
-    VERSION_FILES = CONFIG.version_files
-    # Ensure CHANGELOG.md is present
-    if no entry has path == "CHANGELOG.md":
-        VERSION_FILES.append({ path: "CHANGELOG.md", pattern: "## \\[([^\\]]+)\\]" })
-else:
-    # 3. Auto-detect: check each known file in priority order
-    VERSION_FILES = []
-    for each (file, pattern) in AUTO_DETECT_TABLE:
-        if file exists in project root:
-            VERSION_FILES.append({ path: file, pattern: pattern })
-```
 
 ## Workflow
 
@@ -102,11 +79,11 @@ else:
 1. Determine target version
    - If explicit version argument provided: use it
    - Else: parse CHANGELOG.md for latest ## [X.Y.Z] entry
-2. Version consistency check (MANDATORY GATE)
+2. Version consistency check (gate)
    - Resolve version_files list (configured or auto-detected, see Version Files Resolution above)
    - For each entry in version_files, read the file at `path` and extract the version using `pattern`
    - ALL extracted versions must match the target version
-   - If ANY mismatch: HALT immediately, report inconsistency, do NOT proceed
+   - On any mismatch: stop and report which file has which version
 3. Get latest git tag (git describe --tags --abbrev=0)
    - If target version matches latest tag: report "Already tagged" and stop
    - If mismatch: proceed
@@ -127,7 +104,7 @@ For each entry in the resolved `version_files` list (see Version Files Resolutio
 2. Apply the `pattern` regex to extract the version string (first capture group)
 3. Compare the extracted version against the target version
 
-All extracted versions MUST match the target version. If ANY mismatch is found (including files that are missing or where the pattern does not match), HALT immediately and report which files have which versions. Do NOT proceed with tagging.
+All extracted versions must equal the target version. A missing file or a non-matching pattern counts as a mismatch. On mismatch, stop and report which files have which versions.
 
 ## Version Parsing
 
@@ -159,11 +136,7 @@ If target version != latest tag:
 
 ## Push Steps
 
-After creating the tag, the command MUST execute `git push` to push commits to remote.
-
-After pushing commits, the command MUST execute `git push --tags` to push tags to remote.
-
-These push steps are MANDATORY. Do NOT skip them.
+After creating the tag, run `git push`, then `git push --tags`. A tag that exists only locally is invisible to CI and to `/dotclaude:purge`, which uses remote tags as the deployment boundary.
 
 ## Error Handling
 
@@ -177,7 +150,7 @@ If `git push --tags` fails:
 - Note that commits were pushed but tags were not
 - Suggest the user retry manually with `git push --tags`
 
-Never rollback or delete the local tag on push failure. The local tag MUST be preserved regardless of push outcome.
+Do not delete the local tag on push failure; the user retries the push.
 
 ## Output
 

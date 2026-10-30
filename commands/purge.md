@@ -4,15 +4,6 @@ description: Clean up merged-and-deployed branches and associated worktrees
 
 # /dotclaude:purge
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
-
-Clean up merged branches, remote tracking branches, and orphaned worktrees after releases.
-
 ## Version Argument
 
 If the user provides an explicit version argument (e.g., `/dotclaude:purge 0.3.0`), use that version tag as the deployment boundary directly.
@@ -21,28 +12,7 @@ If no argument is provided, fall back to auto-detection: determine the latest de
 
 ## Prerequisites
 
-Before starting the workflow, resolve the following values:
-
-### Base Branch Resolution
-
-Resolve `{base_branch}` using the config chain (first match wins):
-
-1. SPEC.md metadata field `base_branch` (from the `dotclaude-config` HTML comment block)
-2. Local config file: `<git_root>/.claude/dotclaude-config.json` -> `base_branch` field
-3. Global config file: `~/.claude/dotclaude-config.json` -> `base_branch` field
-4. Default: `main`
-
-Store the resolved value as `{base_branch}` for use throughout the workflow.
-
-### Current Branch
-
-Determine the current branch name:
-
-```
-git branch --show-current
-```
-
-Store the result as `{current_branch}`.
+Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration, Language) and `{current_branch}` with `git branch --show-current`.
 
 ## Workflow
 
@@ -227,7 +197,7 @@ Store the result as `{current_branch}`.
 |----|-----------|----------|
 | EC-1 | No merged branches found | Display "No merged branches to clean up", skip to unmerged warnings |
 | EC-2 | No worktrees exist (only main working tree) | Skip worktree cleanup section entirely |
-| EC-3 | Remote unreachable (`git fetch --prune` fails) | Set `REMOTE_REACHABLE=false`, skip fetch, remote branch detection, remote branch deletion, and remote tag query; warn user; proceed with local-only cleanup |
+| EC-3 | Remote unreachable (`git fetch --prune` fails) | Set `REMOTE_REACHABLE=false`, skip remote branch detection, remote branch deletion, and remote tag query; warn user; proceed with local-only cleanup |
 | EC-4 | All branches are unmerged | Display only warnings, no cleanup actions needed |
 | EC-5 | Worktree has uncommitted changes | Skip that worktree, report reason in summary |
 | EC-6 | `git branch -d` fails (branch not fully merged despite `--merged` listing) | Report failure, continue with next branch |
@@ -239,18 +209,3 @@ Store the result as `{current_branch}`.
 | EC-12 | No tags exist at all (local or remote) | Set `NO_TAGS=true`, skip tag deployment check, treat all merged branches as safe to delete, warn user |
 | EC-13 | Explicit version argument tag does not exist | HALT with error. Do NOT proceed with cleanup. |
 
-## Output
-
-```
-# Purge Complete
-
-- Worktrees removed: {count} (skipped: {count}, failed: {count})
-- Local branches deleted: {count} (skipped: {count}, failed: {count})
-- Remote branches deleted: {count} (skipped: {count}, failed: {count})
-
-## Skipped Items
-- {item}: {reason}
-
-## Warnings (Unmerged Branches)
-- {branch}: last commit {date} - {message}
-```

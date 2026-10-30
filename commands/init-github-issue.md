@@ -6,14 +6,7 @@ user-invocable: false
 
 Instructions for initializing work from GitHub issue URL or number.
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
-
-**Requirements**: `gh` CLI must be installed and authenticated.
+Shared rules (language, naming, worktree, limits) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
 
 ## Step-by-Step Process
 
@@ -252,7 +245,7 @@ pre_filled:
    - SPEC.md review (Step 3 of start-new.md) serves as the validation checkpoint
 
 3. **Target Version**: If `target_version` is set
-   - Skip Step 2.6 (version question)
+   - Skip the target version question in start-new.md (version question)
    - Use milestone version directly
 
 4. **SPEC.md**: Include issue reference
@@ -319,6 +312,5 @@ After context extraction, proceed to analysis phase as defined in init-{type}.md
 1. Parsed GitHub issue data
 2. Detected work type (feature/bugfix/refactor)
 3. Pre-populated context for init workflow
-4. Worktree created at `../{project_name}-{work_type}-{branch_keyword}` with branch `{work_type}/{branch_keyword}`
-5. Route to appropriate init-xxx.md
-6. Continue normal init workflow from there (with pre-filled values)
+4. Route to the matching init command, which creates the worktree and branch (`_init-common`) and continues with the pre-filled values
+5. The SPEC metadata block gets `github_issue: {number}` so `/dotclaude:pr` can add `Resolves #N`
