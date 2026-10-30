@@ -77,7 +77,7 @@ git merge {type}/{keyword}-{k}C
 ## Post-Merge Validation
 
 ### Quality Checks
-Run the project's lint, type check, and full test suite (detected as in code-validator).
+Run the project's quality commands (as detected by code-validator): lint, type check, and the full test suite.
 
 ### Integration Verification
 - [ ] All merged features work together
@@ -113,9 +113,7 @@ git branch -d {type}/{keyword}-{k}C
 
 - [ ] All parallel branches merged
 - [ ] All conflicts resolved
-- [ ] Linter passing
-- [ ] Type checker passing
-- [ ] All tests passing
+- [ ] Project quality commands passing (as detected by code-validator)
 - [ ] Worktrees removed
 - [ ] Local branches cleaned up
 - [ ] Remote branches cleaned up (if applicable)

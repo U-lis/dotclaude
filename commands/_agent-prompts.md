@@ -23,9 +23,11 @@ Decisions Required table: rows the user still has to choose, with options and a 
 ## designer
 
 ```
-Read {worktree_path}/{working_directory}/{doc_dir}/SPEC.md and design the implementation.
-Return: architecture decisions with rationale; phase breakdown with dependencies, marking parallel groups only when the file/module/test analysis shows independence; per-phase checklist items that are verifiable; files to create or modify.
-If something in SPEC is ambiguous, return the questions instead of guessing. You cannot ask the user directly.
+Read {worktree_path}/{working_directory}/{doc_dir}/SPEC.md and design the implementation. Worktree: {worktree_path}.
+parallel_phases: {true|false}{; the user asked for parallel phases, when they did}
+{answers to earlier OPEN items, when this is a repeat call}
+Return: proportional true/false; architecture decisions with rationale; phases with the FR/NFR ids each completes and dependencies; per-phase checklist items that are verifiable; files to create or modify, each existing one cited file:line and each new one marked (new); the OPEN list (or "OPEN: none").
+Confirm every existing symbol, path, and config key with Grep/Read before naming it. What you cannot confirm, and anything you would ask the user, goes to OPEN; do not guess it.
 ```
 
 ## technical-writer: design documents
@@ -34,7 +36,7 @@ If something in SPEC is ambiguous, return the questions instead of guessing. You
 Write the design documents in {worktree_path}/{working_directory}/{doc_dir}/ from this designer output:
 {designer output}
 Templates: ${CLAUDE_PLUGIN_ROOT}/templates/GLOBAL.md, PHASE_PLAN.md, PHASE_TEST.md, PHASE_MERGE.md.
-Files: GLOBAL.md, PHASE_{k}_PLAN_{keyword}.md and PHASE_{k}_TEST.md per phase, PHASE_{k}.5_PLAN_MERGE.md per parallel group. English. Each PLAN lists under Requirements the SPEC FR/NFR ids it completes; every SPEC requirement goes to exactly one phase.
+Files: GLOBAL.md, PHASE_{k}_PLAN_{keyword}.md and PHASE_{k}_TEST.md per phase, PHASE_{k}.5_PLAN_MERGE.md per parallel group; when the output says proportional: true, one PLAN and one TEST and no GLOBAL.md. English. Each PLAN lists under Requirements the SPEC FR/NFR ids it completes; every SPEC requirement goes to exactly one phase. Existing documents are edited in place (your definition: Updating existing documents).
 ```
 
 ## pruner (doc mode) and applying its report
