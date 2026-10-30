@@ -37,6 +37,14 @@ Templates: ${CLAUDE_PLUGIN_ROOT}/templates/GLOBAL.md, PHASE_PLAN.md, PHASE_TEST.
 Files: GLOBAL.md, PHASE_{k}_PLAN_{keyword}.md and PHASE_{k}_TEST.md per phase, PHASE_{k}.5_PLAN_MERGE.md per parallel group. English. Each PLAN lists under Requirements the SPEC FR/NFR ids it completes; every SPEC requirement goes to exactly one phase.
 ```
 
+## pruner (scope mode)
+
+Called on SPEC.md before it is shown for approval; technical-writer applies the report to the Edge Cases table.
+
+```
+Mode: scope. Working dir: {worktree_path}. Target: {working_directory}/{doc_dir}/SPEC.md (Edge Cases table and FR list).
+```
+
 ## pruner (doc mode) and applying its report
 
 ```
@@ -51,7 +59,7 @@ Apply this pruner doc-mode report to the PHASE_*_TEST.md and PHASE_*_PLAN_*.md f
 ## spec-validator
 
 ```
-Validate the documents in {worktree_path}/{working_directory}/{doc_dir}/ (SPEC.md, GLOBAL.md, PHASE_*_PLAN_*.md, PHASE_*_TEST.md, PHASE_*.5_PLAN_MERGE.md if present). Return the report with issues and suggested fixes.
+Validate the documents in {worktree_path}/{working_directory}/{doc_dir}/ (SPEC.md, GLOBAL.md, PHASE_*_PLAN_*.md, PHASE_*_TEST.md, PHASE_*.5_PLAN_MERGE.md if present). Report each missing TEST matrix cell as Critical with its (FR, Partition), and each TEST row without a SPEC FR as Critical. Return the report with issues and suggested fixes.
 ```
 
 ## coder: implement a phase

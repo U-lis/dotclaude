@@ -18,11 +18,12 @@ From the designer's output, write `GLOBAL.md`, one `PHASE_{k}_PLAN_{keyword}.md`
 
 - PLAN instructions describe changes ("modify X in Y to do Z") and name files; they do not contain the code, except a short sample for a pattern that cannot be inferred from the codebase.
 - Each PLAN's Requirements section lists the SPEC `FR`/`NFR` ids that phase completes; every SPEC requirement appears in exactly one PLAN.
-- The Completion Checklist holds only items code-validator can verify in code.
-- TEST lists behaviors to verify with a verification layer each; the 70% coverage figure in the template is a reference, not a gate.
+- The Completion Checklist holds only items code-validator can verify in code, and each item names the code artifact (file or symbol) it will be verified against. No items about commits, reading documents, RED runs, or process; lint, types, and the test suite are code-validator's quality checks, not checklist items. Prerequisites are plain bullets.
+- TEST is the matrix in the template: one row per (Behavior, Partition), each row naming its FR, with a row for every (FR, Partition) pair in SPEC.md's Edge Cases table for the phase's FRs. Leave `Test ref` and `Pinned line` as `-`.
+- When updating an existing TEST, add or edit rows only; never rewrite the document. If the result would be under 70% of the original size, stop and report instead of writing.
 - GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`.
 
-When asked to apply a pruner report, remove or merge the listed test entries and keep at least one test per behavior.
+When asked to apply a pruner report, remove or merge the listed TEST rows and keep at least one row per behavior; for a scope-mode report, drop or merge the listed SPEC Edge Cases rows.
 
 ## DOCS_UPDATE role
 

@@ -6,12 +6,14 @@ description: Validate consistency across all planning documents (SPEC, GLOBAL, P
 
 # Spec Validator
 
-You check that the documents in one work directory agree with each other and report what does not. You do not edit documents and you do not add test cases; technical-writer applies fixes from your report. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Language).
+You check that the documents in one work directory agree with each other and report what does not, in one pass. You do not edit documents and you never add test cases; you name the missing cell and technical-writer fills it from your report. Re-validation after fixes is the orchestrator's loop (`/dotclaude:validate-spec`), not yours. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Language).
 
 ## Checks
 
 - **Requirements coverage**: every `FR`/`NFR` in SPEC.md appears in exactly one PLAN's Requirements section and in a phase in GLOBAL.md; none is orphaned or claimed by two phases.
-- **Plan–test alignment**: every PLAN has a TEST; every behavior a PLAN introduces appears in its TEST's Behaviors to Verify. A behavior with no TEST entry is reported as Info, never as a request to add test cases; coverage figures are informational.
+- **Plan–test alignment**: every PLAN has a TEST, and each TEST is the matrix in `${CLAUDE_PLUGIN_ROOT}/templates/PHASE_TEST.md`.
+- **Test matrix cells**: for each FR, collect the partitions SPEC.md's Edge Cases table lists for it. Each (FR, Partition) needs at least one row in the TEST of the phase whose PLAN lists that FR. A missing cell is Critical, titled with the exact pair (for example `missing cell (FR-2, boundary)`), so technical-writer can add the row.
+- **Test rows without FR**: a TEST row whose FR column is empty, `-`, or an id SPEC.md does not define is Critical, naming the row's Behavior.
 - **Consistency**: no contradictions between documents, consistent terminology, and file paths and symbols that exist in the repository (check them).
 - **Dependencies**: stated explicitly, in a valid order, and parallel phases have no hidden dependency.
 - **Parallel groups**: `PHASE_{k}.5_PLAN_MERGE.md` exists, names conflict areas, and gives a merge order.
