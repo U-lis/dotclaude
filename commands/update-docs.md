@@ -1,131 +1,16 @@
 ---
 description: Update project documentation (README, CHANGELOG) after code implementation is complete.
 ---
-
 # /dotclaude:update-docs
 
-Update project documentation (README, CHANGELOG) after code implementation is complete.
+Update CHANGELOG.md and README.md for the work on the current branch. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`; the prompt template is in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md` (DOCS_UPDATE).
 
-## Configuration
+Prerequisite: every phase in GLOBAL.md is Complete or Skipped. If one is Not Started or In Progress, stop and say which.
 
-The `{working_directory}` value is read from SPEC.md metadata (written by `/dotclaude:start-new`).
-If SPEC.md is not found, fall back to default: `.dc_workspace`.
+1. Gather context: latest tag (`git describe --tags --abbrev=0`), commits since it (`git log {tag}..HEAD --oneline`), the SPEC.md overview, and the target version from the SPEC metadata.
+2. Call technical-writer in its DOCS_UPDATE role with that context. It adds the version entry to CHANGELOG.md (Keep a Changelog categories, newest first, `## [X.Y.Z] - YYYY-MM-DD`, English) and edits README.md only where features, usage, configuration, or workflow diagrams visibly changed.
+3. Commit (Contract: Commits).
+4. When `version_files` is non-empty, or auto-detection finds version files (`/dotclaude:tagging`, Auto-Detection), run the Version Consistency Check from `${CLAUDE_PLUGIN_ROOT}/commands/tagging.md` against the target version and report each mismatch. The tag is never created here; point to `/dotclaude:tagging` for it.
+5. Report the files updated, the CHANGELOG entry, the commit hash, and the consistency result.
 
-## Trigger
-
-- User invokes `/dotclaude:update-docs` directly
-- Orchestrator calls after all phases complete (Step 11)
-
-## Prerequisites
-
-- All implementation phases complete
-- Code validated by code-validator
-
-## Workflow
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Gather Context                                       │
-│    - Get latest tag: git describe --tags --abbrev=0    │
-│    - Get commits since tag: git log {tag}..HEAD        │
-│    - Read {working_directory}/{doc_dir}/SPEC.md for context   │
-├─────────────────────────────────────────────────────────┤
-│ 2. Call TechnicalWriter (DOCS_UPDATE role)             │
-│    - Input: commits, SPEC summary, target version      │
-│    - Task: Update CHANGELOG.md and README.md           │
-├─────────────────────────────────────────────────────────┤
-│ 3. Commit Documentation                                 │
-│    - git add CHANGELOG.md README.md                    │
-│    - git commit -m "docs: update for vX.Y.Z"           │
-├─────────────────────────────────────────────────────────┤
-│ 4. Report Summary                                       │
-│    - List updated files                                 │
-│    - Show CHANGELOG entry preview                       │
-└─────────────────────────────────────────────────────────┘
-```
-
-## TechnicalWriter Invocation
-
-```
-Task tool:
-  subagent_type: "dotclaude:technical-writer"
-  prompt: |
-    You are in DOCS_UPDATE role.
-
-    ## Task: Update Project Documentation
-
-    ### Input
-    - Latest tag: {tag}
-    - Commits since tag:
-      {commit_list}
-    - SPEC summary: {spec_summary}
-    - Target version: {target_version}
-
-    ### CHANGELOG.md Update
-
-    1. Review commits and filter meaningful changes (exclude merge, typo, wip)
-    2. Classify by type following Keep a Changelog format:
-       - Added: new features
-       - Changed: changes in existing functionality
-       - Deprecated: soon-to-be removed features
-       - Removed: removed features
-       - Fixed: bug fixes
-       - Security: vulnerability fixes
-    3. Add new version entry at the top of file (after header)
-    4. Format:
-       ## [X.Y.Z] - YYYY-MM-DD
-
-       ### Added
-       - Item 1
-       - Item 2
-
-       ### Changed
-       - Item 1
-
-    ### README.md Update
-
-    Review if any of the following need updates:
-    - Feature list
-    - Usage examples
-    - Configuration options
-    - Workflow diagrams
-
-    Only update if the implementation introduced visible changes.
-
-    ### Output
-    - Write updated CHANGELOG.md
-    - Write updated README.md (if needed)
-```
-
-## CHANGELOG Rules
-
-- Version follows semver (X.Y.Z)
-- Each version is individual entry (no grouping)
-- Date format: YYYY-MM-DD
-- Content in English
-- Latest version at top of file
-
-## Output
-
-```
-# Documentation Updated
-
-## CHANGELOG.md
-- Added version: X.Y.Z
-- Sections: Added (3), Changed (2), Fixed (1)
-
-## README.md
-- Updated: [Yes/No]
-- Changes: [list if updated]
-
-## Commit
-- Hash: {commit_hash}
-- Message: docs: update for vX.Y.Z
-```
-
-## Invocation Behavior
-
-| Context | Behavior |
-|---------|----------|
-| Direct (`/dotclaude:update-docs`) | Complete docs update, return control to user |
-| Via orchestrator | Complete docs update, return to orchestrator for continued workflow |
+Version numbers in version files are not changed here; they are updated at release time and checked again by `/dotclaude:tagging`.

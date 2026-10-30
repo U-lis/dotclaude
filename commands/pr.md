@@ -15,43 +15,15 @@ Before any git operations, verify the following in order:
 
 ## Configuration
 
-Resolve `base_branch` using the following priority:
-
-1. SPEC.md metadata block in the current working directory (if present):
-   ```html
-   <!-- dotclaude-config
-   base_branch: {value}
-   -->
-   ```
-2. `dotclaude-config.json` (local project config, then global `~/.claude/dotclaude-config.json`)
-3. Default: `main`
+`base_branch`, `working_directory`, and `pr.labels`, `pr.assignee`, `pr.reviewers` are resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration). The PR title and body are written in the configured language (Contract: Language).
 
 ## Document Detection
 
-To generate rich PR body content, detect available design documents before composing the body:
-
-1. **Resolve `working_directory`** using the same priority chain as `base_branch`:
-   - SPEC.md metadata block: `working_directory: {value}`
-   - `dotclaude-config.json` (local project config, then global `~/.claude/dotclaude-config.json`)
-   - Default: `.dc_workspace`
-
-2. **Scan for SPEC.md**: Look for `{working_directory}/*/SPEC.md` (any subdirectory under the working directory, relative to project root).
-
-3. **If SPEC.md found**, also check the **same directory** for:
-   - `GLOBAL.md`
-   - `PHASE_*_TEST.md` (glob pattern, may match multiple files)
-   - `PHASE_*_PLAN.md` (glob pattern, may match multiple files)
-
-4. **Each document is optional.** Missing documents trigger the fallback path for their respective PR body section:
-   - No SPEC.md → fallback for Summary and Resolves
-   - No GLOBAL.md → skip supplementary Summary context
-   - No PHASE_*_PLAN.md → fallback for Changes descriptions
-
-5. If the resolved `working_directory` path does not exist, treat as no design docs and use git-based fallback for all sections.
+Look for `{working_directory}/*/SPEC.md`. If found, also look in the same directory for `GLOBAL.md`, `PHASE_*_TEST.md`, and `PHASE_*_PLAN_*.md`. Each document is optional; a missing one switches its PR body section to the git-based fallback below. A `working_directory` that does not exist means no design documents.
 
 ## Branch Validation
 
-The command MUST reject execution when the current branch is any of:
+Stop when the current branch is any of:
 
 - `main`
 - `master`
@@ -80,12 +52,12 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
       - If GLOBAL.md exists: supplement with Feature Overview (Purpose/Problem/Solution)
       - Fallback: summarize commit messages from `git log {base_branch}..HEAD --oneline`, grouped by type/area
    c. Generate issue link:
-      - If SPEC.md has `GitHub Issue Number` metadata: prepare `Resolves #N` line
+      - If the SPEC metadata block has `github_issue`: prepare `Resolves #N` line
       - If not present, omit the Resolves line entirely
    d. Generate Changes:
       - Run `git diff --stat {base_branch}...HEAD` to get list of changed files
       - For each changed file, generate a description:
-        - If PHASE_*_PLAN.md exists: derive description from plan instructions mentioning the file
+        - If PHASE_*_PLAN_*.md exists: derive description from plan instructions mentioning the file
         - Fallback: derive description from commit messages that touch the file (`git log {base_branch}..HEAD -- {file_path} --oneline`)
       - Format as markdown list: `- \`{file_path}\`: {description}`
    e. Generate Test plan (only verification CI does not cover):
@@ -93,16 +65,22 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
       - `[ ]` items: checks still pending before merge or deploy
       - Do NOT copy items from PHASE_*_TEST.md (automated tests already run in CI) and do NOT generate generic items. Never invent a check that was not performed.
       - Nothing to list → omit the Test plan section
-   f. Append attribution footer: `Generated with [Claude Code](https://claude.com/claude-code)`
-   g. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Attribution
+   f. Full-diff review: skip the call when REVIEW.md already has a `## Full diff` section from this commit range and build Review notes from that table. Otherwise call `dotclaude:reviewer` once with scope "the full branch diff", `Base: {base_branch}`, and the SPEC, RULES, and PLAN paths (prompt in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`, reviewer). If `BLOCKERS` is above 0, show the table and ask with AskUserQuestion: create the PR with the Blockers listed, or stop so they can be fixed first (`/dotclaude:review` after the fix). Stopping ends the command here; the branch stays pushed and no PR is created.
+      - Build the Review notes section from the reviewer table: the `issue` rows, Blocker first, then Major, then Minor, plus the Major and Minor rows carried from phase reviews in `{working_directory}/{doc_dir}/REVIEW.md` that the full-diff table does not already list (same location and finding). Translate only the Finding and Notes prose into the configured language. No `issue` rows anywhere → the section is the single line `No issues on the five review axes.`
+   g. Append attribution footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
+   h. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Review notes -> Attribution
 10. Resolve label from branch prefix:
     -> feature/ -> "enhancement", bugfix/ -> "bug", refactor/ -> "refactoring"
     -> Check label exists: gh label list --search "{label}"
     -> If not found: gh label create "{label}" (warn on failure, do not halt)
-11. Resolve milestone from SPEC.md Target Version:
+    -> Do the same for each label in pr.labels; the labels passed to gh pr create are the branch-prefix label plus pr.labels
+11. Resolve milestone from the SPEC metadata `target_version`:
     -> Check milestone exists: gh api repos/{owner}/{repo}/milestones --jq '.[].title'
     -> If not found: gh api repos/{owner}/{repo}/milestones -f title="{version}" (warn on failure, do not halt)
-12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"] [--milestone "{milestone}"]
+12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"]... [--assignee "{pr.assignee}"] [--reviewer "{reviewer}"]... [--milestone "{milestone}"]
+    -> --assignee only when pr.assignee is non-empty; --reviewer once per entry of pr.reviewers
+    -> If a later gh pr edit fails, fall back to gh api -X POST repos/{owner}/{repo}/issues/{n}/labels (labels) or /assignees (assignees); warn on failure, do not halt
+13. If a SPEC.md was found: ${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh stage <spec> pr
 ```
 
 ## PR Title Generation
@@ -117,7 +95,7 @@ Example: `feature/add-pr-command` becomes `Add pr command`
 
 ## PR Body
 
-The PR body is auto-generated using design documents when available, with git-based fallback. The structure matches the pattern established in merged PRs (#34-#38).
+The PR body is generated from design documents when available, with a git-based fallback.
 
 ### Primary Template (design docs available)
 
@@ -139,6 +117,11 @@ Resolves #{N}
 - [x] {verification performed outside CI, with result}
 - [ ] {check pending before merge/deploy}
 
+## Review notes
+| Axis | Location | Severity | Finding | Source |
+|------|----------|----------|---------|--------|
+| {2 scope} | `{file}:{line}` | {Blocker / Major / Minor} | {one line} | {full diff \| phase {k}} |
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
@@ -157,27 +140,33 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - [x] {verification performed outside CI, with result}
 - [ ] {check pending before merge/deploy}
 
+## Review notes
+| Axis | Location | Severity | Finding | Source |
+|------|----------|----------|---------|--------|
+| {2 scope} | `{file}:{line}` | {Blocker / Major / Minor} | {one line} | {full diff \| phase {k}} |
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
 ### Template Rules
 
-- **Resolves line**: Include `Resolves #N` ONLY when SPEC.md contains `GitHub Issue Number` metadata. Omit the line entirely otherwise.
+- **Resolves line**: Include `Resolves #N` only when the SPEC metadata block has `github_issue`. Omit the line otherwise.
 - **Summary**: Limit to 1-5 bullet points. If source material is longer, condense to the most important points.
 - **Changes**: List only files that appear in `git diff --stat`. Do not list files that were not modified. Each entry provides a meaningful description of what changed in that file.
 - **Test plan**: Only verification CI does not cover (performed or pending). Maximum 10 items. Omit the section when there is nothing to list.
+- **Review notes**: Always present. Rows come only from the reviewer output (step 9f); `checked` and `n/a` axes are not listed. Do not drop or soften a row.
 - **Attribution footer**: Always present, always the last line of the PR body.
 
 ## Milestone
 
-Assign a GitHub milestone matching the `Target Version` from SPEC.md:
+Assign a GitHub milestone matching `target_version` in the SPEC metadata block:
 
-1. Read `Target Version` from SPEC.md (e.g., `0.3.0`, `1.0.0`)
+1. Read `target_version` from the SPEC metadata block (e.g., `0.3.0`, `1.0.0`)
 2. If present, check existing milestones: `gh api repos/{owner}/{repo}/milestones --jq '.[].title'`
 3. If milestone does not exist, create it: `gh api repos/{owner}/{repo}/milestones -f title="{version}"`
 4. Pass `--milestone "{version}"` to `gh pr create`
 
-If SPEC.md has no `Target Version`, skip milestone assignment. If milestone creation fails (e.g., insufficient permissions), warn the user and continue PR creation without milestone.
+If the metadata has no `target_version`, skip milestone assignment. If milestone creation fails (e.g., insufficient permissions), warn the user and continue PR creation without milestone.
 
 ## Label
 
@@ -192,7 +181,9 @@ Auto-assign a label based on branch prefix:
 1. Determine the label from current branch prefix
 2. Check if the label exists: `gh label list --search "{label}"`
 3. If the label does not exist, create it: `gh label create "{label}"`
-4. Pass `--label "{label}"` to `gh pr create`
+4. Pass `--label "{label}"` to `gh pr create`, followed by one `--label` per entry of `pr.labels` (created the same way when missing)
+
+The assignee (`pr.assignee`, default `@me`) and reviewers (`pr.reviewers`) are passed as `--assignee` and `--reviewer`. If `gh pr edit` is needed afterwards and fails, add them with `gh api -X POST repos/{owner}/{repo}/issues/{n}/labels` or `/assignees` instead; a failure there is a warning, not a halt.
 
 If the branch prefix doesn't match any known pattern, skip label assignment. If label creation fails (e.g., insufficient permissions), warn the user and continue PR creation without label.
 
@@ -206,11 +197,11 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 4 | PR already exists | Show existing PR URL |
 | 5 | gh CLI not installed | Installation guide + halt |
 | 6 | gh not authenticated | Auth instructions + halt |
-| 7 | SPEC.md has no `GitHub Issue Number` | Skip `Resolves #N`, no error |
-| 8 | SPEC.md has no `Target Version` | Skip milestone, no error |
+| 7 | SPEC metadata has no `github_issue` | Skip `Resolves #N`, no error |
+| 8 | SPEC metadata has no `target_version` | Skip milestone, no error |
 | 9 | Milestone creation fails | Warn + continue without milestone |
 | 10 | Label creation fails | Warn + continue without label |
-| 11 | Unknown branch prefix | Skip label, no error |
+| 11 | Unknown branch prefix | Skip the prefix label, no error; `pr.labels` still apply |
 | 12 | No SPEC.md exists (manual PR outside dotclaude workflow) | Fall back to git log-based Summary and Changes |
 | 13 | No GLOBAL.md exists (design step skipped) | Skip supplementary context in Summary; use SPEC.md or commits only |
 | 14 | No non-CI verification performed or pending | Omit the Test plan section |
@@ -218,6 +209,8 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 16 | Empty commit log (no commits ahead of base) | Show "No changes detected" in Summary; empty Changes table |
 | 17 | Very long commit history (50+ commits) | Summarize by grouping related changes; limit Summary to 5 bullet points |
 | 18 | SPEC.md has working_directory but directory does not exist | Treat as no design docs; use git-based fallback |
+| 19 | Full-diff review reports Blockers | Ask: create the PR with them listed in Review notes, or stop before `gh pr create` |
+| 20 | No `REVIEW.md` (no phase reviews, or PR outside the dotclaude workflow) | Review notes come from the full-diff review only |
 
 ## Safety
 
@@ -233,7 +226,8 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 - Branch: {branch}
 - Target: {base_branch}
 - Title: {pr_title}
-- Label: {label} (if assigned)
+- Label: {label}, {pr.labels} (if assigned)
+- Assignee / reviewers: {assignee}, {reviewers} (if set)
 - Milestone: {milestone} (if assigned)
 - Issue: Resolves #{N} (if linked)
 - URL: {pr_url}

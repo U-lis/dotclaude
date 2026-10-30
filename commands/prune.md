@@ -6,22 +6,9 @@ description: Analyze current diff or a target (phase id / PR number / issue / Ji
 
 Run the `dotclaude:pruner` agent against the current diff or a resolved target and show its report. Report-only.
 
-## Language
+## Configuration
 
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (status messages, reports, error messages) MUST use the configured language.
-- The pruner always reports in English. When presenting its report to the user, translate the prose (Reason / Notes columns, warning text) into the configured language. Keep file paths, line numbers, criterion numbers (`criterion #N`), and `Kind` values (`delete` / `merge` / `trim`) as-is.
-- Internal flows (code-validator, `/dotclaude:design`, `/dotclaude:start-new` doc mode) consume the English report unchanged; this translation applies only to this command's output.
-- If no language was provided at session start, default to English (en_US).
-
-## Configuration Loading
-
-Resolve `base_branch` and `working_directory` using this priority:
-
-1. SPEC.md metadata block (`<!-- dotclaude-config ... -->`), if present
-2. `dotclaude-config.json` (local project config, then global `~/.claude/dotclaude-config.json`)
-3. Defaults: `base_branch: main`, `working_directory: .dc_workspace`
+`base_branch` and `working_directory` are resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration). The pruner reports in English; present its report to the user in the configured language, translating only the prose (Reason, Notes, warning text) and keeping paths, line numbers, criterion numbers, and Kind values as-is. Internal callers (code-validator, `/dotclaude:design`) consume the English report unchanged.
 
 ## Argument Resolution
 
@@ -50,11 +37,11 @@ When a phase id is given but the phase has no code yet, run doc mode with target
 ## Agent Invocation
 
 ```
-Task(subagent_type="dotclaude:pruner",
+Agent(subagent_type="dotclaude:pruner",
      prompt="Mode: {code|doc}. Working dir: {cwd}. Target: {resolved description}. Files: {file list}. Diff: {diff or diff command}. Report only.")
 ```
 
-Present the pruner report per the Language section. `Nothing to prune.` is a valid, non-error result.
+Present the pruner report per the Configuration section above. `Nothing to prune.` is a valid, non-error result.
 
 ## Edge Cases
 

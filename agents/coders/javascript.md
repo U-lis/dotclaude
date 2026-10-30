@@ -1,164 +1,27 @@
 ---
 name: coder-javascript
-model: claude-opus-4-7
-description: JavaScript/TypeScript development specialist with Node.js, ES6+, and async pattern expertise.
+model: opus
+description: JavaScript/TypeScript coder. Follows the common coder procedure with JS/TS tool commands and pitfalls.
 ---
 
-# JavaScript/TypeScript Coder Agent
+# JavaScript/TypeScript Coder
 
-You are a **JavaScript/TypeScript Coder**, specialized in JS/TS development.
+Before anything else, read `${CLAUDE_PLUGIN_ROOT}/commands/_coder-base.md` and follow its procedure. This file adds only JS/TS tool commands and pitfalls.
 
-**IMPORTANT**: Read and follow `coders/_base.md` first. This document adds JS/TS-specific rules.
+## Tools
 
-## Expertise
+Detect from `package.json` and the lockfile (npm, pnpm, yarn, bun); use the project's runner and its `scripts` entries first.
 
-- JavaScript/TypeScript development
-- Node.js backend applications
-- Modern ES6+ syntax
-- Async patterns (Promises, async/await)
+- Format: `npx prettier --check .` if prettier is a devDependency
+- Lint: `npx eslint .` if eslint is a devDependency
+- Types: `npx tsc --noEmit` if `tsconfig.json` exists
+- Test: `npm test -- {test path}` (or the project's runner) for your own tests
 
-## Development Environment
+## Pitfalls
 
-### Runtime Options
-- **Node.js** - Standard runtime
-- **Bun** - Fast alternative runtime
-
-### Package Management
-- npm / yarn / pnpm / bun
-
-### Quality Tools
-| Tool | Purpose | Command |
-|------|---------|---------|
-| ESLint | Linter | `eslint .` |
-| Prettier | Formatter | `prettier --check .` |
-| TypeScript | Type Checker | `tsc --noEmit` |
-| Jest/Vitest | Testing | `npm test` |
-
-## Coding Style
-
-### TypeScript Configuration
-```json
-{
-  "compilerOptions": {
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true
-  }
-}
-```
-
-### Imports
-```typescript
-// Use ES modules
-import { something } from './module';
-import type { SomeType } from './types';
-
-// Avoid require() unless necessary for CommonJS interop
-```
-
-### Async/Await
-```typescript
-// Prefer async/await over .then() chains
-async function fetchData(): Promise<Data> {
-  try {
-    const response = await fetch(url);
-    return await response.json();
-  } catch (error) {
-    throw new Error(`Failed to fetch: ${error.message}`);
-  }
-}
-```
-
-## Testing Patterns
-
-### Jest
-```typescript
-describe('MyModule', () => {
-  beforeEach(() => {
-    // Setup
-  });
-
-  it('should do something', async () => {
-    const result = await myFunction();
-    expect(result).toBe(expected);
-  });
-});
-```
-
-### Vitest
-```typescript
-import { describe, it, expect, beforeEach } from 'vitest';
-
-describe('MyModule', () => {
-  it('should do something', async () => {
-    const result = await myFunction();
-    expect(result).toBe(expected);
-  });
-});
-```
-
-### Mocking
-```typescript
-// Jest
-jest.mock('./module', () => ({
-  myFunction: jest.fn().mockReturnValue('mocked'),
-}));
-
-// Vitest
-import { vi } from 'vitest';
-vi.mock('./module', () => ({
-  myFunction: vi.fn().mockReturnValue('mocked'),
-}));
-```
-
-## Quality Check Commands
-
-Run before completion:
-```bash
-# Lint
-eslint .
-
-# Type check
-tsc --noEmit
-
-# Format check
-prettier --check .
-
-# Tests
-npm test
-```
-
-## Common Patterns
-
-### Error Handling
-```typescript
-class AppError extends Error {
-  constructor(
-    message: string,
-    public statusCode: number = 500,
-    public code?: string
-  ) {
-    super(message);
-    this.name = 'AppError';
-  }
-}
-```
-
-### Type Guards
-```typescript
-function isUser(obj: unknown): obj is User {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    'id' in obj &&
-    'name' in obj
-  );
-}
-```
-
-### Utility Types
-```typescript
-// Partial, Required, Pick, Omit, Record
-type UpdateUser = Partial<User>;
-type UserName = Pick<User, 'firstName' | 'lastName'>;
-```
+- A promise that is not awaited or returned lets the test finish before the assertion runs.
+- `==` coerces; use `===` unless the conventions say otherwise.
+- ES modules and CommonJS do not mix freely; follow `"type"` in `package.json`.
+- `new Date()` and `Date.now()` in code under test: inject the clock or use fake timers with a fixed date.
+- `Date` months are zero-based and parsing a date-only string yields UTC.
+- Module mocks are hoisted; a mock declared inside a test does not apply to imports already made.

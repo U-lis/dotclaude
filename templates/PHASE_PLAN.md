@@ -4,13 +4,18 @@
 
 {Clear statement of what this phase accomplishes}
 
+## Requirements
+
+{SPEC items this phase completes; code-validator checks these off in SPEC.md on PASS}
+- FR-{n}
+- NFR-{n}
+
 ---
 
 ## Prerequisites
 
-- [ ] Phase {K-1} completed (if applicable)
-- [ ] {Other prerequisite}
-- [ ] {Other prerequisite}
+- Phase {K-1} completed (if applicable)
+- {Other prerequisite}
 
 ---
 
@@ -67,14 +72,8 @@
 
 ## Completion Checklist
 
-- [ ] {Specific, verifiable item 1}
-- [ ] {Specific, verifiable item 2}
-- [ ] {Specific, verifiable item 3}
-- [ ] {Specific, verifiable item 4}
-- [ ] All new code has tests
-- [ ] All tests passing
-- [ ] Linter passing
-- [ ] Type checker passing
+- [ ] {Behavior in code}: `{file or symbol it is verified against}`
+- [ ] {Behavior in code}: `{file or symbol it is verified against}`
 
 ---
 
@@ -100,12 +99,3 @@
 - {Known issues or limitations}
 - {Suggestions for future improvement}
 
----
-
-## Completion Date
-
-{Date when phase was completed - filled by code-validator}
-
-## Completed By
-
-{Agent that completed the phase}

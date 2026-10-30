@@ -29,6 +29,9 @@ When developing dotclaude, distinguish between:
 dotclaude/
 ├── commands/           # Self-contained command files (user-invocable + internal)
 ├── agents/             # Agent definitions with frontmatter
+├── templates/          # Document templates (SPEC, GLOBAL, PHASE_*)
+├── hooks/              # Hook scripts and hooks.json
+├── docs/               # ARCHITECTURE.md, AGENT_MODEL_GUIDE.md
 ├── {working_directory}/ # Working documents (configurable, default: .dc_workspace)
 └── .claude-plugin/     # Plugin configuration
 ```
@@ -38,9 +41,14 @@ dotclaude/
 - `commands/*.md` - Self-contained command files with full implementation
   - User-invocable commands: appear in slash menu (default)
   - Internal commands: `user-invocable: false` in frontmatter (Claude-only)
-- `agents/*.md` - Agent definitions with `name`/`description` frontmatter, invoked via `dotclaude:{agent-name}`
+- `agents/*.md` - Agent definitions. Frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Invoked via `dotclaude:{agent-name}`; coders via `dotclaude:coders:coder-{language}`
 
 When invoked via `/dotclaude:*`, Claude reads the command file and follows its instructions directly.
+
+## Prompt hygiene
+
+- Shared rules live only in `commands/_contract.md`. Other files reference them by section name and do not restate them.
+- Run `scripts/lint-prompts.sh` before committing prompt changes.
 
 ## Version Management
 

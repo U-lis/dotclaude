@@ -4,15 +4,6 @@ description: Clean up merged-and-deployed branches and associated worktrees
 
 # /dotclaude:purge
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
-
-Clean up merged branches, remote tracking branches, and orphaned worktrees after releases.
-
 ## Version Argument
 
 If the user provides an explicit version argument (e.g., `/dotclaude:purge 0.3.0`), use that version tag as the deployment boundary directly.
@@ -21,28 +12,7 @@ If no argument is provided, fall back to auto-detection: determine the latest de
 
 ## Prerequisites
 
-Before starting the workflow, resolve the following values:
-
-### Base Branch Resolution
-
-Resolve `{base_branch}` using the config chain (first match wins):
-
-1. SPEC.md metadata field `base_branch` (from the `dotclaude-config` HTML comment block)
-2. Local config file: `<git_root>/.claude/dotclaude-config.json` -> `base_branch` field
-3. Global config file: `~/.claude/dotclaude-config.json` -> `base_branch` field
-4. Default: `main`
-
-Store the resolved value as `{base_branch}` for use throughout the workflow.
-
-### Current Branch
-
-Determine the current branch name:
-
-```
-git branch --show-current
-```
-
-Store the result as `{current_branch}`.
+Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration, Language) and `{current_branch}` with `git branch --show-current`.
 
 ## Workflow
 
@@ -84,6 +54,10 @@ Store the result as `{current_branch}`.
    -> The main worktree (first entry) is NEVER a candidate for removal
 
 5. Identify merged branches
+   -> If gh works and a remote exists, for each candidate branch first run:
+      gh pr list --state merged --head {branch} --json number,mergedAt
+      A branch with a merged PR counts as merged even if git branch --merged disagrees (squash merges)
+   -> If gh is unavailable or there is no remote, use git branch --merged as the only signal
    -> Local: git branch --merged {base_branch}
    -> Remote (skip if REMOTE_REACHABLE=false): git branch -r --merged {base_branch}
    -> Filter out from both lists:
@@ -186,8 +160,10 @@ Store the result as `{current_branch}`.
 
 11. Execute cleanup
     -> For each confirmed worktree:
+       Preserve documents (below), then
        git worktree remove {path}
        - If removal fails: report failure reason, continue with next
+    -> Remove dangling symlinks left by worktree.share_from_base: for each of .venv venv node_modules target vendor in the primary checkout, delete it if it is a symlink whose target no longer exists
     -> Run: git worktree prune
     -> For each confirmed local branch:
        git branch -d {branch}
@@ -213,6 +189,10 @@ Store the result as `{current_branch}`.
        - {branch}: last commit {date} - {message}
 ```
 
+## Preserve documents
+
+Before a worktree is removed (by purge, and by `/dotclaude:merge` step 6), compare its `{working_directory}` with the primary checkout's `{working_directory}`. Every file present in the worktree and absent in the primary is copied to the same relative path in the primary (`cp -n`, never overwriting). List the copied files in the report. Nothing in the primary is deleted or overwritten, and the copies are left uncommitted.
+
 ## Safety
 
 - Never delete the current branch (`{current_branch}`)
@@ -227,7 +207,7 @@ Store the result as `{current_branch}`.
 |----|-----------|----------|
 | EC-1 | No merged branches found | Display "No merged branches to clean up", skip to unmerged warnings |
 | EC-2 | No worktrees exist (only main working tree) | Skip worktree cleanup section entirely |
-| EC-3 | Remote unreachable (`git fetch --prune` fails) | Set `REMOTE_REACHABLE=false`, skip fetch, remote branch detection, remote branch deletion, and remote tag query; warn user; proceed with local-only cleanup |
+| EC-3 | Remote unreachable (`git fetch --prune` fails) | Set `REMOTE_REACHABLE=false`, skip remote branch detection, remote branch deletion, and remote tag query; warn user; proceed with local-only cleanup |
 | EC-4 | All branches are unmerged | Display only warnings, no cleanup actions needed |
 | EC-5 | Worktree has uncommitted changes | Skip that worktree, report reason in summary |
 | EC-6 | `git branch -d` fails (branch not fully merged despite `--merged` listing) | Report failure, continue with next branch |
@@ -237,20 +217,6 @@ Store the result as `{current_branch}`.
 | EC-10 | Worktree path no longer exists on disk | `git worktree prune` handles this; include in cleanup |
 | EC-11 | Latest local tag has NOT been pushed to remote | Branches merged after the previous remote tag are protected; report them as "Merged but not yet deployed" |
 | EC-12 | No tags exist at all (local or remote) | Set `NO_TAGS=true`, skip tag deployment check, treat all merged branches as safe to delete, warn user |
+| EC-14 | Branch was squash-merged (`git branch --merged` does not list it) | A merged PR from `gh pr list --state merged --head` counts as merged |
 | EC-13 | Explicit version argument tag does not exist | HALT with error. Do NOT proceed with cleanup. |
 
-## Output
-
-```
-# Purge Complete
-
-- Worktrees removed: {count} (skipped: {count}, failed: {count})
-- Local branches deleted: {count} (skipped: {count}, failed: {count})
-- Remote branches deleted: {count} (skipped: {count}, failed: {count})
-
-## Skipped Items
-- {item}: {reason}
-
-## Warnings (Unmerged Branches)
-- {branch}: last commit {date} - {message}
-```

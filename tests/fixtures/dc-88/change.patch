@@ -1,0 +1,37 @@
+diff --git a/pricing.py b/pricing.py
+--- a/pricing.py
++++ b/pricing.py
+@@ -1,2 +1,10 @@
+ def apply_discount(price: float, percent: float) -> float:
++    percent = max(0.0, min(100.0, percent))
+     return price * (1 - percent / 100)
++
++
++def apply_loyalty_bonus(total: float, client) -> float:
++    years = client.membership_years()
++    if years >= 3:
++        return total * 0.93
++    return total
+diff --git a/tests/test_pricing.py b/tests/test_pricing.py
+--- a/tests/test_pricing.py
++++ b/tests/test_pricing.py
+@@ -1,5 +1,18 @@
+-from pricing import apply_discount
++from unittest.mock import Mock
++
++from pricing import apply_discount, apply_loyalty_bonus
+ 
+ 
+ def test_apply_discount_reduces_price():
+     assert apply_discount(200.0, 10) == 180.0
++
++
++def test_apply_discount_clamps_above_100():
++    assert apply_discount(100.0, 150) == 0.0
++
++
++def test_loyalty_bonus_reads_membership():
++    client = Mock()
++    client.membership_years.return_value = 5
++    apply_loyalty_bonus(500.0, client)
++    assert client.membership_years() == 5

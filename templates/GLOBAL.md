@@ -76,29 +76,21 @@
 
 ## Phase Overview
 
-| Phase | Description | Status | Dependencies |
-|-------|-------------|--------|--------------|
-| 1 | {description} | 🔴 Not Started | - |
-| 2 | {description} | 🔴 Not Started | Phase 1 |
-| 3A | {description} | 🔴 Not Started | Phase 2 |
-| 3B | {description} | 🔴 Not Started | Phase 2 |
-| 3.5 | Merge parallel branches | 🔴 Not Started | Phase 3A, 3B |
-| 4 | {description} | 🔴 Not Started | Phase 3.5 |
+| Phase | Description | Requirements | Status | Dependencies |
+|-------|-------------|--------------|--------|--------------|
+| 1 | {description} | FR-{n} | Not Started | - |
+| 2 | {description} | FR-{n}, NFR-{n} | Not Started | Phase 1 |
 
-**Status Legend**:
-- 🔴 Not Started
-- 🟡 In Progress
-- 🟢 Complete
-- ⚠️ Blocked
+{Parallel groups appear only when the designer proposed them (`parallel_phases: true` or the user asked): rows `{k}A`, `{k}B`, and a merge row `{k}.5` that lists the group's phases as dependencies and no requirements.}
+
+**Status values**: `Not Started`, `In Progress`, `Complete`, `Skipped` (validation failed after the attempt limit in `_contract.md`; see the phase's validator report), `Blocked` (waiting on a user decision or an external dependency; the reason is in the phase's PLAN Notes).
 
 ---
 
 ## Phase Dependencies
 
 ```
-Phase 1 ──→ Phase 2 ──→ Phase 3A ──┐
-                    └→ Phase 3B ──┼→ Phase 3.5 ──→ Phase 4
-                    └→ Phase 3C ──┘
+Phase 1 ──→ Phase 2
 ```
 
 ---
@@ -117,7 +109,7 @@ Phase 1 ──→ Phase 2 ──→ Phase 3A ──┐
 ## Completion Criteria
 
 Overall feature is complete when:
-- [ ] All phases marked 🟢 Complete
+- [ ] All phases marked Complete
 - [ ] All tests passing
 - [ ] Documentation updated
 - [ ] Code reviewed

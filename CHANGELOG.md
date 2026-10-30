@@ -5,6 +5,44 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.7.0] - 2026-10-30
+
+### Changed
+
+- PHASE_TEST.md is a (Behavior, FR, Partition, Layer) matrix with Test ref and Pinned line columns; spec-validator reports missing (FR, Partition) cells and FR-less rows as Critical; pruner gains `Mode: scope` for SPEC edge cases; PLAN checklist holds only code-verifiable items ([#86](https://github.com/U-lis/dotclaude/issues/86)).
+- Coders reworked to a procedure + convention loader: read CLAUDE.md/CONVENTIONS.md/RULES.md, record the existing-implementation search, self-review with per-test pinned lines; language files reduced to tool commands and pitfalls, 23KB → 8KB ([#89](https://github.com/U-lis/dotclaude/issues/89)).
+- Designer verifies every named symbol and returns OPEN items instead of guessing; each phase names its FRs, more than 4 phases needs confirmation; proportional work (≤ 2 FR, ≤ 3 files) produces PLAN + TEST only; technical-writer updates documents in place and stops below 70% of the original size; parallel phases are opt-in via `parallel_phases` ([#90](https://github.com/U-lis/dotclaude/issues/90), closes #75).
+- Run stages and PR options ([#85](https://github.com/U-lis/dotclaude/issues/85), closes #67): start-new no longer asks for scope or integration; Design, Code, and Docs always run, then the configured `stages` (`local_test`, `test_deploy`, `remote_test`) run and the chain stops for a go-ahead unless `stages.stop_after` is `pr`. New settings `stages`, `integration`, `pr.labels`/`assignee`/`reviewers`, `worktree.share_from_base`; `pr` applies labels, assignee, and reviewers; `update-docs` runs the version consistency check; `purge` detects squash merges via merged PRs and preserves worktree documents; init symlinks dependency directories into the worktree; `cfg_get` reads dotted keys.
+- Prompt restructure ([#79](https://github.com/U-lis/dotclaude/issues/79)): shared rules (configuration, language, naming, worktree, roles, checkpoints, commits, retry policy, git safety, limits) are defined once in `commands/_contract.md`; commands and agents reference it. Agent prompt templates moved to `commands/_agent-prompts.md`. Duplicated sections, ALL-CAPS rhetoric, box diagrams and pseudocode loops removed. Prompt files in scope shrink from 284KB to 185KB (the init commands are reduced further in #84).
+- `start-new`: SPEC.md is committed once, after approval; the init verification no longer re-runs the init command; spec-validator runs in the design step; the before-design check uses `git rev-parse --show-toplevel` instead of `pwd`.
+- Retry policy unified: code-validator owns the validate-fix loop (3 validations); no orchestrator-level retry.
+- Agent models use family aliases (`opus`, `sonnet`) instead of dated ids ([#80](https://github.com/U-lis/dotclaude/issues/80)). Lookups go to the built-in Explore agent.
+- Coder common rules moved from `agents/coders/_base.md` to `commands/_coder-base.md`; coders read it via `${CLAUDE_PLUGIN_ROOT}` (verified to substitute in agent and command bodies).
+- Language rule ([#81](https://github.com/U-lis/dotclaude/issues/81), closes #74, #77): SPEC.md, conversation, and PR title/body follow the `language` setting; GLOBAL/PLAN/TEST/CHANGELOG/README stay English.
+- `tagging` requires `base_branch` instead of literal `main`; CHANGELOG version regex unified to `## \[([^\]]+)\]`.
+- `pr`: reads `github_issue` and `target_version` from the SPEC metadata block; PLAN glob fixed to `PHASE_*_PLAN_*.md`.
+- `merge`: asks before cleanup and removes the worktree before deleting the branch.
+- GLOBAL.md phase status vocabulary unified to Not Started / In Progress / Complete / Skipped; PHASE_MERGE template uses `{type}/{keyword}-{k}X` naming.
+- Hook commands quote `${CLAUDE_PLUGIN_ROOT}`.
+- Docs (README, ARCHITECTURE, AGENT_MODEL_GUIDE, CLAUDE.md) synchronized with the files that exist; manual-install option that copied a gitignored directory removed.
+
+### Added
+
+- Workspace policy ([#91](https://github.com/U-lis/dotclaude/issues/91)): `workspace_tracking` config with snapshots when ignored, `guard-workspace.sh` denying non-document files in `{working_directory}`, 10MB size warning on Stop, naming rules against `_W2`/`__2` variants and report files, document preservation on worktree removal.
+- Controller/worker session protocol draft ([#92](https://github.com/U-lis/dotclaude/issues/92)): `docs/CTL_PROTOCOL.md` (message kinds with request ids, controller state, probe rule, launch notes) and `templates/WORKER_RULES.md`. Used to build Wave 4 of this release with five worker sessions; `/dotclaude:ctl` automation moves to 0.8.0.
+- `reviewer` agent (opus, read-only, five axes with Blocker/Major/Minor) and `/dotclaude:review`: review after each phase's validator PASS with one fix round, one full-diff review before integration, PR comment triage (accept / rebut / ignore) with replies and thread resolution ([#88](https://github.com/U-lis/dotclaude/issues/88), closes #73). Review tables accumulate in `{working_directory}/{doc_dir}/REVIEW.md`.
+- `templates/RULES.md` project coding rules created by init; `coder-generic` fallback coder ([#89](https://github.com/U-lis/dotclaude/issues/89)). SPEC Data Migration section ([#90](https://github.com/U-lis/dotclaude/issues/90), closes #71).
+- SPEC metadata block is the work state ([#83](https://github.com/U-lis/dotclaude/issues/83), closes #15): `stage`, `approved_at`/`approved_hash` (approval = hash of the SPEC body, so stage edits never invalidate it), `decisions`, `handoff`. `hooks/spec-meta.sh` reads and writes the block (`find`, `get`, `set`, `stage`, `approve`, `check-approved`, `handoff`, `decision`); `start-new` resumes from `stage` without re-asking; `design` refuses to start without `check-approved`; code-validator checks off the SPEC `FR`/`NFR` items listed in each PLAN's new Requirements section on PASS. GLOBAL status adds `Blocked`.
+- Single `init` command ([#84](https://github.com/U-lis/dotclaude/issues/84), closes #2): `init-feature/bugfix/refactor/github-issue/prefill` and `_init-common` are replaced by `commands/init.md`. Input is free text, a GitHub issue/PR URL or `#N`, a Jira key, or `--prefill "<text>"`; the work type is inferred and confirmed once (or taken from `default_work_type`); the fixed question lists are gone and only information still missing after analysis is asked, in one combined question with at least two options each. Edge cases map to `(FR, partition)` pairs (normal / boundary / invalid / error / concurrency / permission / data-migration); cases without an FR are reported, not added. SPEC review defaults to `spec_review: editor` (open the file, approve in chat); `ask` keeps the AskUserQuestion. `_prefill-filters.md` trimmed to its pattern table.
+- Hooks rewritten ([#82](https://github.com/U-lis/dotclaude/issues/82)): the Stop hook (never fired in any recorded session: wrong cwd, wrong doc_dir, wrong glob) now walks `git worktree list`, acts only on dotclaude worktrees whose SPEC stage is in the code phase, blocks once per turn (`stop_hook_active`) when a work branch holds uncommitted code outside `{working_directory}`, and logs to `{working_directory}/.hook.log`. New PreToolUse guards: `guard-commit.sh` denies `git commit` of code on a work branch without the `.validated/PHASE_{k}` marker that code-validator writes on PASS (documents-only commits pass); `guard-design.sh` denies calling the designer when `spec-meta.sh check-approved` fails. Shared `hooks/_lib.sh`; every hook fails open. `tests/hooks/` with a shared fixture and `run_all.sh` (74 cases).
+- Terminal title prefix ([#93](https://github.com/U-lis/dotclaude/issues/93)): with config `title_prefix: true`, `hooks/title-prefix.sh` puts `[확인요청]` (ko) or `[INPUT]` in the terminal title on permission/idle/AskUserQuestion waits and clears it on the next prompt.
+- `scripts/lint-prompts.sh`: static checks for duplicated Language sections, `claude_works` literals, dated model ids, ALL-CAPS emphasis counts, legacy `Task tool` names, stale globs, `${CLAUDE_PLUGIN_ROOT}` path existence, and total prompt size.
+
+### Removed
+
+- Single-document mode (`{working_directory}/{SUBJECT}.md`) for 1–2 phase work; every work produces SPEC.md and PHASE files, plus GLOBAL.md except for proportional work (≤ 2 FR, ≤ 3 files).
+- `templates/PHASE_PLAN.md` Completion Date / Completed By sections (never filled by any agent).
+
 ## [0.6.0] - 2026-09-30
 
 ### Added

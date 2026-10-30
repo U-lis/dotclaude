@@ -18,28 +18,18 @@ For the full project structure, see [Architecture](docs/ARCHITECTURE.md). For mo
 
 ### Install
 
-#### Option 1: Plugin Marketplace (Recommended)
+```bash
+/plugin install dotclaude --marketplace U-lis/dotclaude
+```
 
-Install dotclaude via Claude Code's plugin marketplace:
+Alternatively, add the marketplace first and install in a second step:
 
 ```bash
-# Add the marketplace repository (first time only)
 /plugin marketplace add https://github.com/U-lis/dotclaude
-
-# Install the plugin
 /plugin install dotclaude
 ```
 
-#### Option 2: Manual Installation
-
-For direct control or customization, clone and copy manually:
-
-```bash
-git clone https://github.com/U-lis/dotclaude.git
-cp -r dotclaude/.claude your-project/
-```
-
-**Note**: For updates, use `/plugin update dotclaude` (plugin installation) or re-clone and copy (manual installation). Restart Claude Code after updating to apply changes.
+**Note**: For updates, use `/plugin update dotclaude`. Restart Claude Code after updating to apply changes.
 
 ### Optional: GitHub CLI
 
@@ -65,22 +55,21 @@ See the [Configuration](#configuration) section below for available settings and
 /dotclaude:start-new
 
 # Orchestrator takes over:
-# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
-# 2. Gathers requirements via step-by-step questions
-#    - If GitHub Issue: parses issue URL, auto-detects type, pre-fills fields
-#      and skips questions already answered in the issue body
-# 3. Asks target version (auto-filled from milestone if GitHub Issue)
-# 4. Creates and reviews SPEC with user
-# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
-# 6. Executes selected scope
-# 7. Asks post-completion integration (Direct Merge or Create PR)
+# 1. Infers the work type (feature/bugfix/refactor) from your input and confirms it once
+# 2. Analyzes the codebase and drafts SPEC.md in a new worktree
+# 3. Asks one combined question for anything missing (including target version)
+# 4. Reviews the SPEC with you and commits it once approved
+# 5. Runs Design, Code, and Docs as one set (no scope question)
+# 6. Runs the configured stages (local_test, test_deploy, remote_test); empty ones are skipped
+# 7. Stops and reports; continues to the PR (or merge, per `integration`) when you say "proceed",
+#    unless stages.stop_after is "pr"
 # 8. Returns final summary
 
-# Reuse current conversation context as initialization input (skip redundant Q&A):
-/dotclaude:start-new --prefill
-
-# Combine prefill with a GitHub issue URL (asks how to merge the two sources):
-/dotclaude:start-new --prefill https://github.com/owner/repo/issues/123
+# start-new accepts free text, a GitHub issue/PR URL or #N, a Jira key, or --prefill "<text>":
+/dotclaude:start-new "add CSV export to the report page"
+/dotclaude:start-new https://github.com/owner/repo/issues/123
+/dotclaude:start-new PROJ-42
+/dotclaude:start-new --prefill "<text from the current conversation>"
 
 # After merge, create version tag (verifies version consistency, pushes automatically):
 /dotclaude:tagging
@@ -88,7 +77,7 @@ See the [Configuration](#configuration) section below for available settings and
 /dotclaude:tagging 0.3.0
 ```
 
-**Note**: `--prefill` automatically detects the work type from the conversation, extracts pre-filled answers, and skips matching questions. Sensitive data (API keys, passwords, JWT tokens, etc.) is filtered before being passed to init commands.
+**Note**: `--prefill` text is filtered for sensitive data (API keys, passwords, JWT tokens, etc.) before anything else uses it; the unfiltered text is never written to disk.
 
 ### Manual Execution (Bypass Orchestrator)
 
@@ -132,10 +121,20 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 
 | Setting | Type | Default | Description |
 |---------|------|---------|-------------|
-| `language` | string | `en_US` | Language for agent conversations and user-facing text. Set via SessionStart hook. Documents remain in English. |
+| `language` | string | `en_US` | User-facing text, SPEC.md, and PR title/body use this language. GLOBAL, PLAN, TEST, CHANGELOG, and README stay English. |
 | `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
 | `base_branch` | string | `main` | Default base branch for git operations |
 | `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
+| `title_prefix` | boolean | `false` | Prefix the terminal title while the session waits for user input |
+| `stages.local_test` / `stages.test_deploy` / `stages.remote_test` | string | `""` | Shell command run from the worktree root after Docs, in that order. Empty = skipped, reported as "not configured". A non-zero exit stops the chain. |
+| `stages.stop_after` | string | `remote_test` | `local_test`, `remote_test`, or `pr`. Where start-new stops and waits for "proceed"; `pr` continues to integration without waiting. |
+| `integration` | string | `pr` | `pr` runs the `/dotclaude:pr` procedure, `merge` runs `/dotclaude:merge` |
+| `pr.labels` | array | `[]` | Labels added to the PR besides the branch-prefix label |
+| `pr.assignee` | string | `@me` | PR assignee; empty = none |
+| `pr.reviewers` | array | `[]` | PR reviewers |
+| `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
+| `workspace_tracking` | string | `commit` | `commit` tracks `{working_directory}` in git. `ignore` adds it to `.gitignore`; design commit points then write `.snapshots/*.tar.gz` (newest 5 kept) instead |
+| `parallel_phases` | boolean | `false` | Allow the designer to propose parallel phase groups (`{k}A`/`{k}B` plus merge `{k}.5`); when false, phases are sequential unless you ask |
 
 #### Version Files
 
@@ -150,26 +149,29 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | Command | Description |
 |---------|-------------|
 | `/dotclaude:configure` | Interactive configuration management |
-| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow. Supports `--prefill` to reuse prior conversation context and a GitHub issue URL argument |
+| `/dotclaude:start-new` | Entry point - accepts free text, a GitHub issue/PR URL or #N, a Jira key, or `--prefill "<text>"`; infers the work type and confirms it once, analyzes, asks one combined question for anything missing, then runs the full workflow |
 | `/dotclaude:design` | Transform SPEC into implementation plan |
 | `/dotclaude:validate-spec` | Validate document consistency (optional) |
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
 | `/dotclaude:code all` | Execute all phases automatically |
 | `/dotclaude:merge` | Merge current branch to base branch |
-| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan) from design docs or git history |
+| `/dotclaude:pr` | Create GitHub Pull Request with structured body (Summary, Changes, Test plan, Review notes) from design docs or git history |
 | `/dotclaude:tagging [version]` | Create version tag with push enforcement and version consistency checks |
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
 | `/dotclaude:prune [target]` | Analyze current diff or target (phase id / PR / issue / Jira key) and report deletion/merge candidates. Report-only. |
+| `/dotclaude:review [PR URL \| #N]` | Review the current diff on five axes (correctness, scope, safety, maintainability, tests), or triage a PR's review comments (CodeRabbit included) as accept / rebut / ignore, then fix, reply, and resolve the rows you approve |
 
 ### Orchestrator
 
 The orchestrator workflow is integrated into `/dotclaude:start-new` command (`commands/start-new.md`):
 
 - **Manages entire workflow** from init to merge
-- **Coordinates subagents** via Task tool
+- **Coordinates subagents** via the Agent tool
 - **Enables parallel execution** for parallel phases
 - **Tracks state** for resumability
+
+Shared rules (configuration, commits, limits, the validate-fix loop) are defined once in `commands/_contract.md`. Other command and agent files reference it instead of restating the rules.
 
 ## Appendix
 
@@ -182,18 +184,27 @@ The orchestrator workflow is integrated into `/dotclaude:start-new` command (`co
 | spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
 | code-validator | Code quality + plan verification, with post-PASS pruning pass |
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
-| Coders | Language-specific implementation |
+| reviewer | Report-only five-axis diff review with Blocker/Major/Minor severity; runs after each phase's validator PASS and once on the full diff before integration |
+| Coders | Language-specific implementation; `coder-generic` is the fallback for languages without a dedicated coder |
 
-Agents have YAML frontmatter (`name`, `description`) and can be invoked directly via `dotclaude:{agent-name}` pattern.
+Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`. Init creates `{working_directory}/RULES.md` from `templates/RULES.md` when missing; coders and the reviewer read it as the project's coding rules.
 
 Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` command.
 
-### Document Types
+### Hooks
 
-#### Simple Tasks (1-2 phases)
-```
-{working_directory}/{SUBJECT}.md
-```
+| Event | Script | Behavior |
+|-------|--------|----------|
+| `SessionStart` | `init-config.sh` | Creates the global config if missing and prints `[dotclaude] language: …` |
+| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Also warns (no block) when a `{working_directory}` exceeds 10MB. Logs to `{working_directory}/.hook.log` |
+| `PreToolUse` Bash | `guard-commit.sh` | Denies `git commit` of code on a work branch unless `.validated/PHASE_{k}` exists for the phase named in the message (code-validator writes it on PASS). Documents-only commits pass |
+| `PreToolUse` Write, Edit, MultiEdit, Bash | `guard-workspace.sh` | Denies writing (or redirecting, `tee`, `cp`/`mv`) non-document files (not `.md`/`.json`/`.log`/snapshot `.tar.gz`) and report or variant names (`COMPLETION_REPORT.md`, `*_W2.md`, `*__2`) under `{working_directory}` |
+| `PreToolUse` Agent | `guard-design.sh` | Denies calling `dotclaude:designer` when the SPEC is not approved (`spec-meta.sh check-approved`) |
+| `PreToolUse` AskUserQuestion, `Notification`, `UserPromptSubmit` | `title-prefix.sh` | With `title_prefix: true`, sets the terminal title to `[확인요청]`/`[INPUT] <dir>` while waiting for the user and clears it on the next prompt |
+
+Every hook fails open: a missing tool or an unexpected error exits 0 so the user is never blocked by a hook bug. `hooks/spec-meta.sh` reads and writes the SPEC metadata block (`find get set stage approve check-approved handoff decision`). Tests: `tests/hooks/run_all.sh`.
+
+### Document Types
 
 #### Directory Naming Convention
 
@@ -211,9 +222,9 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 
 **Note**: `{subject}` continues to be used for branch names and commit messages.
 
-#### Complex Tasks (3+ phases)
+#### Work Directory
 ```
-{working_directory}/{doc_dir}/               # Example: claude_works/2026_02_25-auth/
+{working_directory}/{doc_dir}/               # Example: .dc_workspace/2026_02_25-auth/
 ├── SPEC.md                      # Requirements (What)
 ├── GLOBAL.md                    # Architecture, phase overview
 ├── PHASE_1_PLAN_{keyword}.md    # Implementation plan
@@ -240,19 +251,19 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 
 | Step | Phase | Description |
 |------|-------|-------------|
-| 1 | Init | Work type selection |
-| 2 | Init | Load init instructions (questions, analysis, target version, branch, SPEC) |
-| 3 | Init | SPEC review |
-| 4 | Init | SPEC commit |
-| 5 | Init | Scope selection |
+| 1 | Init | Intake and work type (init) |
+| 2 | Init | Analysis and SPEC draft (init) |
+| 3 | Init | SPEC review (editor or ask) |
+| 4 | Init | Approve and commit SPEC |
+| 5 | (removed) | No scope question; Design, Code, and Docs always run |
 | 6 | Design | Designer analysis |
-| 7 | Design | Document creation via TechnicalWriter |
-| 8 | Design | Design commit |
+| 7 | Design | Document creation via technical-writer |
+| 8 | Design | Commit design documents |
 | 9 | Code | Phase list parsing |
-| 10 | Code | Phase execution (sequential/parallel) |
+| 10 | Code | Phase execution (coder, then code-validator; sequential or parallel) |
 | 11 | Docs | Documentation update |
-| 12 | Integration | Post-completion integration (Direct Merge or Create PR) |
-| 13 | Final | Summary return |
+| 12 | Stages and integration | Configured test stages, go-ahead, then PR or merge |
+| 13 | Final | Summary |
 
 ## License
 

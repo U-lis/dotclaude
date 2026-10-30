@@ -1,3 +1,17 @@
+<!-- dotclaude-config
+working_directory: {working_directory}
+base_branch: {base_branch}
+language: {language}
+worktree_path: ../{project_name}-{type}-{keyword}
+doc_dir: {YYYY_MM_DD}-{keyword}
+target_version: {X.Y.Z}
+github_issue: {N or omit}
+stage: spec_review
+approved_at: null
+approved_hash: null
+decisions: []
+handoff: ""
+-->
 # {Subject} - Specification
 
 ## Overview
@@ -52,6 +66,17 @@
 
 ---
 
+## Data Migration
+
+{Write "Not applicable" when none of the items below applies. Otherwise fill each item; the designer plans a dedicated phase for it.}
+
+- **Schema or stored-structure changes**: {tables, columns, indexes, JSONField or document keys added, renamed, or removed}
+- **Default-value changes**: {field, old default, new default, and whether existing rows keep the old value}
+- **Backfill**: {needed or not; how it runs (migration, management command, script) and on which data}
+- **Rollback**: {how to reverse the change and what data a rollback loses}
+
+---
+
 ## Out of Scope
 
 The following are explicitly NOT part of this work:
@@ -72,6 +97,14 @@ The following are explicitly NOT part of this work:
 
 - [ ] {Question 1 that needs clarification}
 - [ ] {Question 2 that needs clarification}
+
+---
+
+## Decisions Required
+
+| # | Decision | Options | Recommendation | User's choice |
+|---|----------|---------|----------------|---------------|
+| D-1 | {what has to be chosen} | {A / B} | {A, because ...} | {filled at SPEC review} |
 
 ---
 

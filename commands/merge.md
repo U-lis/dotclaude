@@ -1,79 +1,17 @@
 ---
 description: Merge current branch to base branch with conflict analysis and branch cleanup
 ---
-
 # /dotclaude:merge [branch]
 
-## Language
+Merge a work branch into `base_branch`, resolve conflicts with the user, and clean up. `base_branch` is resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration, Language). The branch argument defaults to the current branch.
 
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
+1. Record `{feature_branch}`. If it equals `base_branch`, stop.
+2. In the primary checkout: `git checkout {base_branch} && git pull origin {base_branch}`.
+3. `git merge {feature_branch}`.
+4. On conflict: list the files (`git diff --name-only --diff-filter=U`), read each file's conflict markers, and recommend per file: keep `{base_branch}` (`git checkout --ours`), keep `{feature_branch}` (`git checkout --theirs`), or manual merge. Present the recommendations with AskUserQuestion and wait for the user's choice before touching any file. Apply the chosen strategy, `git add` the files, and let the user edit the manual ones before committing the merge.
+5. Run the project's test suite if one is detectable (same detection as code-validator); report the result.
+6. Ask before cleaning up. Apply the Preserve documents rule of `${CLAUDE_PLUGIN_ROOT}/commands/purge.md` to the worktree first. Then `git worktree remove ../{project_name}-{type}-{keyword}` first and `git branch -d {feature_branch}` second; git refuses to delete a branch that is still checked out in a worktree. Removing the worktree deletes nothing that is committed; uncommitted files there are reported first and block removal.
+7. If the work has a SPEC.md, run `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh stage <spec> done` before the worktree is removed (the file lives in the worktree; the stage change is committed on the work branch only if the user wants it, otherwise it is informational).
+8. Report: branch, target, conflicts resolved, branch and worktree removed, and the next step (`git push origin {base_branch}`, then `/dotclaude:tagging`).
 
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
-
-Merge current branch to base branch, analyze conflicts, cleanup.
-
-## Arguments
-
-| Arg | Description | Default |
-|-----|-------------|---------|
-| branch | Feature branch to merge | Current branch |
-
-## base_branch Resolution
-
-Resolve the target base branch using this priority chain:
-
-1. **SPEC.md metadata** (highest priority): Look for SPEC.md in the current `{working_directory}` tree. Parse the HTML comment metadata block (`<!-- dotclaude-config ... base_branch: {value} -->`). Extract `base_branch` value if present.
-2. **Config file**: Read `.claude/dotclaude-config.json`. Extract `base_branch` field if present.
-3. **Default**: `"main"` (lowest priority).
-
-Store the resolved value as `{base_branch}` for use throughout the workflow.
-
-## Workflow
-
-```
-1. Save current branch name as {feature_branch}
-2. git checkout {base_branch} && git pull origin {base_branch}
-3. git merge {feature_branch}
-   - If conflict: execute enhanced conflict resolution (see below)
-4. Run tests (if configured)
-5. git branch -d {feature_branch}
-6. Report summary
-```
-
-## Conflict Resolution
-
-If merge conflict occurs:
-
-1. **List conflicted files**: Run `git diff --name-only --diff-filter=U` to enumerate all files with conflicts.
-2. **Analyze conflict content**: For each conflicted file, read the file and parse conflict markers (`<<<<<<<`, `=======`, `>>>>>>>`). Identify what each branch changed.
-3. **Recommend strategy**: For each file, recommend one of:
-   - "Accept current ({base_branch})": Use the base branch version
-   - "Accept incoming ({feature_branch})": Use the feature branch version
-   - "Manual merge required": Conflicts are too complex for automatic recommendation
-4. **Present recommendation to user**: Display the analysis and recommendations. Use AskUserQuestion to confirm the strategy for each file or group of files.
-5. **Wait for user confirmation**: Do NOT auto-resolve. Explicitly wait for user to approve the recommended strategy or provide alternative instructions.
-6. **Execute resolution**: After confirmation, apply the chosen strategy:
-   - Accept current: `git checkout --ours {file} && git add {file}`
-   - Accept incoming: `git checkout --theirs {file} && git add {file}`
-   - Manual: User edits the file, then signals completion
-7. After all conflicts resolved: `git commit`
-
-## Safety
-
-- Never force push
-- Never commit directly to {base_branch} (only merge)
-- Confirm before branch deletion
-
-## Output
-
-```
-# Merge Complete
-
-- Feature: {branch}
-- Merged to: {base_branch}
-- Conflicts: {resolved/none}
-- Branch deleted: yes/no
-
-Next: git push origin {base_branch}
-```
+Never force-push, and never commit to `base_branch` other than the merge commit itself (Contract: Git safety).
