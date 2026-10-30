@@ -53,7 +53,8 @@ This document shows the project directory structure for dotclaude. For the full 
 │   └── RULES.md                 # Project coding rules, copied by init
 ├── docs/                        # Project documentation
 │   ├── ARCHITECTURE.md         # This file
-│   └── AGENT_MODEL_GUIDE.md    # Agent model selection
+│   ├── AGENT_MODEL_GUIDE.md    # Agent model selection
+│   └── CTL_PROTOCOL.md         # Controller/worker session protocol (draft)
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
 │   ├── _lib.sh                  # Shared helpers (JSON, config, worktrees, fail-open)
