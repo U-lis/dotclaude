@@ -42,7 +42,9 @@ Check, in the worktree: the branch is `{type}/{keyword}` and not `base_branch`; 
 10. For each phase:
    - Detect the language from the PLAN and call `dotclaude:coders:coder-{language}`, or `dotclaude:coders:coder-generic` when no dedicated coder exists (code.md Coder Selection), passing the RULES.md path (coder prompt in `_agent-prompts.md`).
    - Call code-validator once with the worktree path, the coder namespace, the phase id, and the SPEC/PLAN/TEST/GLOBAL paths (GLOBAL omitted when the work is proportional). It owns the validate-fix loop (Contract: Validate-fix loop).
-   - On PASS, commit the phase (Contract: Commits). On PASS-WITH-WARN, show the validator's WARN rows and ask the user whether to commit; on yes, create `{working_directory}/{doc_dir}/.validated/PHASE_{k}` and commit; on no, stop with the phase uncommitted. On FAIL the validator has already marked the phase Skipped in GLOBAL.md; record the error and continue with the next phase.
+   - On PASS-WITH-WARN, show the validator's WARN rows and ask the user whether to commit; on yes, create `{working_directory}/{doc_dir}/.validated/PHASE_{k}`; on no, stop with the phase uncommitted.
+   - On PASS (or PASS-WITH-WARN after yes), call `dotclaude:reviewer` with scope "phase {phase_id} (uncommitted changes)", the worktree, `base_branch`, and the SPEC, RULES, and phase PLAN paths. If `BLOCKERS` is above 0, call the coder once with the Blocker rows to fix only those, then code-validator and the reviewer once more; there is no third round. Append the final table under `## Phase {k}` in `{working_directory}/{doc_dir}/REVIEW.md`.
+   - Commit the phase with the REVIEW document (Contract: Commits). If Blockers are still open, set the phase Status to `Blocked` in GLOBAL.md (or the PLAN Notes), commit anyway, and stop the chain: report the open Blockers with `file:line` and let the user decide. On FAIL the validator has already marked the phase Skipped in GLOBAL.md; record the error and continue with the next phase.
    - After the last phase, run `spec-meta.sh stage <spec> local_test`.
 
    For a parallel group, first create one worktree per phase (`../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}`), then call the coders for all phases of the group in a single message so they run concurrently, each told its own worktree path. When all return, run the merge phase as written in `PHASE_{k}.5_PLAN_MERGE.md`: merge each branch into `{type}/{keyword}` with `--no-edit`, resolve conflicts, run the validator for the merge phase, commit, then remove the group's worktrees.
@@ -60,6 +62,8 @@ After Docs, take `local_test`, `test_deploy`, and `remote_test` from config `sta
 - If `stop_after` is `local_test`, stop after that stage (whether it ran or was not configured), report, and wait.
 
 After `remote_test`, or after the last configured stage, stop and report which stages passed and which were not configured. Wait for the user to say "proceed" (any clear go-ahead) before integration. When `stop_after` is `pr`, do not wait; continue to integration directly.
+
+Before integration, regardless of `integration` value, run one full-diff review: call `dotclaude:reviewer` on `git diff {base_branch}...HEAD` with the SPEC, RULES, and REVIEW.md paths; append the table under `## Full diff` in REVIEW.md. Blockers stop the chain and are reported; Major/Minor rows go into the PR body Review notes (`/dotclaude:pr`) or the merge report (`/dotclaude:merge`).
 
 Integration follows config `integration`. `pr` runs the `/dotclaude:pr` procedure, which sets `stage: pr` and leaves the worktree until the PR is merged. `merge` runs the `/dotclaude:merge` procedure, which removes the worktree and sets `stage: done`.
 
