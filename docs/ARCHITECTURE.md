@@ -40,13 +40,15 @@ This document shows the project directory structure for dotclaude. For the full 
 │       ├── javascript.md        # JS/TS specialist
 │       ├── svelte.md            # Svelte specialist
 │       ├── rust.md              # Rust specialist
+│       ├── generic.md           # Fallback coder for other languages
 │       └── sql.md               # SQL/DB specialist
 ├── templates/                   # Document templates
 │   ├── SPEC.md
 │   ├── GLOBAL.md
 │   ├── PHASE_PLAN.md
 │   ├── PHASE_TEST.md
-│   └── PHASE_MERGE.md
+│   ├── PHASE_MERGE.md
+│   └── RULES.md                 # Project coding rules, copied by init
 ├── docs/                        # Project documentation
 │   ├── ARCHITECTURE.md         # This file
 │   └── AGENT_MODEL_GUIDE.md    # Agent model selection
@@ -62,6 +64,7 @@ This document shows the project directory structure for dotclaude. For the full 
 ├── scripts/
 │   └── lint-prompts.sh          # Static checks for prompt files
 ├── tests/
+│   ├── fixtures/                # Fixtures for tests
 │   └── hooks/                   # Shell tests for hooks (run_all.sh)
 └── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```

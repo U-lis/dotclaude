@@ -35,6 +35,8 @@ cd ../{project_name}-{type}-{keyword}
 mkdir -p {working_directory}/$(date +%Y_%m_%d)-{keyword}
 ```
 
+Create `{working_directory}/RULES.md` from `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md` when it does not exist; never overwrite an existing one.
+
 When config `worktree.share_from_base` is true, then link dependency directories: for each of `.venv venv node_modules target vendor` that exists in the primary checkout and not in the worktree, create a relative symlink in the worktree pointing at the primary's directory (`ln -s "$(realpath --relative-to=. {primary}/{dir})" {dir}`). List what was linked in the init report.
 
 `git checkout -b` is not a fallback (Contract: Worktree). Everything after this step happens in the worktree.
@@ -77,6 +79,8 @@ Call technical-writer (template `${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md`, confi
 ### Edge Cases          | # | FR | Partition | Case | Expected behavior |
 ### Out-of-scope findings (not requirements)
 ```
+
+After technical-writer writes SPEC.md, call pruner with `Mode: scope` on SPEC.md (prompt in `_agent-prompts.md`); if it reports candidates, call technical-writer to apply them to the Edge Cases table before the SPEC is shown for approval. Record how long this call took in the init report (the issue asks whether scope mode should fold into spec-validator).
 
 Bugfix SPECs add Root Cause (`file:line`, explanation) and Fix Strategy; refactor SPECs add Behavior Preservation (what must not change, which tests prove it) and Dependents.
 
