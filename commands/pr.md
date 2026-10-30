@@ -65,8 +65,10 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
       - `[ ]` items: checks still pending before merge or deploy
       - Do NOT copy items from PHASE_*_TEST.md (automated tests already run in CI) and do NOT generate generic items. Never invent a check that was not performed.
       - Nothing to list → omit the Test plan section
-   f. Append attribution footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
-   g. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Attribution
+   f. Full-diff review: call `dotclaude:reviewer` once with scope "the full branch diff", `Base: {base_branch}`, and the SPEC, RULES, and PLAN paths (prompt in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`, reviewer). If `BLOCKERS` is above 0, show the table and ask with AskUserQuestion: create the PR with the Blockers listed, or stop so they can be fixed first (`/dotclaude:review` after the fix). Stopping ends the command here; the branch stays pushed and no PR is created.
+      - Build the Review notes section from the reviewer table: the `issue` rows, Blocker first, then Major, then Minor, plus the Major and Minor rows carried from phase reviews in `{working_directory}/{doc_dir}/REVIEW.md` that the full-diff table does not already list (same location and finding). Translate only the Finding and Notes prose into the configured language. No `issue` rows anywhere → the section is the single line `No issues on the five review axes.`
+   g. Append attribution footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
+   h. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Review notes -> Attribution
 10. Resolve label from branch prefix:
     -> feature/ -> "enhancement", bugfix/ -> "bug", refactor/ -> "refactoring"
     -> Check label exists: gh label list --search "{label}"
@@ -115,6 +117,11 @@ Resolves #{N}
 - [x] {verification performed outside CI, with result}
 - [ ] {check pending before merge/deploy}
 
+## Review notes
+| Axis | Location | Severity | Finding | Source |
+|------|----------|----------|---------|--------|
+| {2 scope} | `{file}:{line}` | {Blocker / Major / Minor} | {one line} | {full diff \| phase {k}} |
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
@@ -133,6 +140,11 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - [x] {verification performed outside CI, with result}
 - [ ] {check pending before merge/deploy}
 
+## Review notes
+| Axis | Location | Severity | Finding | Source |
+|------|----------|----------|---------|--------|
+| {2 scope} | `{file}:{line}` | {Blocker / Major / Minor} | {one line} | {full diff \| phase {k}} |
+
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 ```
 
@@ -142,6 +154,7 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - **Summary**: Limit to 1-5 bullet points. If source material is longer, condense to the most important points.
 - **Changes**: List only files that appear in `git diff --stat`. Do not list files that were not modified. Each entry provides a meaningful description of what changed in that file.
 - **Test plan**: Only verification CI does not cover (performed or pending). Maximum 10 items. Omit the section when there is nothing to list.
+- **Review notes**: Always present. Rows come only from the reviewer output (step 9f); `checked` and `n/a` axes are not listed. Do not drop or soften a row.
 - **Attribution footer**: Always present, always the last line of the PR body.
 
 ## Milestone
@@ -196,6 +209,8 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 16 | Empty commit log (no commits ahead of base) | Show "No changes detected" in Summary; empty Changes table |
 | 17 | Very long commit history (50+ commits) | Summarize by grouping related changes; limit Summary to 5 bullet points |
 | 18 | SPEC.md has working_directory but directory does not exist | Treat as no design docs; use git-based fallback |
+| 19 | Full-diff review reports Blockers | Ask: create the PR with them listed in Review notes, or stop before `gh pr create` |
+| 20 | No `REVIEW.md` (no phase reviews, or PR outside the dotclaude workflow) | Review notes come from the full-diff review only |
 
 ## Safety
 
