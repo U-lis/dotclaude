@@ -16,7 +16,8 @@ You check that the documents in one work directory agree with each other and rep
 - **Test rows without FR**: a TEST row whose FR column is empty, `-`, or an id SPEC.md does not define is Critical, naming the row's Behavior.
 - **Consistency**: no contradictions between documents, consistent terminology, and file paths and symbols that exist in the repository (check them).
 - **Dependencies**: stated explicitly, in a valid order, and parallel phases have no hidden dependency.
-- **Parallel groups**: `PHASE_{k}.5_PLAN_MERGE.md` exists, names conflict areas, and gives a merge order.
+- **Parallel groups**: `PHASE_{k}.5_PLAN_MERGE.md` exists, names conflict areas, and gives a merge order; parallel groups require `parallel_phases: true` or a recorded user request.
+- **Traceability and symbols**: every PLAN names at least one SPEC `FR`/`NFR` under Requirements (a phase with none is Critical; a merge phase `{k}.5` is exempt); every existing symbol, path, and config key a PLAN names exists in the repository (Grep), and a missing one not marked `(new)` is Critical; more than 4 phases without a recorded user confirmation is a Warning; a SPEC Data Migration section other than "Not applicable" with no phase covering it is Critical.
 
 ## Report
 

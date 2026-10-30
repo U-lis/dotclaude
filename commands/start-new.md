@@ -32,17 +32,17 @@ Check, in the worktree: the branch is `{type}/{keyword}` and not `base_branch`; 
 
 ## Design (Steps 6–8)
 
-6. Call designer with the SPEC path. It returns architecture decisions, the phase breakdown with dependencies, and per-phase checklists. If it returns open questions instead, ask the user and call it again.
-7. Call technical-writer with the designer output and the target directory. It writes GLOBAL.md, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, and `PHASE_{k}.5_PLAN_MERGE.md` for parallel groups. Then call pruner in doc mode on the PLAN and TEST files; if it reports candidates, call technical-writer to apply them. Then call spec-validator; on issues, call technical-writer with the report and validate again, at most 3 rounds (Contract: Limits); if issues remain, show them to the user before continuing.
+6. Call designer with the SPEC path and the resolved `parallel_phases` value. It returns architecture decisions, the phase breakdown with dependencies and the FRs each phase completes, per-phase checklists, and an `OPEN` list. If `OPEN` is not `none`, ask the user all items in one AskUserQuestion and call designer again with the answers.
+7. Call technical-writer with the designer output and the target directory. When the designer output says `proportional: true`, technical-writer writes one PLAN and one TEST and no GLOBAL.md; run `spec-meta.sh decision <spec> add proportional` and skip spec-validator. code-validator still runs. It writes GLOBAL.md, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, and `PHASE_{k}.5_PLAN_MERGE.md` for parallel groups. Then call pruner in doc mode on the PLAN and TEST files; if it reports candidates, call technical-writer to apply them. Then call spec-validator; on issues, call technical-writer with the report and validate again, at most 3 rounds (Contract: Limits); if issues remain, show them to the user before continuing.
 8. Commit the design documents (Contract: Commits) and run `spec-meta.sh stage <spec> code`.
 
 ## Code (Steps 9–10)
 
-9. Read the Phase Overview table in GLOBAL.md. Sequential phases run in order; a parallel group `{k}A, {k}B, …` runs as one layer followed by its merge phase `{k}.5`.
+9. Read the Phase Overview table in GLOBAL.md (proportional work: the single phase 1). Sequential phases run in order; a parallel group `{k}A, {k}B, …` runs as one layer followed by its merge phase `{k}.5`.
 10. For each phase:
-   - Detect the language from the PLAN and call `dotclaude:coders:coder-{language}` with the phase id and the PLAN path.
-   - Call code-validator once with the worktree path, the coder namespace, the phase id, and the PLAN/TEST/GLOBAL paths. It owns the validate-fix loop (Contract: Validate-fix loop).
-   - On PASS, commit the phase (Contract: Commits). On FAIL the validator has already marked the phase Skipped in GLOBAL.md; record the error and continue with the next phase.
+   - Detect the language from the PLAN and call `dotclaude:coders:coder-{language}`, or `dotclaude:coders:coder-generic` when no dedicated coder exists (code.md Coder Selection), passing the RULES.md path (coder prompt in `_agent-prompts.md`).
+   - Call code-validator once with the worktree path, the coder namespace, the phase id, and the SPEC/PLAN/TEST/GLOBAL paths (GLOBAL omitted when the work is proportional). It owns the validate-fix loop (Contract: Validate-fix loop).
+   - On PASS, commit the phase (Contract: Commits). On PASS-WITH-WARN, show the validator's WARN rows and ask the user whether to commit; on yes, create `{working_directory}/{doc_dir}/.validated/PHASE_{k}` and commit; on no, stop with the phase uncommitted. On FAIL the validator has already marked the phase Skipped in GLOBAL.md; record the error and continue with the next phase.
    - After the last phase, run `spec-meta.sh stage <spec> local_test`.
 
    For a parallel group, first create one worktree per phase (`../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}`), then call the coders for all phases of the group in a single message so they run concurrently, each told its own worktree path. When all return, run the merge phase as written in `PHASE_{k}.5_PLAN_MERGE.md`: merge each branch into `{type}/{keyword}` with `--no-edit`, resolve conflicts, run the validator for the merge phase, commit, then remove the group's worktrees.
@@ -92,5 +92,7 @@ Then list what the user should do next: for merge, review the log and push `base
 ## Errors
 
 If an agent call or a git command fails in a way the workflow does not define (not a validator FAIL, which is handled in Step 10), stop the chain, report the error and the step, and suggest how to resume: Steps 6–13 can be re-entered by invoking `/dotclaude:design`, `/dotclaude:code`, `/dotclaude:update-docs`, `/dotclaude:merge`, or `/dotclaude:pr` directly.
+
+When a background agent's task notification reports failed or stalled, restart it once with the same prompt; if the restart also fails, stop and report the agent, the step, and both errors to the user. While a phase runs longer than 30 minutes, print one progress line every 30 minutes (phase, current agent, elapsed time).
 
 Do not enter plan mode during init. Requirements are gathered with AskUserQuestion and approved at Step 3; plan mode would add a second approval that interrupts the flow.

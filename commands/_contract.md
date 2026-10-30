@@ -27,6 +27,7 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | `pr.labels` | `[]` | Labels added to the pull request besides the branch-prefix label |
 | `pr.assignee` | `@me` | Pull request assignee; empty means none |
 | `pr.reviewers` | `[]` | Pull request reviewers |
+| `parallel_phases` | false | Allow the designer to propose parallel phase groups ({k}A/{k}B plus merge {k}.5); when false, phases are sequential unless the user asks |
 | `worktree.share_from_base` | `true` | Init symlinks dependency directories from the primary checkout into the new worktree (see Worktree) |
 
 `/dotclaude:start-new` writes the resolved values plus `worktree_path` and `doc_dir` into SPEC.md as an HTML comment so later commands can read them without re-resolving:
@@ -62,6 +63,8 @@ The SPEC metadata block is the work's state. A new session reads it before askin
 
 **Requirement checkboxes** in SPEC.md are owned by code-validator: when a phase passes, it checks off the `FR`/`NFR` items that phase's PLAN lists under Requirements. A merged work therefore has every requirement checked, and an unchecked one points at the phase that did not deliver it.
 
+`{working_directory}/RULES.md` holds the project's coding rules (template `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md`); init creates it when missing and never overwrites it; coders and the reviewer read it, code-validator does not.
+
 `decisions` holds short tokens for operating decisions that would otherwise live only in conversation (for example `stacked-pr`, `deploy-before-merge`); commands read them before acting. `handoff` is one line the current session leaves for the next.
 
 GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`, `Blocked`.
@@ -84,7 +87,7 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Branch | `{type}/{keyword}` | `feature/user-auth` |
 | Worktree | `../{project_name}-{type}-{keyword}` | `../shop-feature-user-auth` |
 | Document directory | `{working_directory}/{doc_dir}` with `doc_dir = $(date +%Y_%m_%d)-{keyword}` | `.dc_workspace/2026_03_01-user-auth` |
-| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md` | |
+| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md` (GLOBAL.md is omitted for proportional work) | |
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
 
@@ -109,7 +112,7 @@ The command that the user invoked is the orchestrator. It asks the user question
 | SPEC.md, GLOBAL/PLAN/TEST/MERGE documents, CHANGELOG and README updates, applying a pruner report to documents | `dotclaude:technical-writer` |
 | Architecture decisions and phase decomposition | `dotclaude:designer` |
 | Consistency check across SPEC/GLOBAL/PLAN/TEST | `dotclaude:spec-validator` |
-| Implementing a phase, fixing validation errors, applying a pruner report to tests | `dotclaude:coders:coder-{language}` |
+| Implementing a phase, fixing validation errors, applying a pruner report to tests | `dotclaude:coders:coder-{language}` (`dotclaude:coders:coder-generic` for languages without a dedicated coder) |
 | Validating a phase and owning its validate-fix loop | `dotclaude:code-validator` |
 | Finding redundant tests and over-long comments (report only) | `dotclaude:pruner` |
 | Reading many files or searching the codebase to answer a question | the built-in `Explore` agent |
@@ -139,7 +142,7 @@ These are the points where the orchestrator waits for the user, through AskUserQ
 2. SPEC "decisions required" items: the user picks, even when SPEC names a recommended option.
 3. Go-ahead after the run stages, before integration: the user says "proceed" in chat. It is skipped when `stages.stop_after` is `pr`.
 
-Phase decomposition does not need user review: after SPEC approval, design runs through designer, technical-writer, and spec-validator, and coding starts when spec-validator passes. After SPEC approval, Design, Code, and Docs always run as one set; there is no scope question. Between chained steps the orchestrator does not stop to ask "what next".
+Phase decomposition does not need user review: after SPEC approval, design runs through designer, technical-writer, and spec-validator, and coding starts when spec-validator passes. After SPEC approval, Design, Code, and Docs always run as one set; there is no scope question. Between chained steps the orchestrator does not stop to ask "what next". When designer returns `OPEN` items (unconfirmed symbols, more than 4 phases, work outside the SPEC requirements), the orchestrator asks the user all of them in one AskUserQuestion and calls designer again with the answers. For proportional work (SPEC has at most 2 FR and the design touches at most 3 files: one PLAN, one TEST, no GLOBAL.md), the orchestrator records `spec-meta.sh decision <spec> add proportional` and may skip spec-validator; code-validator still runs.
 
 ## Commits
 

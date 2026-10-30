@@ -133,6 +133,7 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `pr.assignee` | string | `@me` | PR assignee; empty = none |
 | `pr.reviewers` | array | `[]` | PR reviewers |
 | `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
+| `parallel_phases` | boolean | `false` | Allow the designer to propose parallel phase groups (`{k}A`/`{k}B` plus merge `{k}.5`); when false, phases are sequential unless you ask |
 
 #### Version Files
 
@@ -181,9 +182,9 @@ Shared rules (configuration, commits, limits, the validate-fix loop) are defined
 | spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
 | code-validator | Code quality + plan verification, with post-PASS pruning pass |
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
-| Coders | Language-specific implementation |
+| Coders | Language-specific implementation; `coder-generic` is the fallback for languages without a dedicated coder |
 
-Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`.
+Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`. Init creates `{working_directory}/RULES.md` from `templates/RULES.md` when missing; coders and the reviewer read it as the project's coding rules.
 
 Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` command.
 
