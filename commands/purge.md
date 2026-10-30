@@ -54,6 +54,10 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
    -> The main worktree (first entry) is NEVER a candidate for removal
 
 5. Identify merged branches
+   -> If gh works and a remote exists, for each candidate branch first run:
+      gh pr list --state merged --head {branch} --json number,mergedAt
+      A branch with a merged PR counts as merged even if git branch --merged disagrees (squash merges)
+   -> If gh is unavailable or there is no remote, use git branch --merged as the only signal
    -> Local: git branch --merged {base_branch}
    -> Remote (skip if REMOTE_REACHABLE=false): git branch -r --merged {base_branch}
    -> Filter out from both lists:
@@ -156,8 +160,10 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
 
 11. Execute cleanup
     -> For each confirmed worktree:
+       Preserve documents (below), then
        git worktree remove {path}
        - If removal fails: report failure reason, continue with next
+    -> Remove dangling symlinks left by worktree.share_from_base: for each of .venv venv node_modules target vendor in the primary checkout, delete it if it is a symlink whose target no longer exists
     -> Run: git worktree prune
     -> For each confirmed local branch:
        git branch -d {branch}
@@ -183,6 +189,10 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
        - {branch}: last commit {date} - {message}
 ```
 
+## Preserve documents
+
+Before a worktree is removed (by purge, and by `/dotclaude:merge` step 6), compare its `{working_directory}` with the primary checkout's `{working_directory}`. Every file present in the worktree and absent in the primary is copied to the same relative path in the primary (`cp -n`, never overwriting). List the copied files in the report. Nothing in the primary is deleted or overwritten, and the copies are left uncommitted.
+
 ## Safety
 
 - Never delete the current branch (`{current_branch}`)
@@ -207,5 +217,6 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
 | EC-10 | Worktree path no longer exists on disk | `git worktree prune` handles this; include in cleanup |
 | EC-11 | Latest local tag has NOT been pushed to remote | Branches merged after the previous remote tag are protected; report them as "Merged but not yet deployed" |
 | EC-12 | No tags exist at all (local or remote) | Set `NO_TAGS=true`, skip tag deployment check, treat all merged branches as safe to delete, warn user |
+| EC-14 | Branch was squash-merged (`git branch --merged` does not list it) | A merged PR from `gh pr list --state merged --head` counts as merged |
 | EC-13 | Explicit version argument tag does not exist | HALT with error. Do NOT proceed with cleanup. |
 

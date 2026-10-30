@@ -10,6 +10,7 @@ Prerequisite: every phase in GLOBAL.md is Complete or Skipped. If one is Not Sta
 1. Gather context: latest tag (`git describe --tags --abbrev=0`), commits since it (`git log {tag}..HEAD --oneline`), the SPEC.md overview, and the target version from the SPEC metadata.
 2. Call technical-writer in its DOCS_UPDATE role with that context. It adds the version entry to CHANGELOG.md (Keep a Changelog categories, newest first, `## [X.Y.Z] - YYYY-MM-DD`, English) and edits README.md only where features, usage, configuration, or workflow diagrams visibly changed.
 3. Commit (Contract: Commits).
-4. Report the files updated, the CHANGELOG entry, and the commit hash.
+4. When `version_files` is non-empty, or auto-detection finds version files (`/dotclaude:tagging`, Auto-Detection), run the Version Consistency Check from `${CLAUDE_PLUGIN_ROOT}/commands/tagging.md` against the target version and report each mismatch. The tag is never created here; point to `/dotclaude:tagging` for it.
+5. Report the files updated, the CHANGELOG entry, the commit hash, and the consistency result.
 
-Version numbers in version files are not changed here; they are updated at release time and checked by `/dotclaude:tagging`.
+Version numbers in version files are not changed here; they are updated at release time and checked again by `/dotclaude:tagging`.

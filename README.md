@@ -59,9 +59,10 @@ See the [Configuration](#configuration) section below for available settings and
 # 2. Analyzes the codebase and drafts SPEC.md in a new worktree
 # 3. Asks one combined question for anything missing (including target version)
 # 4. Reviews the SPEC with you and commits it once approved
-# 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
-# 6. Executes selected scope
-# 7. Asks post-completion integration (Direct Merge or Create PR)
+# 5. Runs Design, Code, and Docs as one set (no scope question)
+# 6. Runs the configured stages (local_test, test_deploy, remote_test); empty ones are skipped
+# 7. Stops and reports; continues to the PR (or merge, per `integration`) when you say "proceed",
+#    unless stages.stop_after is "pr"
 # 8. Returns final summary
 
 # start-new accepts free text, a GitHub issue/PR URL or #N, a Jira key, or --prefill "<text>":
@@ -125,6 +126,13 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `base_branch` | string | `main` | Default base branch for git operations |
 | `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
 | `title_prefix` | boolean | `false` | Prefix the terminal title while the session waits for user input |
+| `stages.local_test` / `stages.test_deploy` / `stages.remote_test` | string | `""` | Shell command run from the worktree root after Docs, in that order. Empty = skipped, reported as "not configured". A non-zero exit stops the chain. |
+| `stages.stop_after` | string | `remote_test` | `local_test`, `remote_test`, or `pr`. Where start-new stops and waits for "proceed"; `pr` continues to integration without waiting. |
+| `integration` | string | `pr` | `pr` runs the `/dotclaude:pr` procedure, `merge` runs `/dotclaude:merge` |
+| `pr.labels` | array | `[]` | Labels added to the PR besides the branch-prefix label |
+| `pr.assignee` | string | `@me` | PR assignee; empty = none |
+| `pr.reviewers` | array | `[]` | PR reviewers |
+| `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
 
 #### Version Files
 
@@ -242,14 +250,14 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 | 2 | Init | Analysis and SPEC draft (init) |
 | 3 | Init | SPEC review (editor or ask) |
 | 4 | Init | Approve and commit SPEC |
-| 5 | Init | Scope |
+| 5 | (removed) | No scope question; Design, Code, and Docs always run |
 | 6 | Design | Designer analysis |
 | 7 | Design | Document creation via technical-writer |
 | 8 | Design | Commit design documents |
 | 9 | Code | Phase list parsing |
 | 10 | Code | Phase execution (coder, then code-validator; sequential or parallel) |
 | 11 | Docs | Documentation update |
-| 12 | Integration | Direct Merge or Create PR |
+| 12 | Stages and integration | Configured test stages, go-ahead, then PR or merge |
 | 13 | Final | Summary |
 
 ## License

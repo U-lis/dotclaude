@@ -19,6 +19,15 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | `title_prefix` | `false` | Put `[확인요청]`/`[INPUT]` in the terminal title while waiting for the user |
 | `spec_review` | `editor` | How SPEC approval is collected: `editor` (open the file, approve in chat) or `ask` (AskUserQuestion) |
 | `default_work_type` | unset | `feature`, `bugfix`, or `refactor`; when set, init does not ask to confirm the inferred type |
+| `stages.local_test` | `""` | Shell command run from the worktree root after Docs; empty means the stage is skipped and reported as "not configured" |
+| `stages.test_deploy` | `""` | Same, run after `local_test` (for example a deploy to a test environment) |
+| `stages.remote_test` | `""` | Same, run after `test_deploy` (for example tests against that environment) |
+| `stages.stop_after` | `remote_test` | Where start-new stops and waits for the user: `local_test`, `remote_test`, or `pr` (`pr` means no stop before integration) |
+| `integration` | `pr` | How finished work is integrated: `pr` (the `/dotclaude:pr` procedure) or `merge` (the `/dotclaude:merge` procedure) |
+| `pr.labels` | `[]` | Labels added to the pull request besides the branch-prefix label |
+| `pr.assignee` | `@me` | Pull request assignee; empty means none |
+| `pr.reviewers` | `[]` | Pull request reviewers |
+| `worktree.share_from_base` | `true` | Init symlinks dependency directories from the primary checkout into the new worktree (see Worktree) |
 
 `/dotclaude:start-new` writes the resolved values plus `worktree_path` and `doc_dir` into SPEC.md as an HTML comment so later commands can read them without re-resolving:
 
@@ -85,6 +94,10 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 
 Work never happens on `base_branch` and never in the primary checkout. Init creates the work branch with `git worktree add ../{project_name}-{type}-{keyword} -b {type}/{keyword} {base_branch}` after `git checkout {base_branch} && git pull origin {base_branch}`, verifies the directory exists, and changes into it. `git checkout -b` and `git switch -c` are not substitutes: the primary checkout is the user's and must stay on `base_branch`.
 
+With `worktree.share_from_base` true, init also links `.venv`, `venv`, `node_modules`, `target`, and `vendor` from the primary checkout into the worktree as relative symlinks, for each that exists in the primary and not in the worktree.
+
+Before a worktree is removed, files in its `{working_directory}` that the primary checkout's `{working_directory}` lacks are copied to the primary, so documents of finished work survive the removal. `/dotclaude:purge` defines this once (Preserve documents) and `/dotclaude:merge` uses it.
+
 The worktree is removed by `/dotclaude:merge` after a successful merge, or by `/dotclaude:purge` once the branch is merged and deployed. `/dotclaude:pr` leaves it in place until the PR is merged.
 
 ## Who does what
@@ -124,10 +137,9 @@ These are the points where the orchestrator waits for the user, through AskUserQ
 
 1. SPEC review: approval in chat after the file is opened in an editor (`spec_review: editor`) or an Approve / Needs Revision question (`ask`). Revision loops through technical-writer, at most 3 times.
 2. SPEC "decisions required" items: the user picks, even when SPEC names a recommended option.
-3. Scope selection after SPEC approval: Design, Design → Code, or Design → Code → Docs.
-4. Integration method after the selected scope completes, unless scope was Design only: Direct Merge or Create PR.
+3. Go-ahead after the run stages, before integration: the user says "proceed" in chat. It is skipped when `stages.stop_after` is `pr`.
 
-Phase decomposition does not need user review: after SPEC approval, design runs through designer, technical-writer, and spec-validator, and coding starts when spec-validator passes. Between chained steps the orchestrator does not stop to ask "what next".
+Phase decomposition does not need user review: after SPEC approval, design runs through designer, technical-writer, and spec-validator, and coding starts when spec-validator passes. After SPEC approval, Design, Code, and Docs always run as one set; there is no scope question. Between chained steps the orchestrator does not stop to ask "what next".
 
 ## Commits
 
