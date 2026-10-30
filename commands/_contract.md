@@ -28,10 +28,31 @@ worktree_path: ../{project_name}-{type}-{keyword}
 doc_dir: {YYYY_MM_DD}-{keyword}
 target_version: {X.Y.Z}
 github_issue: {N}            # only when the work came from a GitHub issue
+stage: spec_review           # see State
+approved_at: null            # ISO time of SPEC approval
+approved_hash: null          # sha256 of the SPEC body (below this block) at approval
+decisions: []                # operating decisions that must survive a new session
+handoff: ""                  # one line for the next session
 -->
 ```
 
 A command that runs without SPEC.md uses the config files, then defaults; `worktree_path` falls back to `.` and `doc_dir` to the keyword.
+
+Read and write the block with `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh` (`find`, `get`, `set`, `stage`, `approve`, `check-approved`, `handoff`, `decision`). The script edits only the block, so the SPEC body and its approval hash are untouched.
+
+## State
+
+The SPEC metadata block is the work's state. A new session reads it before asking anything, so decisions made in an earlier session are not lost.
+
+`stage` moves forward through `init → spec_review → design → code → local_test → test_deploy → remote_test → pr → done`. The command that completes a stage sets the next one: init sets `spec_review` when SPEC.md is drafted; SPEC approval sets `design`; the design commit sets `code`; the last phase commit sets `local_test`; `/dotclaude:pr` sets `pr`; `/dotclaude:merge` sets `done`. Stages that a project does not use are passed through without stopping.
+
+**Approval** is recorded as `approved_at` plus `approved_hash`, the hash of the SPEC body below the block. Approval holds while the body is unchanged; editing the body after approval requires a new review, while editing the block (stage, handoff, decisions) does not. `spec-meta.sh check-approved` makes that judgment, and design must not start without it.
+
+**Requirement checkboxes** in SPEC.md are owned by code-validator: when a phase passes, it checks off the `FR`/`NFR` items that phase's PLAN lists under Requirements. A merged work therefore has every requirement checked, and an unchecked one points at the phase that did not deliver it.
+
+`decisions` holds short tokens for operating decisions that would otherwise live only in conversation (for example `stacked-pr`, `deploy-before-merge`); commands read them before acting. `handoff` is one line the current session leaves for the next.
+
+GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`, `Blocked`.
 
 ## Language
 

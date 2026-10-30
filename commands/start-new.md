@@ -9,6 +9,8 @@ You interact with the user through AskUserQuestion. You run git yourself. You ca
 
 ## Step 0: Route on arguments
 
+First run `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh find` in the current directory. If it finds a SPEC.md whose `stage` is set and not `done`, this is a resume: show the user the `handoff` line and the `decisions` tokens if any, then continue from that stage (`spec_review` → Step 3, `design` → Step 6, `code` → Step 9 at the first phase that is not Complete, `local_test`/`test_deploy`/`remote_test`/`pr` → Step 12) without asking the work type again. Otherwise route on the arguments:
+
 | Arguments | Action |
 |-----------|--------|
 | A GitHub issue or PR URL (`https://github.com/<owner>/<repo>/(issues|pull)/<n>`) and no `--prefill` | `Skill("dotclaude:init-github-issue")` with the URL. Work type is inferred from the issue, so Step 1 is skipped. |
@@ -27,21 +29,21 @@ Before the SPEC draft, unless the init command already set the version from a Gi
 
 After the init command returns, check that `git worktree list` contains `../{project_name}-{type}-{keyword}`, that the current branch is `{type}/{keyword}`, and that `{working_directory}/{doc_dir}/SPEC.md` exists in that worktree. If any check fails, stop and report what is missing. Do not re-run the init command: it already asked the user questions once, and repeating them without explanation is worse than a clear error.
 
-**Step 3. SPEC review.** Summarize SPEC.md and ask: Approve or Needs Revision. On revision, call technical-writer with the user's feedback and ask again (at most 3 rounds, Contract: Limits). If SPEC.md lists decisions the user still has to make, ask each one here; a recommended option is still a question.
+**Step 3. SPEC review.** The init command set `stage: spec_review`. Summarize SPEC.md and ask: Approve or Needs Revision. On revision, call technical-writer with the user's feedback and ask again (at most 3 rounds, Contract: Limits). If SPEC.md lists decisions the user still has to make (Decisions Required table), ask each one here and have technical-writer record the choice; a recommended option is still a question.
 
-**Step 4. Commit SPEC.md** (Contract: Commits). This is the only SPEC commit.
+**Step 4. Approve and commit.** Run `spec-meta.sh approve <spec>` (records `approved_at`, `approved_hash`, `stage: design`), then commit SPEC.md (Contract: Commits). This is the only SPEC commit.
 
 **Step 5. Scope.** Ask: "How far should we proceed?" with options Design, Design → Code, Design → Code → Docs.
 
 ## Before design
 
-Check, in the worktree: the branch is `{type}/{keyword}` and not `base_branch`; `{working_directory}/{doc_dir}/SPEC.md` exists and `git log --oneline -1 -- <that path>` shows a commit; `git rev-parse --show-toplevel` ends with `{project_name}-{type}-{keyword}`. If any check fails, stop and report. These checks exist because every later step writes into this worktree and commits on this branch.
+Check, in the worktree: the branch is `{type}/{keyword}` and not `base_branch`; `spec-meta.sh check-approved <spec>` exits 0 (the SPEC body is the approved one); `git rev-parse --show-toplevel` ends with `{project_name}-{type}-{keyword}`. If any check fails, stop and report. These checks exist because every later step writes into this worktree and commits on this branch.
 
 ## Design (Steps 6–8)
 
 6. Call designer with the SPEC path. It returns architecture decisions, the phase breakdown with dependencies, and per-phase checklists. If it returns open questions instead, ask the user and call it again.
 7. Call technical-writer with the designer output and the target directory. It writes GLOBAL.md, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, and `PHASE_{k}.5_PLAN_MERGE.md` for parallel groups. Then call pruner in doc mode on the PLAN and TEST files; if it reports candidates, call technical-writer to apply them. Then call spec-validator; on issues, call technical-writer with the report and validate again, at most 3 rounds (Contract: Limits); if issues remain, show them to the user before continuing.
-8. Commit the design documents (Contract: Commits).
+8. Commit the design documents (Contract: Commits) and run `spec-meta.sh stage <spec> code`.
 
 If scope was Design, go to Step 13.
 
@@ -52,6 +54,7 @@ If scope was Design, go to Step 13.
    - Detect the language from the PLAN and call `dotclaude:coders:coder-{language}` with the phase id and the PLAN path.
    - Call code-validator once with the worktree path, the coder namespace, the phase id, and the PLAN/TEST/GLOBAL paths. It owns the validate-fix loop (Contract: Validate-fix loop).
    - On PASS, commit the phase (Contract: Commits). On FAIL the validator has already marked the phase Skipped in GLOBAL.md; record the error and continue with the next phase.
+   - After the last phase, run `spec-meta.sh stage <spec> local_test`.
 
    For a parallel group, first create one worktree per phase (`../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}`), then call the coders for all phases of the group in a single message so they run concurrently, each told its own worktree path. When all return, run the merge phase as written in `PHASE_{k}.5_PLAN_MERGE.md`: merge each branch into `{type}/{keyword}` with `--no-edit`, resolve conflicts, run the validator for the merge phase, commit, then remove the group's worktrees.
 
@@ -63,7 +66,9 @@ Call technical-writer in its DOCS_UPDATE role with the commits since the last ta
 
 ## Integration (Step 12)
 
-Ask: "How would you like to integrate this work?" with options Direct Merge and Create PR. Direct Merge runs the `/dotclaude:merge` procedure, which also removes the worktree. Create PR runs the `/dotclaude:pr` procedure and leaves the worktree until the PR is merged.
+Ask: "How would you like to integrate this work?" with options Direct Merge and Create PR. Direct Merge runs the `/dotclaude:merge` procedure, which also removes the worktree and sets `stage: done`. Create PR runs the `/dotclaude:pr` procedure, which sets `stage: pr` and leaves the worktree until the PR is merged.
+
+Before stopping for any reason, write one line for the next session with `spec-meta.sh handoff <spec> "..."` (what was done, what is next, anything decided in conversation), and record operating decisions with `spec-meta.sh decision <spec> add <token>`.
 
 ## Summary (Step 13)
 

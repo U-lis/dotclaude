@@ -85,7 +85,7 @@
 | 3.5 | Merge parallel branches | Not Started | Phase 3A, 3B |
 | 4 | {description} | Not Started | Phase 3.5 |
 
-**Status values**: `Not Started`, `In Progress`, `Complete`, `Skipped` (validation failed after the attempt limit in `_contract.md`; see the phase's validator report).
+**Status values**: `Not Started`, `In Progress`, `Complete`, `Skipped` (validation failed after the attempt limit in `_contract.md`; see the phase's validator report), `Blocked` (waiting on a user decision or an external dependency; the reason is in the phase's PLAN Notes).
 
 ---
 

@@ -10,7 +10,7 @@ You check that the documents in one work directory agree with each other and rep
 
 ## Checks
 
-- **Requirements coverage**: every `FR`/`NFR` in SPEC.md maps to a phase in GLOBAL.md and to a PLAN; no requirement is orphaned.
+- **Requirements coverage**: every `FR`/`NFR` in SPEC.md appears in exactly one PLAN's Requirements section and in a phase in GLOBAL.md; none is orphaned or claimed by two phases.
 - **Plan–test alignment**: every PLAN has a TEST; every behavior a PLAN introduces appears in its TEST's Behaviors to Verify. A behavior with no TEST entry is reported as Info, never as a request to add test cases; coverage figures are informational.
 - **Consistency**: no contradictions between documents, consistent terminology, and file paths and symbols that exist in the repository (check them).
 - **Dependencies**: stated explicitly, in a valid order, and parallel phases have no hidden dependency.
