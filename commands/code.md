@@ -25,7 +25,7 @@ Prerequisites: `GLOBAL.md` and the phase's `PHASE_{k}_PLAN_{keyword}.md` and `PH
    | SQL / database | `dotclaude:coders:coder-sql` |
 
 3. Call the coder with the phase id, the worktree path, and the document paths. For a parallel phase (`3A`), the worktree is `../{project_name}-{type}-{keyword}-3A`; create it first with `git worktree add <path> -b {type}/{keyword}-3A {type}/{keyword}` if it does not exist.
-4. Call code-validator once with the worktree path, the coder namespace, the phase id, and the PLAN/TEST/GLOBAL paths. It runs the validate-fix loop and updates the documents on PASS (Contract: Validate-fix loop).
+4. Call code-validator once with the worktree path, the coder namespace, the phase id, and the PLAN/TEST/GLOBAL paths. It runs the validate-fix loop, updates the documents, and leaves the `.validated/PHASE_{k}` marker on PASS (Contract: Validate-fix loop).
 5. On PASS, commit the changed code together with the PLAN, GLOBAL, TEST, and SPEC documents (the validator checked off this phase's requirements in SPEC.md; Contract: Commits). On FAIL, the phase is already marked Skipped in GLOBAL.md; report the validator's unresolved issues and stop. When every phase in GLOBAL.md is Complete or Skipped, run `spec-meta.sh stage <spec> local_test`.
 
 Report: phase, status, files changed, validator summary (lint, types, tests), commit hash, and the next command (`/dotclaude:code {next}`, `/dotclaude:code {k}.5` after a parallel group, or `/dotclaude:merge` when all phases are done).

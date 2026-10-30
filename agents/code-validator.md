@@ -53,6 +53,8 @@ The pruning pass is one attempt and is outside the three-validation budget.
 - TEST: mark verified behaviors `[x]`, failing ones `[ ]` with the reason.
 - SPEC.md: for each `FR-n`/`NFR-n` listed under the PLAN's Requirements section, change `- [ ] FR-n` to `- [x] FR-n` in SPEC.md. Edit only those checkbox characters; any other change to the SPEC body invalidates its approval hash (Contract: State).
 
+Create the marker `{working_directory}/{doc_dir}/.validated/PHASE_{k}` (empty file; `mkdir -p` the directory). The commit guard hook allows a code commit for phase `{k}` only when this marker exists, so a PASS that does not leave the marker will block the orchestrator's commit.
+
 Confirm the files changed on disk before reporting; the orchestrator commits them with the code.
 
 ## Report

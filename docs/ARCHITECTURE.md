@@ -57,8 +57,17 @@ This document shows the project directory structure for dotclaude. For the full 
 │   └── AGENT_MODEL_GUIDE.md    # Agent model selection
 ├── hooks/                       # Hook scripts
 │   ├── hooks.json               # Hook configuration
-│   ├── init-config.sh           # SessionStart config initializer
-│   └── check-validation-complete.sh  # Validation completion checker
+│   ├── _lib.sh                  # Shared helpers (JSON, config, worktrees, fail-open)
+│   ├── init-config.sh           # SessionStart: global config + language line
+│   ├── spec-meta.sh             # SPEC metadata block reader/writer (state)
+│   ├── check-validation-complete.sh  # Stop: uncommitted code in a dotclaude worktree
+│   ├── guard-commit.sh          # PreToolUse Bash: code commit needs .validated marker
+│   ├── guard-design.sh          # PreToolUse Agent: designer needs approved SPEC
+│   └── title-prefix.sh          # Terminal title prefix while waiting for the user
+├── scripts/
+│   └── lint-prompts.sh          # Static checks for prompt files
+├── tests/
+│   └── hooks/                   # Shell tests for hooks (run_all.sh)
 └── {working_directory}/         # Working documents (configurable, default: .dc_workspace)
 ```
 
