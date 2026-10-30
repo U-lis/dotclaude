@@ -83,10 +83,12 @@ For a parallel phase, `{worktree_path}` is that phase's own worktree.
 Validate phase {phase_id} and own its validate-fix loop.
 Worktree: {worktree_path}
 Coder: {coder_namespace}
+SPEC: {working_directory}/{doc_dir}/SPEC.md
 PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
 TEST: {working_directory}/{doc_dir}/PHASE_{phase_id}_TEST.md
 GLOBAL: {working_directory}/{doc_dir}/GLOBAL.md
-Return PASS or FAIL with the report.
+Check the checklist, every SPEC requirement against the PLAN's Requirements, every TEST matrix row, and the quality tools of each changed file's nearest project directory.
+Return the report table and one status: PASS (marker created after the documents), PASS-WITH-WARN (no test runner or no linter; documents updated, marker not created, the user must confirm before the commit), or FAIL.
 ```
 
 ## technical-writer: DOCS_UPDATE
