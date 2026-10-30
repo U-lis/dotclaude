@@ -15,6 +15,7 @@ Agent frontmatter uses family aliases (`opus`, `sonnet`, `haiku`), never a dated
 | code-validator | `sonnet` |
 | coder-generic (`agents/coders/generic.md`) | `opus` |
 | pruner | `sonnet` |
+| reviewer | `opus` (review judgment across scope and design; once per phase plus once per diff) |
 | `commands/_coder-base.md` | none (reference read by coders, not an agent) |
 
 ## Decision Matrix
