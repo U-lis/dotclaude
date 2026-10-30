@@ -27,6 +27,18 @@ Re-ask only the invalid item. If `working_directory` changed and the old directo
 
 Ask whether to enable `title_prefix` (boolean, default off). When on, hooks put `[확인요청]` (ko) or `[INPUT]` in the terminal title while the session waits for the user, and clear it on the next prompt.
 
+## Step 3c: Stages and integration
+
+Ask, each defaulting to the current value:
+
+- `stages.local_test`, `stages.test_deploy`, `stages.remote_test`: a shell command each; empty (the default) means the stage is skipped.
+- `stages.stop_after`: `local_test`, `remote_test`, or `pr`.
+- `integration`: `pr` or `merge`.
+- `pr.labels` (comma-separated list), `pr.assignee` (default `@me`, empty for none), `pr.reviewers` (comma-separated list).
+- `worktree.share_from_base`: boolean, default on.
+
+Validate `stop_after` and `integration` against the allowed values above and re-ask only the invalid item. Stage commands are stored as entered.
+
 ## Step 4: Version files
 
 Ask: View, Add, Remove, Reset to auto-detection, Auto-detect and suggest, or Skip. Loop on this menu until Skip.
@@ -41,6 +53,6 @@ Ask: View, Add, Remove, Reset to auto-detection, Auto-detect and suggest, or Ski
 
 ## Step 5: Save and confirm
 
-Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
+Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, and `worktree` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
 
 Report write errors (permissions, invalid directory) with the path and stop; do not retry silently.

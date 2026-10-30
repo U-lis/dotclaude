@@ -15,7 +15,7 @@ Before any git operations, verify the following in order:
 
 ## Configuration
 
-`base_branch` and `working_directory` are resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration). The PR title and body are written in the configured language (Contract: Language).
+`base_branch`, `working_directory`, and `pr.labels`, `pr.assignee`, `pr.reviewers` are resolved as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Configuration). The PR title and body are written in the configured language (Contract: Language).
 
 ## Document Detection
 
@@ -71,10 +71,13 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
     -> feature/ -> "enhancement", bugfix/ -> "bug", refactor/ -> "refactoring"
     -> Check label exists: gh label list --search "{label}"
     -> If not found: gh label create "{label}" (warn on failure, do not halt)
+    -> Do the same for each label in pr.labels; the labels passed to gh pr create are the branch-prefix label plus pr.labels
 11. Resolve milestone from the SPEC metadata `target_version`:
     -> Check milestone exists: gh api repos/{owner}/{repo}/milestones --jq '.[].title'
     -> If not found: gh api repos/{owner}/{repo}/milestones -f title="{version}" (warn on failure, do not halt)
-12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"] [--milestone "{milestone}"]
+12. Create PR: gh pr create --base {base_branch} --title "{title}" --body "{body}" [--label "{label}"]... [--assignee "{pr.assignee}"] [--reviewer "{reviewer}"]... [--milestone "{milestone}"]
+    -> --assignee only when pr.assignee is non-empty; --reviewer once per entry of pr.reviewers
+    -> If a later gh pr edit fails, fall back to gh api -X POST repos/{owner}/{repo}/issues/{n}/labels (labels) or /assignees (assignees); warn on failure, do not halt
 13. If a SPEC.md was found: ${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh stage <spec> pr
 ```
 
@@ -165,7 +168,9 @@ Auto-assign a label based on branch prefix:
 1. Determine the label from current branch prefix
 2. Check if the label exists: `gh label list --search "{label}"`
 3. If the label does not exist, create it: `gh label create "{label}"`
-4. Pass `--label "{label}"` to `gh pr create`
+4. Pass `--label "{label}"` to `gh pr create`, followed by one `--label` per entry of `pr.labels` (created the same way when missing)
+
+The assignee (`pr.assignee`, default `@me`) and reviewers (`pr.reviewers`) are passed as `--assignee` and `--reviewer`. If `gh pr edit` is needed afterwards and fails, add them with `gh api -X POST repos/{owner}/{repo}/issues/{n}/labels` or `/assignees` instead; a failure there is a warning, not a halt.
 
 If the branch prefix doesn't match any known pattern, skip label assignment. If label creation fails (e.g., insufficient permissions), warn the user and continue PR creation without label.
 
@@ -183,7 +188,7 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 8 | SPEC metadata has no `target_version` | Skip milestone, no error |
 | 9 | Milestone creation fails | Warn + continue without milestone |
 | 10 | Label creation fails | Warn + continue without label |
-| 11 | Unknown branch prefix | Skip label, no error |
+| 11 | Unknown branch prefix | Skip the prefix label, no error; `pr.labels` still apply |
 | 12 | No SPEC.md exists (manual PR outside dotclaude workflow) | Fall back to git log-based Summary and Changes |
 | 13 | No GLOBAL.md exists (design step skipped) | Skip supplementary context in Summary; use SPEC.md or commits only |
 | 14 | No non-CI verification performed or pending | Omit the Test plan section |
@@ -206,7 +211,8 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 - Branch: {branch}
 - Target: {base_branch}
 - Title: {pr_title}
-- Label: {label} (if assigned)
+- Label: {label}, {pr.labels} (if assigned)
+- Assignee / reviewers: {assignee}, {reviewers} (if set)
 - Milestone: {milestone} (if assigned)
 - Issue: Resolves #{N} (if linked)
 - URL: {pr_url}

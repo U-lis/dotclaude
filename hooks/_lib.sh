@@ -58,11 +58,12 @@ find_worktrees() {
 # work_branch <branch> : true if feature|bugfix|refactor/...
 work_branch() { [[ "$1" =~ ^(feature|bugfix|refactor)/ ]]; }
 
-# cfg_get <key> <default> : global config, then primary-repo config, then cwd-repo config (later wins).
+# cfg_get <key> <default> : <key> may be a dotted path (stages.stop_after). Needs jq or python3.
+#   Order: global config, then primary-repo config, then cwd-repo config (later wins).
 # Uses $HOOK_CWD (defaults to $PWD) to locate repositories.
 cfg_get() {
   local key=$1 def=$2 val="" v f cwd=${HOOK_CWD:-$PWD} primary top files=()
-  command -v jq >/dev/null 2>&1 || { printf '%s' "$def"; return 0; }
+  command -v jq >/dev/null 2>&1 || command -v python3 >/dev/null 2>&1 || { printf '%s' "$def"; return 0; }
   files+=("$HOME/.claude/dotclaude-config.json")
   primary=$(find_worktrees "$cwd" | head -1 | cut -f1)
   [ -n "$primary" ] && files+=("$primary/.claude/dotclaude-config.json")
@@ -70,7 +71,11 @@ cfg_get() {
   [ -n "$top" ] && [ "$top" != "$primary" ] && files+=("$top/.claude/dotclaude-config.json")
   for f in "${files[@]}"; do
     [ -f "$f" ] || continue
-    v=$(jq -r --arg k "$key" 'getpath([$k])|if .==null then empty else tostring end' "$f" 2>/dev/null)
+    if command -v jq >/dev/null 2>&1; then
+      v=$(jq -r --arg k "$key" 'getpath($k|split("."))|if .==null then empty else tostring end' "$f" 2>/dev/null)
+    else
+      v=$(json_get "$(cat "$f")" "$key")
+    fi
     [ -n "$v" ] && val=$v
   done
   printf '%s' "${val:-$def}"

@@ -38,6 +38,8 @@ Follow `PHASE_{k}.5_PLAN_MERGE.md`: from the main worktree on `{type}/{keyword}`
 
 Run every phase that is not Complete, in dependency order from the GLOBAL.md Phase Overview (fallback: `PHASE_*_PLAN_*.md` file names, where `{k}` depends on `{k-1}`, `{k}A/B` on `{k-1}`, and `{k}.5` on all `{k}X`). Parallel phases in one group are run in a single message so the coders work concurrently, each in its own worktree, then the merge phase runs. A FAIL does not stop the run: the phase stays Skipped and the next phase starts, because later phases may not depend on it and the user gets one report at the end.
 
+After the last phase, `all` does not run the test stages. When start-new called it, start-new runs them (Step 12). When invoked standalone, print the commands from config `stages` (`local_test`, `test_deploy`, `remote_test`, skipping empty ones) as the suggested next step.
+
 The `all` invocation is the user's instruction to commit each phase and continue to the next without asking.
 
 Final report: a table of phase, status, commit, and note; the unresolved issues of skipped phases with file and line; and the commands to retry them (`/dotclaude:code {k}`) before `/dotclaude:merge` and `/dotclaude:tagging`.

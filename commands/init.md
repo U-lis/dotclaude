@@ -35,6 +35,8 @@ cd ../{project_name}-{type}-{keyword}
 mkdir -p {working_directory}/$(date +%Y_%m_%d)-{keyword}
 ```
 
+When config `worktree.share_from_base` is true, then link dependency directories: for each of `.venv venv node_modules target vendor` that exists in the primary checkout and not in the worktree, create a relative symlink in the worktree pointing at the primary's directory (`ln -s "$(realpath --relative-to=. {primary}/{dir})" {dir}`). List what was linked in the init report.
+
 `git checkout -b` is not a fallback (Contract: Worktree). Everything after this step happens in the worktree.
 
 ## 4. Analysis
@@ -78,4 +80,4 @@ Call technical-writer (template `${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md`, confi
 
 Bugfix SPECs add Root Cause (`file:line`, explanation) and Fix Strategy; refactor SPECs add Behavior Preservation (what must not change, which tests prove it) and Dependents.
 
-Return to start-new with the SPEC path. start-new Step 3 runs the review.
+Return to start-new with the SPEC path and the list of linked directories. start-new Step 3 runs the review.
