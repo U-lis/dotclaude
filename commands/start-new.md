@@ -1,35 +1,28 @@
 ---
 description: Entry point for starting new work. Runs the full workflow from requirements to integration, asking the user at each checkpoint.
 ---
-# /dotclaude:start-new [github-issue-url] [--prefill "<text>"]
+# /dotclaude:start-new [text | github-url | #N | JIRA-KEY] [--prefill "<text>"]
 
 You are the orchestrator for one unit of work: gather requirements, get SPEC.md approved, design, implement phase by phase, update docs, and integrate. The shared rules (configuration, language, naming, worktree, who does what, checkpoints, commits, retry policy, git safety) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`. Read it once at the start and follow it; this file only describes the order of steps.
 
-You interact with the user through AskUserQuestion. You run git yourself. You call agents with the Agent tool and never write SPEC.md, design documents, or code yourself (Contract: Who does what). Prompt templates for each agent call are in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`. At the start of each step print one line, `[Step {N}/13] {step name}: {current action}`, so the user can follow progress.
+You interact with the user through AskUserQuestion. You run git yourself. You call agents with the Agent tool and never write SPEC.md, design documents, or code yourself (Contract: Who does what). Prompt templates for each agent call are in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`. At the start of each step print one line, `[Step {N}/13] {step name}: {current action}`, so the user can follow progress. Step numbers are kept stable across versions; Steps 1–2 are both performed by init.
 
-## Step 0: Route on arguments
+## Step 0: Resume or start
 
-First run `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh find` in the current directory. If it finds a SPEC.md whose `stage` is set and not `done`, this is a resume: show the user the `handoff` line and the `decisions` tokens if any, then continue from that stage (`spec_review` → Step 3, `design` → Step 6, `code` → Step 9 at the first phase that is not Complete, `local_test`/`test_deploy`/`remote_test`/`pr` → Step 12) without asking the work type again. Otherwise route on the arguments:
+Run `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh find` in the current directory. If it finds a SPEC.md whose `stage` is set and not `done`, this is a resume: show the user the `handoff` line and the `decisions` tokens if any, then continue from that stage (`spec_review` → Step 3, `design` → Step 6, `code` → Step 9 at the first phase that is not Complete, `local_test`/`test_deploy`/`remote_test`/`pr` → Step 12) without asking anything else. Otherwise start new work.
 
-| Arguments | Action |
-|-----------|--------|
-| A GitHub issue or PR URL (`https://github.com/<owner>/<repo>/(issues|pull)/<n>`) and no `--prefill` | `Skill("dotclaude:init-github-issue")` with the URL. Work type is inferred from the issue, so Step 1 is skipped. |
-| `--prefill "<text>"` with or without a URL | `Skill("dotclaude:init-prefill")` with `prefill_body` = the text and `url_reference` = the URL or null. init-prefill detects the work type, pre-fills answers, and routes to the matching init command. If the body is empty it returns here and Step 1 runs. |
-| Nothing | Continue with Step 1. |
+## Init (Steps 1–4)
 
-`--prefill` text must be quoted on the command line; an unquoted body is tokenized by the shell and only its first word arrives. If the arguments look truncated that way, stop and tell the user instead of guessing a route.
+**Steps 1–2. Intake, work type, analysis, SPEC draft.** `Skill("dotclaude:init")` with the arguments as given: free text, a GitHub issue or PR URL or `#N`, a Jira key, `--prefill "<text>"`, or nothing. init infers and confirms the work type, creates the worktree and branch, analyzes the codebase, asks one combined question for whatever is still missing (target version included, when the project has a CHANGELOG or `version_files`), and has technical-writer write SPEC.md with `stage: spec_review`. `--prefill` text must be quoted on the command line; if the arguments look truncated (only one word after the flag), stop and tell the user instead of guessing.
 
-## Init
+After init returns, check that `git worktree list` contains `../{project_name}-{type}-{keyword}`, that the current branch is `{type}/{keyword}`, and that `{working_directory}/{doc_dir}/SPEC.md` exists in that worktree. If a check fails, stop and report what is missing; do not re-run init, because it already asked the user questions once.
 
-**Step 1. Work type.** Ask: "What type of work do you want to start?" with options Add/Modify Feature, Bug Fix, Refactoring, GitHub Issue.
+**Step 3. SPEC review.** Two methods, chosen by config `spec_review` (default `editor`):
 
-**Step 2. Run the init command.** `Skill("dotclaude:init-feature")`, `init-bugfix`, `init-refactor`, or `init-github-issue` according to the answer. The init command owns its questions, the analysis steps, the worktree and branch creation, and the SPEC.md draft through technical-writer. Do not improvise questions; follow the loaded file.
+- `editor`: open the SPEC for the user with `xdg-open` (Linux), `open` (macOS), or `$EDITOR`, in the background so the session is not blocked, and say in chat that you are waiting for approval or change requests. The user replies in chat; any clear affirmative ("approved", "승인", "spec confirmed", "go") is approval, anything else is feedback. This is what users did anyway: in the recorded sessions a third of the Approve dialogs were dismissed and approval came as a chat sentence after reading the file in an editor.
+- `ask`: summarize SPEC.md and AskUserQuestion with Approve or Needs Revision.
 
-Before the SPEC draft, unless the init command already set the version from a GitHub milestone, ask the target version: read CHANGELOG.md, show the last three versions in a short table, and offer `{patch}`, `{minor}`, `{major}` computed from the current version. The answer goes into SPEC.md and is used again in Step 11.
-
-After the init command returns, check that `git worktree list` contains `../{project_name}-{type}-{keyword}`, that the current branch is `{type}/{keyword}`, and that `{working_directory}/{doc_dir}/SPEC.md` exists in that worktree. If any check fails, stop and report what is missing. Do not re-run the init command: it already asked the user questions once, and repeating them without explanation is worse than a clear error.
-
-**Step 3. SPEC review.** The init command set `stage: spec_review`. Summarize SPEC.md and ask: Approve or Needs Revision. On revision, call technical-writer with the user's feedback and ask again (at most 3 rounds, Contract: Limits). If SPEC.md lists decisions the user still has to make (Decisions Required table), ask each one here and have technical-writer record the choice; a recommended option is still a question.
+On feedback, call technical-writer with it and review again (at most 3 rounds, Contract: Limits). If the SPEC's Decisions Required table still has open rows, resolve them in the same exchange; a recommended option is still the user's choice.
 
 **Step 4. Approve and commit.** Run `spec-meta.sh approve <spec>` (records `approved_at`, `approved_hash`, `stage: design`), then commit SPEC.md (Contract: Commits). This is the only SPEC commit.
 

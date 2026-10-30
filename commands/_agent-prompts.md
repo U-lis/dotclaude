@@ -13,9 +13,11 @@ Write {worktree_path}/{working_directory}/{doc_dir}/SPEC.md.
 Template: ${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md. Language: {language}.
 Metadata block (first lines of the file, see ${CLAUDE_PLUGIN_ROOT}/templates/SPEC.md):
   working_directory: ..., base_branch: ..., language: ..., worktree_path: ..., doc_dir: ..., target_version: ..., github_issue: ... (omit if none), stage: spec_review, approved_at: null, approved_hash: null, decisions: [], handoff: ""
-Requirements gathered from the user: {answers}
-Analysis results: {related code, conflicts and resolutions, edge cases}
-Include a "Decisions required" section for anything the user still has to choose.
+Source: {intake summary and reference (issue/Jira/prefill/free text)}
+Requirements: {FR/NFR list}
+Analysis results: related code table; conflicts with resolutions; edge cases as (FR, partition, case, expected behavior); out-of-scope findings (reported, not requirements)
+{bugfix: root cause file:line and fix strategy | refactor: behavior preservation and dependents}
+Decisions Required table: rows the user still has to choose, with options and a recommendation.
 ```
 
 ## designer
