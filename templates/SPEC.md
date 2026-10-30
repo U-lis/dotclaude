@@ -66,6 +66,17 @@ handoff: ""
 
 ---
 
+## Data Migration
+
+{Write "Not applicable" when none of the items below applies. Otherwise fill each item; the designer plans a dedicated phase for it.}
+
+- **Schema or stored-structure changes**: {tables, columns, indexes, JSONField or document keys added, renamed, or removed}
+- **Default-value changes**: {field, old default, new default, and whether existing rows keep the old value}
+- **Backfill**: {needed or not; how it runs (migration, management command, script) and on which data}
+- **Rollback**: {how to reverse the change and what data a rollback loses}
+
+---
+
 ## Out of Scope
 
 The following are explicitly NOT part of this work:
