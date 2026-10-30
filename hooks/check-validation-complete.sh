@@ -1,65 +1,53 @@
-#!/bin/bash
-# Stop hook: Warn if code changes exist with unchecked PHASE_*_PLAN items
-# Part of mandatory-validation feature
+#!/usr/bin/env bash
+# Stop hook: block when a work-branch worktree has uncommitted code (outside working_directory).
+# Fail open on any error.
+exec 2>/dev/null
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || exit 0
+# shellcheck source=_lib.sh
+. "$HERE/_lib.sh" || exit 0
 
-BRANCH=$(git branch --show-current 2>/dev/null)
+INPUT=$(cat)
+[ "$(json_get "$INPUT" stop_hook_active)" = true ] && exit 0
+CWD=$(json_get "$INPUT" cwd); CWD=${CWD:-$PWD}
+git -C "$CWD" rev-parse --git-dir >/dev/null || exit 0
+export HOOK_CWD=$CWD
 
-# Only check on feature/bugfix/refactor branches
-if [[ ! "$BRANCH" =~ ^(feature|bugfix|refactor)/ ]]; then
-  exit 0
+WD=$(cfg_get working_directory .dc_workspace); WD=${WD%/}
+BASE=$(cfg_get base_branch main)
+PRIMARY=$(find_worktrees "$CWD" | head -1 | cut -f1)
+[ -n "$PRIMARY" ] || exit 0
+LOG="$PRIMARY/$WD/.hook.log"
+
+reason=""
+while IFS=$'\t' read -r wt br; do
+  [ -n "$wt" ] || continue
+  work_branch "$br" || continue
+  [ "$br" = "$BASE" ] && continue
+  files=()
+  while IFS= read -r line; do
+    p=${line:3}; p=${p##* -> }; p=${p#\"}; p=${p%\"}
+    under_ws "$p" "$WD" || files+=("$p")
+  done < <(git -C "$wt" status --porcelain --untracked-files=all)
+  if [ ${#files[@]} -gt 0 ]; then
+    spec=$("$HERE/spec-meta.sh" find "$wt")
+    if [ -z "$spec" ]; then
+      log_line "$LOG" "Stop skip $wt on $br: no SPEC.md (not dotclaude work)"; continue
+    fi
+    stage=$("$HERE/spec-meta.sh" stage "$spec")
+    case "$stage" in
+      code|local_test|test_deploy|remote_test) ;;
+      *) log_line "$LOG" "Stop skip $wt on $br: stage '${stage:-none}' has no phase in flight"; continue ;;
+    esac
+    e="${files[0]}"; [ ${#files[@]} -gt 1 ] && e="$e, ${files[1]}"
+    reason="Uncommitted code in $wt on $br: ${#files[@]} file(s), e.g. $e. Run code-validator for the current phase and commit on PASS, or tell the user why the work stays uncommitted."
+    break
+  fi
+done < <(find_worktrees "$CWD")
+
+if [ -n "$reason" ]; then
+  log_line "$LOG" "Stop block $reason"
+  block_stop "$reason"
+else
+  log_line "$LOG" "Stop pass no uncommitted code on work branches"
 fi
-
-# Extract subject from branch name (e.g., feature/configure-command -> configure-command)
-SUBJECT="${BRANCH#*/}"
-
-if [[ -z "$SUBJECT" ]]; then
-  exit 0
-fi
-
-# Check for uncommitted code changes
-# Exclude: working directories, .md files, config directories, plugin cache
-CODE_CHANGES=$(git status --porcelain \
-  | grep -v "claude_works/" \
-  | grep -v "\.dc_workspace/" \
-  | grep -v "^.. \.claude/" \
-  | grep -v "^.. dotclaude/" \
-  | grep -v "\.md$" \
-  | head -1)
-
-if [[ -z "$CODE_CHANGES" ]]; then
-  # No code changes - allow stop
-  exit 0
-fi
-
-# Load working_directory from config
-GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)
-GLOBAL_CONFIG="$HOME/.claude/dotclaude-config.json"
-LOCAL_CONFIG="$GIT_ROOT/.claude/dotclaude-config.json"
-
-WORKING_DIR=".dc_workspace"  # default
-
-# Load local config first (overrides global)
-if [ -f "$LOCAL_CONFIG" ]; then
-  WORKING_DIR=$(jq -r '.working_directory // ".dc_workspace"' "$LOCAL_CONFIG" 2>/dev/null || echo ".dc_workspace")
-elif [ -f "$GLOBAL_CONFIG" ]; then
-  WORKING_DIR=$(jq -r '.working_directory // ".dc_workspace"' "$GLOBAL_CONFIG" 2>/dev/null || echo ".dc_workspace")
-fi
-
-# Check for unchecked items in PHASE_*_PLAN files for CURRENT BRANCH SUBJECT ONLY
-# Check configured working_directory
-UNCHECKED=$(grep -l '^\- \[ \]' "$WORKING_DIR/$SUBJECT"/PHASE_*_PLAN_*.md 2>/dev/null | head -1)
-
-# Also check legacy claude_works/ for backward compatibility
-if [[ -z "$UNCHECKED" ]] && [[ "$WORKING_DIR" != "claude_works" ]]; then
-  UNCHECKED=$(grep -l '^\- \[ \]' "claude_works/$SUBJECT"/PHASE_*_PLAN_*.md 2>/dev/null | head -1)
-fi
-
-if [[ -n "$UNCHECKED" ]]; then
-  cat << 'EOF'
-{"decision": "block", "reason": "Code changes detected but PHASE_*_PLAN.md has unchecked items. Run code-validator to update checklists before stopping."}
-EOF
-  exit 0
-fi
-
-# All checks passed
 exit 0

@@ -126,6 +126,7 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `working_directory` | string | `.dc_workspace` | Directory for work files (relative to project root) |
 | `base_branch` | string | `main` | Default base branch for git operations |
 | `version_files` | array | `[]` | Version files for tagging consistency check. Empty = auto-detect. See [Version Files](#version-files). |
+| `title_prefix` | boolean | `false` | Prefix the terminal title while the session waits for user input |
 
 #### Version Files
 
@@ -182,8 +183,15 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 
 ### Hooks
 
-- `SessionStart`: `hooks/init-config.sh` creates the global config if missing and prints the configured language.
-- `Stop`: `hooks/check-validation-complete.sh` blocks stopping when `PHASE_*_PLAN` files on the current work branch still have unchecked items. This hook is being reworked in 0.7.0.
+| Event | Script | Behavior |
+|-------|--------|----------|
+| `SessionStart` | `init-config.sh` | Creates the global config if missing and prints `[dotclaude] language: …` |
+| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Logs to `{working_directory}/.hook.log` |
+| `PreToolUse` Bash | `guard-commit.sh` | Denies `git commit` of code on a work branch unless `.validated/PHASE_{k}` exists for the phase named in the message (code-validator writes it on PASS). Documents-only commits pass |
+| `PreToolUse` Agent | `guard-design.sh` | Denies calling `dotclaude:designer` when the SPEC is not approved (`spec-meta.sh check-approved`) |
+| `PreToolUse` AskUserQuestion, `Notification`, `UserPromptSubmit` | `title-prefix.sh` | With `title_prefix: true`, sets the terminal title to `[확인요청]`/`[INPUT] <dir>` while waiting for the user and clears it on the next prompt |
+
+Every hook fails open: a missing tool or an unexpected error exits 0 so the user is never blocked by a hook bug. `hooks/spec-meta.sh` reads and writes the SPEC metadata block (`find get set stage approve check-approved handoff decision`). Tests: `tests/hooks/run_all.sh`.
 
 ### Document Types
 

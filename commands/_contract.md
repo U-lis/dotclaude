@@ -16,6 +16,7 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | `base_branch` | `main` | Branch that work branches fork from and merge into |
 | `language` | `en_US` | Language of user-facing text (see Language) |
 | `version_files` | `[]` | Files checked by `/dotclaude:tagging`; empty means auto-detect |
+| `title_prefix` | `false` | Put `[확인요청]`/`[INPUT]` in the terminal title while waiting for the user |
 
 `/dotclaude:start-new` writes the resolved values plus `worktree_path` and `doc_dir` into SPEC.md as an HTML comment so later commands can read them without re-resolving:
 
@@ -46,7 +47,7 @@ The SPEC metadata block is the work's state. A new session reads it before askin
 
 `stage` moves forward through `init → spec_review → design → code → local_test → test_deploy → remote_test → pr → done`. The command that completes a stage sets the next one: init sets `spec_review` when SPEC.md is drafted; SPEC approval sets `design`; the design commit sets `code`; the last phase commit sets `local_test`; `/dotclaude:pr` sets `pr`; `/dotclaude:merge` sets `done`. Stages that a project does not use are passed through without stopping.
 
-**Approval** is recorded as `approved_at` plus `approved_hash`, the hash of the SPEC body below the block. Approval holds while the body is unchanged; editing the body after approval requires a new review, while editing the block (stage, handoff, decisions) does not. `spec-meta.sh check-approved` makes that judgment, and design must not start without it.
+**Approval** is recorded as `approved_at` plus `approved_hash`, the hash of the SPEC body below the block. Approval holds while the body is unchanged; editing the body after approval requires a new review, while editing the block (stage, handoff, decisions) does not. `spec-meta.sh check-approved` makes that judgment; a PreToolUse hook denies calling the designer agent when it fails.
 
 **Requirement checkboxes** in SPEC.md are owned by code-validator: when a phase passes, it checks off the `FR`/`NFR` items that phase's PLAN lists under Requirements. A merged work therefore has every requirement checked, and an unchecked one points at the phase that did not deliver it.
 
@@ -135,7 +136,7 @@ Phase decomposition does not need user review: after SPEC approval, design runs 
 | After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, and TEST documents the validator updated | `feat/fix/refactor({keyword}): complete phase {k}` |
 | After CHANGELOG/README update | `CHANGELOG.md`, `README.md` | `docs: update CHANGELOG and README for {version}` |
 
-No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not.
+No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while a work branch holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`.
 
 ## Validate-fix loop
 
