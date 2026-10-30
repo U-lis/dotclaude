@@ -133,6 +133,7 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `pr.assignee` | string | `@me` | PR assignee; empty = none |
 | `pr.reviewers` | array | `[]` | PR reviewers |
 | `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
+| `workspace_tracking` | string | `commit` | `commit` tracks `{working_directory}` in git. `ignore` adds it to `.gitignore`; design commit points then write `.snapshots/*.tar.gz` (newest 5 kept) instead |
 | `parallel_phases` | boolean | `false` | Allow the designer to propose parallel phase groups (`{k}A`/`{k}B` plus merge `{k}.5`); when false, phases are sequential unless you ask |
 
 #### Version Files
@@ -193,8 +194,9 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 | Event | Script | Behavior |
 |-------|--------|----------|
 | `SessionStart` | `init-config.sh` | Creates the global config if missing and prints `[dotclaude] language: …` |
-| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Logs to `{working_directory}/.hook.log` |
+| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Also warns (no block) when a `{working_directory}` exceeds 10MB. Logs to `{working_directory}/.hook.log` |
 | `PreToolUse` Bash | `guard-commit.sh` | Denies `git commit` of code on a work branch unless `.validated/PHASE_{k}` exists for the phase named in the message (code-validator writes it on PASS). Documents-only commits pass |
+| `PreToolUse` Write, Edit, MultiEdit, Bash | `guard-workspace.sh` | Denies writing (or redirecting, `tee`, `cp`/`mv`) non-document files (not `.md`/`.json`/`.log`/snapshot `.tar.gz`) and report or variant names (`COMPLETION_REPORT.md`, `*_W2.md`, `*__2`) under `{working_directory}` |
 | `PreToolUse` Agent | `guard-design.sh` | Denies calling `dotclaude:designer` when the SPEC is not approved (`spec-meta.sh check-approved`) |
 | `PreToolUse` AskUserQuestion, `Notification`, `UserPromptSubmit` | `title-prefix.sh` | With `title_prefix: true`, sets the terminal title to `[확인요청]`/`[INPUT] <dir>` while waiting for the user and clears it on the next prompt |
 

@@ -35,6 +35,8 @@ cd ../{project_name}-{type}-{keyword}
 mkdir -p {working_directory}/$(date +%Y_%m_%d)-{keyword}
 ```
 
+Workspace tracking is checked in section 5 against `git check-ignore -q {working_directory}`.
+
 Create `{working_directory}/RULES.md` from `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md` when it does not exist; never overwrite an existing one.
 
 When config `worktree.share_from_base` is true, then link dependency directories: for each of `.venv venv node_modules target vendor` that exists in the primary checkout and not in the worktree, create a relative symlink in the worktree pointing at the primary's directory (`ln -s "$(realpath --relative-to=. {primary}/{dir})" {dir}`). List what was linked in the init report.
@@ -65,6 +67,8 @@ Collect everything still undecided: ambiguous requirement wording, conflicts, sc
 - Include the edge-case list verbatim in the question text when asking the user to confirm it, so they can see what they approve.
 - Target version is one of the questions only when `CHANGELOG.md` exists or `version_files` is set, and only when the GitHub milestone did not already give it. Options are the computed patch/minor/major.
 - Nothing is asked that the intake or the code already answers.
+
+- Workspace tracking: when `git check-ignore -q {working_directory}` (run in the worktree) disagrees with `workspace_tracking` (`commit` but ignored, or `ignore` but not ignored), add one question asking which to keep. Its answer is used for this work; for `ignore`, add `{working_directory}/` to `.gitignore` if missing.
 
 If nothing is missing, ask nothing.
 

@@ -38,4 +38,11 @@ mv "$T/SPEC.bak" "$DOC/SPEC.md"
 # (f) outside git
 mkdir -p "$T/nogit"
 out=$(run "$T/nogit"); rc=$?; empty "non-git cwd silent" "$out"; [ $rc = 0 ] && ok "non-git exit 0" || ko "non-git exit" $rc
+# (j) workspace over 10MB -> warn, no block
+git -C "$W" checkout -q -- . 2>/dev/null; rm -f "$W/app.py"
+dd if=/dev/zero of="$DOC/big.bin" bs=1M count=11 status=none
+out=$(run "$W"); contains "(j) big workspace -> additionalContext" "$out" '"additionalContext":"workspace '
+contains "(j) hint text" "$out" 'run /dotclaude:purge or move data files out'
+case "$out" in *'"decision":"block"'*) ko "(j) must not block" "$out";; *) ok "(j) no block";; esac
+grep -q 'Stop warn .*: workspace [0-9]*MB' "$LOG" && ok "(j) warn logged" || ko "(j) warn log" "$(tail -3 "$LOG")"
 finish
