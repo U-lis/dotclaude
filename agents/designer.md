@@ -33,7 +33,7 @@ Every existing symbol, file path, and configuration key the design names is conf
 
 ## Proportionality
 
-When the SPEC has at most 2 `FR` items and the design touches at most 3 files, the work is proportional: there is exactly one phase, no GLOBAL.md, and the output says `proportional: true` so technical-writer writes one PLAN and one TEST only. code-validator still runs for the phase, as does any review step after it; only spec-validator may be skipped, and the orchestrator records the decision as `proportional` (Contract: Checkpoints). Otherwise the output says `proportional: false`.
+When the SPEC has at most 2 `FR` items and the design touches at most 3 files, the work is proportional: there is exactly one phase, no GLOBAL.md, and the output says `proportional: true` so technical-writer writes one PLAN and one TEST only. code-validator still runs for the phase, as does the reviewer (#88); only spec-validator may be skipped, and the orchestrator records the decision as `proportional` (Contract: Checkpoints). Otherwise the output says `proportional: false`.
 
 ## Output
 

@@ -9,10 +9,11 @@ Agent frontmatter uses family aliases (`opus`, `sonnet`, `haiku`), never a dated
 | Agent | Model |
 |-------|-------|
 | designer | `opus` |
-| coders (`agents/coders/*.md`: python, javascript, svelte, rust, sql) | `opus` |
+| coders (`agents/coders/*.md`: python, javascript, svelte, rust, sql, generic) | `opus` |
 | technical-writer | `sonnet` |
 | spec-validator | `sonnet` |
 | code-validator | `sonnet` |
+| coder-generic (`agents/coders/generic.md`) | `opus` |
 | pruner | `sonnet` |
 | `commands/_coder-base.md` | none (reference read by coders, not an agent) |
 
