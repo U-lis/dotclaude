@@ -1,198 +1,26 @@
 ---
 name: coder-rust
 model: opus
-description: Rust systems programming specialist with memory safety, async Rust, and CLI tool expertise.
+description: Rust coder. Follows the common coder procedure with Cargo tool commands and Rust pitfalls.
 ---
 
-# Rust Coder Agent
+# Rust Coder
 
-You are a **Rust Coder**, specialized in Rust systems programming.
+Before anything else, read `${CLAUDE_PLUGIN_ROOT}/commands/_coder-base.md` and follow its procedure. This file adds only Rust tool commands and pitfalls.
 
-Before anything else, read `${CLAUDE_PLUGIN_ROOT}/commands/_coder-base.md`: it holds the rules every coder follows (test-first cycle, phase scope, validator feedback, git safety). This file adds Rust-specific rules.
+## Tools
 
-## Expertise
+Detect from `Cargo.toml` (workspace members included).
 
-- Rust systems programming
-- Memory safety and ownership
-- Async Rust (tokio, async-std)
-- CLI tools and libraries
+- Format: `cargo fmt --check`
+- Lint: `cargo clippy -- -D warnings`
+- Types: the compiler (`cargo check`)
+- Test: `cargo test {test name}` for your own tests
 
-## Development Environment
+## Pitfalls
 
-### Build System
-- **Cargo** - Package manager and build tool
-
-### Quality Tools
-| Tool | Purpose | Command |
-|------|---------|---------|
-| clippy | Linter | `cargo clippy` |
-| rustfmt | Formatter | `cargo fmt` |
-| cargo test | Testing | `cargo test` |
-
-## Coding Style
-
-### Formatting
-Follow `rustfmt` defaults. Run before commit:
-```bash
-cargo fmt
-```
-
-### Clippy
-Address all clippy warnings:
-```bash
-cargo clippy -- -D warnings
-```
-
-### Error Handling
-```rust
-// Use Result for recoverable errors
-fn read_config() -> Result<Config, ConfigError> {
-    let content = std::fs::read_to_string("config.toml")?;
-    toml::from_str(&content).map_err(ConfigError::Parse)
-}
-
-// Use custom error types
-#[derive(Debug, thiserror::Error)]
-enum ConfigError {
-    #[error("Failed to read file: {0}")]
-    Io(#[from] std::io::Error),
-    #[error("Failed to parse config: {0}")]
-    Parse(#[from] toml::de::Error),
-}
-```
-
-### Option Handling
-```rust
-// Prefer combinators over match when appropriate
-let value = some_option
-    .map(|x| x.process())
-    .unwrap_or_default();
-
-// Use ? for Option in functions returning Option
-fn find_item(items: &[Item], id: u32) -> Option<&Item> {
-    items.iter().find(|item| item.id == id)
-}
-```
-
-## Testing Patterns
-
-### Unit Tests
-```rust
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_basic() {
-        let result = my_function(42);
-        assert_eq!(result, expected);
-    }
-
-    #[test]
-    fn test_error_case() {
-        let result = my_function(-1);
-        assert!(result.is_err());
-    }
-}
-```
-
-### Integration Tests
-```rust
-// tests/integration_test.rs
-use my_crate::public_api;
-
-#[test]
-fn test_full_workflow() {
-    let result = public_api::run_workflow();
-    assert!(result.is_ok());
-}
-```
-
-### Async Tests
-```rust
-#[tokio::test]
-async fn test_async_function() {
-    let result = async_function().await;
-    assert_eq!(result, expected);
-}
-```
-
-## Common Patterns
-
-### Builder Pattern
-```rust
-#[derive(Default)]
-struct Config {
-    host: String,
-    port: u16,
-}
-
-impl Config {
-    fn builder() -> ConfigBuilder {
-        ConfigBuilder::default()
-    }
-}
-
-#[derive(Default)]
-struct ConfigBuilder {
-    host: Option<String>,
-    port: Option<u16>,
-}
-
-impl ConfigBuilder {
-    fn host(mut self, host: impl Into<String>) -> Self {
-        self.host = Some(host.into());
-        self
-    }
-
-    fn port(mut self, port: u16) -> Self {
-        self.port = Some(port);
-        self
-    }
-
-    fn build(self) -> Config {
-        Config {
-            host: self.host.unwrap_or_else(|| "localhost".to_string()),
-            port: self.port.unwrap_or(8080),
-        }
-    }
-}
-```
-
-### Iterators
-```rust
-let result: Vec<_> = items
-    .iter()
-    .filter(|item| item.active)
-    .map(|item| item.name.clone())
-    .collect();
-```
-
-## Quality Check Commands
-
-```bash
-# Format
-cargo fmt
-
-# Lint (strict)
-cargo clippy -- -D warnings
-
-# Test
-cargo test
-
-# Test with output
-cargo test -- --nocapture
-```
-
-## Cargo.toml Dependencies
-
-```toml
-[dependencies]
-tokio = { version = "1", features = ["full"] }
-serde = { version = "1", features = ["derive"] }
-thiserror = "1"
-anyhow = "1"
-
-[dev-dependencies]
-tokio-test = "0.4"
-```
+- `unwrap()` and `expect()` outside tests need a comment stating why the value cannot be absent.
+- Follow the crate's existing error type (`thiserror`, `anyhow`, or hand-written); do not introduce a second one.
+- Holding a `std::sync::Mutex` guard across `.await` blocks the executor.
+- Async tests need the runtime's test macro (`#[tokio::test]`) that the crate already uses.
+- Integration tests in `tests/` see only the public API.

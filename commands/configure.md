@@ -51,6 +51,10 @@ Ask: View, Add, Remove, Reset to auto-detection, Auto-detect and suggest, or Ski
 - Reset: set `[]`.
 - Auto-detect and suggest: for each known file, show detected version and status (new, already configured, configured but missing), then offer to add the new ones and remove the missing ones with the Add/Remove rules.
 
+## Step 4b: Project coding rules
+
+Inside a git repository, ask whether to edit the project coding rules; the file is per project, so the scope chosen in Step 2 does not apply. On yes, open `<git_root>/{working_directory}/RULES.md` in the editor the way start-new opens SPEC.md (Step 3, `editor`); when it does not exist, create it first from `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md` (create `working_directory` if needed). Coders read this file before writing code.
+
 ## Step 5: Save and confirm
 
 Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, and `worktree` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
