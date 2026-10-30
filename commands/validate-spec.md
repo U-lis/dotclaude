@@ -1,111 +1,14 @@
 ---
 description: Validate consistency across all planning documents using spec-validator agent. Use after design documents are created or when user invokes /dotclaude:validate-spec.
 ---
-
 # /dotclaude:validate-spec
 
-Validate consistency across all planning documents using spec-validator agent.
+Check that SPEC, GLOBAL, PLAN, and TEST documents agree. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
 
-## Configuration
+Prerequisite: `{working_directory}/{doc_dir}/` holds `SPEC.md`, `GLOBAL.md`, at least one `PHASE_{k}_PLAN_{keyword}.md`, and the matching `PHASE_{k}_TEST.md`.
 
-The `{working_directory}` value is read from SPEC.md metadata (written by `/dotclaude:start-new`).
-If SPEC.md is not found, fall back to default: `.dc_workspace`.
+1. Call spec-validator with the directory. Its checklist (requirements coverage, plan–test alignment, consistency, dependencies, merge plans for parallel groups) is in its definition.
+2. If the report lists issues, call technical-writer with the report and validate again. Stop after 3 rounds and show the remaining issues to the user; some may need a SPEC decision rather than a document fix.
+3. Report PASSED or the remaining issues.
 
-## Trigger
-
-User invokes `/dotclaude:validate-spec` after design documents are created.
-
-## Prerequisites
-
-- `{working_directory}/{doc_dir}/SPEC.md` exists
-- `{working_directory}/{doc_dir}/GLOBAL.md` exists
-- At least one `PHASE_{k}_PLAN_{keyword}.md` exists
-- Corresponding `PHASE_{k}_TEST.md` files exist
-
-## Workflow
-
-```
-┌─────────────────────────────────────────────────────────┐
-│ 1. Read All Documents                                   │
-│    - SPEC.md                                           │
-│    - GLOBAL.md                                         │
-│    - All PHASE_*_PLAN_*.md files                       │
-│    - All PHASE_*_TEST.md files                         │
-│    - PHASE_*.5_PLAN_MERGE.md (if exists)               │
-├─────────────────────────────────────────────────────────┤
-│ 2. Invoke spec-validator Agent                          │
-│    - Cross-reference all documents                      │
-│    - Check requirements coverage                        │
-│    - Verify test case completeness                      │
-│    - Validate phase dependencies                        │
-├─────────────────────────────────────────────────────────┤
-│ 3. If Issues Found                                      │
-│    - Report to TechnicalWriter for fixes                │
-│    - Wait for document updates                          │
-│    - Re-validate                                        │
-├─────────────────────────────────────────────────────────┤
-│ 4. Validation Complete                                  │
-│    - Report success to user                             │
-│    - Ready for implementation                           │
-└─────────────────────────────────────────────────────────┘
-```
-
-## Validation Checklist
-
-### Requirements Coverage
-- [ ] All SPEC requirements → GLOBAL phase overview
-- [ ] All phase requirements → PLAN documents
-- [ ] No orphaned requirements
-
-### Plan-Test Alignment
-- [ ] Each PLAN has corresponding TEST
-- [ ] Each behavior introduced in PLAN maps to at least one Behaviors to Verify entry in TEST (report missing ones; do not add test cases)
-- [ ] Coverage reported (reference only; 70% is not a pass/fail gate)
-
-### Completeness
-- [ ] Behavior coverage reported (informational only; not a blocking check, no test cases are added)
-
-### Consistency
-- [ ] No contradictions
-- [ ] Consistent terminology
-- [ ] Accurate file references
-
-### Dependencies
-- [ ] Dependencies explicitly stated
-- [ ] Logical order
-- [ ] Parallel phases truly independent
-
-### Parallel Phase Validation
-- [ ] PHASE_{k}.5_PLAN_MERGE.md exists
-- [ ] Conflict areas identified
-- [ ] Merge order defined
-
-## Output
-
-### Validation Report
-```markdown
-# Spec Validation Report
-
-## Status: PASSED / FAILED
-
-## Issues Found (if any)
-- Issue 1: ...
-- Issue 2: ...
-
-## Validation Passed
-- [x] Requirements coverage
-- [x] Plan-Test alignment
-- [x] No contradictions
-- [x] Dependencies correct
-```
-
-## Iteration Loop
-
-```
-validate → issues found → TW fixes → re-validate → repeat until PASSED
-```
-
-## Next Steps
-
-After validation passes:
-1. Proceed to `/dotclaude:code [phase]` to start implementation
+Next: `/dotclaude:code 1`.

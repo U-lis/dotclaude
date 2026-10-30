@@ -6,6 +6,8 @@ user-invocable: false
 
 Regex-based sensitive data filtering patterns applied to prefill content before any extraction (NFR-1).
 
+Shared rules (language, naming, worktree, limits) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
+
 This file is an internal reference, not a user-invocable command. It is referenced from `commands/init-prefill.md` Step 2 (Sensitive Data Filtering).
 
 ## Overview
@@ -46,7 +48,7 @@ Patterns are applied in the following order. Order matters because earlier match
 
 **Rationale**: Specific (longer / structurally unique) patterns are matched first to avoid false positives from generic patterns. For example, a JWT contains `.`-separated base64url segments that could partially match an email or phone regex if applied later. Running JWT first guarantees the JWT body is collapsed to `[REDACTED:JWT]` before any later pattern inspects it.
 
-**Already-redacted text protection**: Once a substring is replaced with `[REDACTED:*]`, later patterns operate on the redacted text. The redaction marker contains characters (`[`, `:`, `]`) that none of the seven patterns match, so re-redaction does not occur.
+**Already-redacted text protection**: Once a substring is replaced with `[REDACTED:*]`, later patterns operate on the redacted text. A marker may still be touched by a later pattern (the Bearer rewrite in step 3 does this on purpose; the password pattern's `\S+` could match a marker). Treat `[REDACTED:*]` as already handled: never emit a nested marker such as `[REDACTED:[REDACTED:JWT]]`.
 
 ---
 

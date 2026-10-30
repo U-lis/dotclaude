@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Prompt restructure ([#79](https://github.com/U-lis/dotclaude/issues/79)): shared rules (configuration, language, naming, worktree, roles, checkpoints, commits, retry policy, git safety, limits) are defined once in `commands/_contract.md`; commands and agents reference it. Agent prompt templates moved to `commands/_agent-prompts.md`. Duplicated sections, ALL-CAPS rhetoric, box diagrams and pseudocode loops removed. Prompt files in scope shrink from 284KB to 185KB (the init commands are reduced further in #84).
+- `start-new`: SPEC.md is committed once, after approval; the init verification no longer re-runs the init command; spec-validator runs in the design step; the before-design check uses `git rev-parse --show-toplevel` instead of `pwd`.
+- Retry policy unified: code-validator owns the validate-fix loop (3 validations); no orchestrator-level retry.
+- Agent models use family aliases (`opus`, `sonnet`) instead of dated ids ([#80](https://github.com/U-lis/dotclaude/issues/80)). Lookups go to the built-in Explore agent.
+- Coder common rules moved from `agents/coders/_base.md` to `commands/_coder-base.md`; coders read it via `${CLAUDE_PLUGIN_ROOT}` (verified to substitute in agent and command bodies).
+- Language rule ([#81](https://github.com/U-lis/dotclaude/issues/81), closes #74, #77): SPEC.md, conversation, and PR title/body follow the `language` setting; GLOBAL/PLAN/TEST/CHANGELOG/README stay English.
+- `tagging` requires `base_branch` instead of literal `main`; CHANGELOG version regex unified to `## \[([^\]]+)\]`.
+- `pr`: reads `github_issue` and `target_version` from the SPEC metadata block; PLAN glob fixed to `PHASE_*_PLAN_*.md`.
+- `merge`: asks before cleanup and removes the worktree before deleting the branch.
+- GLOBAL.md phase status vocabulary unified to Not Started / In Progress / Complete / Skipped; PHASE_MERGE template uses `{type}/{keyword}-{k}X` naming.
+- Hook commands quote `${CLAUDE_PLUGIN_ROOT}`.
+- Docs (README, ARCHITECTURE, AGENT_MODEL_GUIDE, CLAUDE.md) synchronized with the files that exist; manual-install option that copied a gitignored directory removed.
+
+### Added
+
+- `scripts/lint-prompts.sh`: static checks for duplicated Language sections, `claude_works` literals, dated model ids, ALL-CAPS emphasis counts, legacy `Task tool` names, stale globs, `${CLAUDE_PLUGIN_ROOT}` path existence, and total prompt size.
+
+### Removed
+
+- Single-document mode (`{working_directory}/{SUBJECT}.md`) for 1–2 phase work; every work produces SPEC.md, GLOBAL.md and PHASE files.
+- `templates/PHASE_PLAN.md` Completion Date / Completed By sections (never filled by any agent).
+
 ## [0.6.0] - 2026-09-30
 
 ### Added

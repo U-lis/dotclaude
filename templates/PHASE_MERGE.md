@@ -10,11 +10,11 @@ Merge parallel phase branches back to base branch and resolve any conflicts.
 
 | Branch | Phase | Status |
 |--------|-------|--------|
-| feature/{subject}-{k}A | Phase {k}A | 🔴 Not Merged |
-| feature/{subject}-{k}B | Phase {k}B | 🔴 Not Merged |
-| feature/{subject}-{k}C | Phase {k}C | 🔴 Not Merged |
+| {type}/{keyword}-{k}A | Phase {k}A | 🔴 Not Merged |
+| {type}/{keyword}-{k}B | Phase {k}B | 🔴 Not Merged |
+| {type}/{keyword}-{k}C | Phase {k}C | 🔴 Not Merged |
 
-**Base Branch**: feature/{subject}
+**Base Branch**: {type}/{keyword}
 
 ---
 
@@ -33,15 +33,15 @@ Based on Designer's analysis, potential conflicts may occur in:
 
 The following order minimizes conflict resolution complexity:
 
-1. **feature/{subject}-{k}A** → feature/{subject}
+1. **{type}/{keyword}-{k}A** → {type}/{keyword}
    - Expected conflicts: {none/minimal/list files}
    - Resolution notes: {notes}
 
-2. **feature/{subject}-{k}B** → feature/{subject}
+2. **{type}/{keyword}-{k}B** → {type}/{keyword}
    - Expected conflicts: {list}
    - Resolution notes: {notes}
 
-3. **feature/{subject}-{k}C** → feature/{subject}
+3. **{type}/{keyword}-{k}C** → {type}/{keyword}
    - Expected conflicts: {list}
    - Resolution notes: {notes}
 
@@ -51,22 +51,22 @@ The following order minimizes conflict resolution complexity:
 
 ```bash
 # Ensure on base branch
-git checkout feature/{subject}
+git checkout {type}/{keyword}
 
 # Merge first branch
-git merge feature/{subject}-{k}A
+git merge {type}/{keyword}-{k}A
 # Resolve conflicts if any
 # git add .
 # git commit -m "Merge phase {k}A"
 
 # Merge second branch
-git merge feature/{subject}-{k}B
+git merge {type}/{keyword}-{k}B
 # Resolve conflicts if any
 # git add .
 # git commit -m "Merge phase {k}B"
 
 # Merge third branch
-git merge feature/{subject}-{k}C
+git merge {type}/{keyword}-{k}C
 # Resolve conflicts if any
 # git add .
 # git commit -m "Merge phase {k}C"
@@ -77,16 +77,7 @@ git merge feature/{subject}-{k}C
 ## Post-Merge Validation
 
 ### Quality Checks
-```bash
-# Run linter
-ruff check .
-
-# Run type checker
-ty check
-
-# Run all tests
-pytest
-```
+Run the project's lint, type check, and full test suite (detected as in code-validator).
 
 ### Integration Verification
 - [ ] All merged features work together
@@ -101,19 +92,19 @@ After successful merge:
 
 ```bash
 # Remove worktrees
-git worktree remove ../{subject}-{k}A
-git worktree remove ../{subject}-{k}B
-git worktree remove ../{subject}-{k}C
+git worktree remove ../{project_name}-{type}-{keyword}-{k}A
+git worktree remove ../{project_name}-{type}-{keyword}-{k}B
+git worktree remove ../{project_name}-{type}-{keyword}-{k}C
 
 # Delete remote branches (optional)
-git push origin --delete feature/{subject}-{k}A
-git push origin --delete feature/{subject}-{k}B
-git push origin --delete feature/{subject}-{k}C
+git push origin --delete {type}/{keyword}-{k}A
+git push origin --delete {type}/{keyword}-{k}B
+git push origin --delete {type}/{keyword}-{k}C
 
 # Delete local branches
-git branch -d feature/{subject}-{k}A
-git branch -d feature/{subject}-{k}B
-git branch -d feature/{subject}-{k}C
+git branch -d {type}/{keyword}-{k}A
+git branch -d {type}/{keyword}-{k}B
+git branch -d {type}/{keyword}-{k}C
 ```
 
 ---

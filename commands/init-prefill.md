@@ -6,12 +6,7 @@ user-invocable: false
 
 Instructions for initializing work from a free-form conversation body provided via the `--prefill` option of `/dotclaude:start-new`.
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
+Shared rules (language, naming, worktree, limits) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
 
 ## Step-by-Step Process
 
@@ -108,7 +103,7 @@ If `url_reference` is null at entry:
 
 #### URL Fetch
 
-Use the `gh` CLI to fetch the URL content. The invocation pattern mirrors `init-github-issue.md` Step 2 (line 42-49) so that downstream context extraction can reuse the same JSON shape.
+Use the `gh` CLI to fetch the URL content. The invocation pattern mirrors `init-github-issue.md` Step 2 (Issue Parsing) so that downstream context extraction can reuse the same JSON shape.
 
 1. Parse `url_reference` to extract `owner`, `repo`, `number`, and `kind` (`issues` or `pull`).
 2. Dispatch by `kind`:
@@ -121,7 +116,7 @@ gh issue view {number} --repo {owner}/{repo} --json title,body,labels,milestone
 gh pr view {number} --repo {owner}/{repo} --json title,body,labels,milestone
 ```
 
-3. Always pass `--repo {owner}/{repo}` derived from the URL itself (NOT the current worktree's repo). This handles cross-repo URLs correctly. Same pattern as `init-github-issue.md` Step 2 line 44.
+3. Always pass `--repo {owner}/{repo}` derived from the URL itself (NOT the current worktree's repo). This handles cross-repo URLs correctly. Same pattern as `init-github-issue.md` Step 2 (Issue Parsing).
 4. On success: store the parsed JSON object as `url_fetch_result`. Proceed to **User Resolution Choice**.
 
 #### Fetch Failure Handling (per FR-9 last clause and AD-6)
@@ -171,7 +166,7 @@ Each user selection sets `url_resolution` and triggers the corresponding follow-
 
 | User Selection | `url_resolution` | Behavior |
 |----------------|------------------|----------|
-| Merge (recommended) | `merge_prefill_priority` | Apply `init-github-issue.md` Step 4 Deep Body Analysis (line 129-168) to `url_fetch_result.body` to produce `url_pre_filled`. Merge into the prefill-derived `pre_filled` (Step 4 output) with **prefill keys taking priority on conflict**. Step 3 keyword analysis runs on `filtered_prefill_body + url_fetch_result.body` concatenated for higher accuracy. |
+| Merge (recommended) | `merge_prefill_priority` | Apply `init-github-issue.md` Step 4 Deep Body Analysis to `url_fetch_result.body` to produce `url_pre_filled`. Merge into the prefill-derived `pre_filled` (Step 4 output) with **prefill keys taking priority on conflict**. Step 3 keyword analysis runs on `filtered_prefill_body + url_fetch_result.body` concatenated for higher accuracy. |
 | URL Override | `merge_url_priority` | Same as above, but **URL keys take priority on conflict**. |
 | URL Ignore | `ignore_url` | Discard `url_fetch_result`. Keep `url_reference` as a plain link only; it appears in `conversation.url_reference` for SPEC.md header but contributes no `pre_filled` data. Step 3 runs on `filtered_prefill_body` only. |
 | Cancel | `cancel_prefill` | Halt this `init-prefill` execution. Return control to `start-new.md` Step 1 (Work Type Selection). The user is then prompted: "Would you like to start from the GitHub Issue instead?" If yes, `start-new.md` Step 1 routes to `init-github-issue` with `url_reference` as the issue input. |
@@ -194,7 +189,7 @@ After Step 2.5 completes (or is skipped because no URL was present), the followi
 - **Multiple URLs in body**: The first regex match wins for fetch. Remaining matches are preserved in body text as plain links (no fetch, no `AskUserQuestion` per additional URL).
 - **URL inside code block or quoted text**: The regex still matches inside fenced code blocks or quotes. This is intentional for v0.5.0; refinement is deferred.
 - **Pull request URL written as `/pull/`**: The regex group `(issues|pull)` correctly matches `/pull/`. `gh pr view` is invoked, NOT `gh issue view`. (GitHub URLs use the singular `/pull/` form even though the API surface and `gh pr` are plural.)
-- **URL points to a different repo than the current worktree**: The fetch invocation uses `--repo {owner}/{repo}` derived from the URL itself, mirroring `init-github-issue.md` Step 2 line 44. Cross-repo references work without additional configuration.
+- **URL points to a different repo than the current worktree**: The fetch invocation uses `--repo {owner}/{repo}` derived from the URL itself, mirroring `init-github-issue.md` Step 2 (Issue Parsing). Cross-repo references work without additional configuration.
 - **URL references a private repo without access**: Fetch fails with 403/404. Falls into Fetch Failure Handling above (`url_resolution = fallback_no_fetch`).
 
 ---
@@ -215,7 +210,7 @@ Unlike `init-github-issue.md` (which uses GitHub labels first, then body keyword
 | add, new, feature, implement, support, enable | feature |
 | refactor, clean, improve code, restructure, reorganize | refactor |
 
-(Same keyword set as `init-github-issue.md` Step 3 Body Analysis Keywords, line 80-87.)
+(Same keyword set as `init-github-issue.md` Step 3 Body Analysis Keywords.)
 
 2. Aggregate match counts per work type. The work type with the highest count wins.
 
@@ -231,7 +226,7 @@ Options:
 multiSelect: false
 ```
 
-**Work Type Mapping from User Confirmation** (same as `init-github-issue.md` line 99-102):
+**Work Type Mapping from User Confirmation** (same as `init-github-issue.md` Step 3, Work Type Detection):
 
 - "Add/Modify Feature" -> feature
 - "Bug Fix" -> bugfix
@@ -243,7 +238,7 @@ Store the detected/confirmed work type as `work_type`.
 
 ### Step 4: Context Extraction
 
-Analyze `filtered_prefill_body` to extract `pre_filled` keys for the detected `work_type`. The same heuristic tables as `init-github-issue.md` Step 4 (line 135-168) are applied, with the phrase "issue body" replaced by "prefill body" throughout.
+Analyze `filtered_prefill_body` to extract `pre_filled` keys for the detected `work_type`. The same heuristic tables as `init-github-issue.md` Step 4 (Context Extraction) are applied, with the phrase "issue body" replaced by "prefill body" throughout.
 
 **General extraction rule**: For each field below, scan `filtered_prefill_body` for the described patterns. If a confident extraction is found, include the field in `pre_filled`. If not found or ambiguous, OMIT the field entirely (do NOT set to empty string). Omitted fields fall through to the downstream init-xxx and are asked normally via `AskUserQuestion`.
 
@@ -292,14 +287,14 @@ Analyze `filtered_prefill_body` to extract `pre_filled` keys for the detected `w
 
 **Target Version**:
 
-- Prefill body has no GitHub milestone available (unlike `init-github-issue.md` line 124-127, where `target_version` may come from milestone).
-- `target_version` is OMIT (set to `null`). The standard `start-new.md` Step 2.6 (Target Version Question) will be asked normally.
+- Prefill body has no GitHub milestone available (unlike `init-github-issue.md` Step 4 (milestone handling), where `target_version` may come from milestone).
+- `target_version` is OMIT (set to `null`). The standard `start-new.md` the target version question in start-new.md will be asked normally.
 
 ---
 
 ### Step 5: Route to Init File
 
-Based on detected `work_type`, route to the corresponding init file (same routing table as `init-github-issue.md` Step 5, line 174-180):
+Based on detected `work_type`, route to the corresponding init file (same routing table as `init-github-issue.md` Step 5, Route to Init File):
 
 | Work Type | Init File | Branch Prefix |
 |-----------|-----------|---------------|
@@ -309,10 +304,10 @@ Based on detected `work_type`, route to the corresponding init file (same routin
 
 **Pre-populated Context**:
 
-The same `pre_filled` YAML structure as `init-github-issue.md` line 187-243 is used, with two structural differences:
+The same `pre_filled` YAML structure as `init-github-issue.md` Step 5 (Route to Init File) is used, with two structural differences:
 
 1. The `github_issue` block is REPLACED by a `conversation` block.
-2. The `pre_filled` block keys per work type are identical to those in `init-github-issue.md` (1:1 match with each downstream init-xxx's line 16-31 pre-fill check table).
+2. The `pre_filled` block keys per work type are identical to those in `init-github-issue.md` (1:1 match with each downstream init-xxx's Pre-filled Data Handling table).
 
 The `conversation` block schema:
 
@@ -388,7 +383,7 @@ pre_filled:
 
 **Init File Behavior with Pre-filled Context**:
 
-The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` uses the EXISTING pre-fill check infrastructure (line 16-31 of each file). No changes are needed in those files (per AD-7). Specifically:
+The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` uses the EXISTING pre-fill check infrastructure (the Pre-filled Data Handling section of each file). No changes are needed in those files (per AD-7). Specifically:
 
 1. **Branch Creation**: Use `pre_filled.branch_keyword`, follow branch creation steps in `_init-common`. The keyword is pre-filled, not auto-generated.
 
@@ -398,7 +393,7 @@ The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` uses th
    - If absent or empty, the step asks normally via `AskUserQuestion`.
    - SPEC.md review (Step 3 of `start-new.md`) serves as the validation checkpoint.
 
-3. **Target Version**: Always run `start-new.md` Step 2.6 (no milestone is available from prefill, so `target_version` is always `null` here).
+3. **Target Version**: Always ask the target version question in start-new.md (no milestone is available from prefill, so `target_version` is always `null` here).
 
 4. **SPEC.md Header** (FR-6 and FR-9): The downstream TechnicalWriter, when drafting SPEC.md, MUST include header lines according to `url_resolution` produced by Step 2.5. The `conversation` block (passed via the YAML payload below) carries `source`, `url_reference`, and `url_resolution`.
 
@@ -411,19 +406,19 @@ The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` uses th
    | `fallback_no_fetch` | `**Source Conversation**: prefill`<br>`**Source Issue**: {url_reference} (fetch failed)` |
    | `cancel_prefill` | (not applicable -- this case halts before Step 5) |
 
-   When `conversation.source != "prefill"` (i.e., direct init or `init-github-issue` path), the existing behavior of `init-github-issue.md` line 258-259 (`**Source Issue**: {issue_url}`) applies and `**Source Conversation**` is omitted.
+   When `conversation.source != "prefill"` (i.e., direct init or `init-github-issue` path), the existing behavior of `init-github-issue.md` Step 5 (Route to Init File) (`**Source Issue**: {issue_url}`) applies and `**Source Conversation**` is omitted.
 
 This SPEC.md header guidance is consumed by the TechnicalWriter at SPEC.md drafting time. The downstream `init-feature.md` / `init-bugfix.md` / `init-refactor.md` files themselves do NOT need to be modified to support this; the TechnicalWriter receives the `conversation` block (including `url_resolution`) as part of its context payload and applies the rule above.
 
 **Field Mapping per Work Type**:
 
-The pre_filled key set per work type is unchanged from `init-github-issue.md` line 263-298 (same 8/6/6 keys for feature/bugfix/refactor respectively). Refer to that section for the explicit per-step mapping table; no duplication is added here in order to keep the two files semantically aligned.
+The pre_filled key set per work type is unchanged from `init-github-issue.md` Step 5 (Route to Init File) (same 8/6/6 keys for feature/bugfix/refactor respectively). Refer to that section for the explicit per-step mapping table; no duplication is added here in order to keep the two files semantically aligned.
 
 ---
 
 ## Analysis Phase
 
-After context extraction and routing, the downstream init-xxx proceeds to its analysis phase as defined in `init-{type}.md` (same behavior as `init-github-issue.md` line 304-306).
+After context extraction and routing, the downstream init-xxx proceeds to its analysis phase as defined in `init-{type}.md` (same behavior as `init-github-issue.md` Analysis Phase).
 
 **Note**: The analysis phase should still run to verify requirements against the codebase, but can reference `conversation.body` for context.
 
@@ -438,8 +433,8 @@ After context extraction and routing, the downstream init-xxx proceeds to its an
 
 ## Output
 
-1. Filtered prefill body (Step 2 result; Phase 2 = passthrough)
-2. Resolved URL reference, if any (Step 2.5 result; Phase 2 = passthrough)
+1. Filtered prefill body (Step 2 result)
+2. Resolved URL reference, if any (Step 2.5 result)
 3. Detected work type (feature/bugfix/refactor)
 4. Pre-populated context for init workflow (`conversation` block + `pre_filled` block)
 5. Worktree created at `../{project_name}-{work_type}-{branch_keyword}` with branch `{work_type}/{branch_keyword}` (via downstream `_init-common`)

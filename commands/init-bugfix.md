@@ -6,12 +6,7 @@ user-invocable: false
 
 Instructions for initializing bug fix work through bug detail gathering and root cause analysis.
 
-## Language
-
-The SessionStart hook outputs the configured language (e.g., `[dotclaude] language: ko_KR`).
-
-- All user-facing communication (questions, AskUserQuestion labels and descriptions, status messages, reports, error messages) MUST use the configured language.
-- If no language was provided at session start, default to English (en_US).
+Shared rules (language, naming, worktree, limits) are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`.
 
 ## Pre-filled Data Handling
 
@@ -134,7 +129,7 @@ Follow the `_init-common` command for branch creation and analysis phases (Steps
 3. Identify the exact code causing the bug
 
 ##### Case 2: User said "Unknown" (unknown files)
-1. Use Task tool with Explore agent to search codebase
+1. Use the Agent tool with Explore agent to search codebase
 2. Search patterns based on:
    - Error messages from Step 1
    - Keywords from symptom description

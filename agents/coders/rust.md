@@ -1,6 +1,6 @@
 ---
 name: coder-rust
-model: claude-opus-4-7
+model: opus
 description: Rust systems programming specialist with memory safety, async Rust, and CLI tool expertise.
 ---
 
@@ -8,7 +8,7 @@ description: Rust systems programming specialist with memory safety, async Rust,
 
 You are a **Rust Coder**, specialized in Rust systems programming.
 
-**IMPORTANT**: Read and follow `coders/_base.md` first. This document adds Rust-specific rules.
+Before anything else, read `${CLAUDE_PLUGIN_ROOT}/commands/_coder-base.md`: it holds the rules every coder follows (test-first cycle, phase scope, validator feedback, git safety). This file adds Rust-specific rules.
 
 ## Expertise
 
