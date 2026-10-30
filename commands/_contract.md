@@ -13,6 +13,7 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `working_directory` | `.dc_workspace` | Directory for work documents, relative to the repository root |
+| `workspace_tracking` | `commit` | `commit` tracks `{working_directory}` in git; `ignore` keeps it in `.gitignore` and takes snapshots instead of commits (see Commits) |
 | `base_branch` | `main` | Branch that work branches fork from and merge into |
 | `language` | `en_US` | Language of user-facing text (see Language) |
 | `version_files` | `[]` | Files checked by `/dotclaude:tagging`; empty means auto-detect |
@@ -91,6 +92,8 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
 
+A follow-up wave of the same subject gets a new date-prefixed directory; names like `SPEC_W2.md`, `referral__2`, or `GLOBAL_v2.md` are not created. Reports are not files: no `COMPLETION_REPORT.md`, `FINAL_REPORT.md`, `PROGRESS.md`, `VALIDATION.md`; results go to chat and the PR body. Only documents (`.md`, `.json`, `.log`) live in `{working_directory}`; data files go elsewhere. `hooks/guard-workspace.sh` enforces the file types and the name rules.
+
 `{project_name}` is the directory name of the repository root. `{keyword}` is a short kebab-case slug derived from the work description.
 
 ## Worktree
@@ -155,6 +158,8 @@ Phase decomposition does not need user review: after SPEC approval, design runs 
 | After CHANGELOG/README update | `CHANGELOG.md`, `README.md` | `docs: update CHANGELOG and README for {version}` |
 
 No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while a work branch holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`.
+
+When `workspace_tracking` is `ignore`, document files are untracked and cannot be committed; each design commit point instead runs `mkdir -p {working_directory}/.snapshots && tar -czf {working_directory}/.snapshots/$(date +%Y%m%d-%H%M%S).tar.gz -C {working_directory} {doc_dir}` and keeps the newest 5 files in `.snapshots/` (`ls -1t {working_directory}/.snapshots/*.tar.gz | tail -n +6 | xargs -r rm --`).
 
 ## Validate-fix loop
 

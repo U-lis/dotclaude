@@ -44,10 +44,23 @@ while IFS=$'\t' read -r wt br; do
   fi
 done < <(find_worktrees "$CWD")
 
+warn=""
+while IFS=$'\t' read -r wt br; do
+  [ -n "$wt" ] && [ -d "$wt/$WD" ] || continue
+  mb=$(du -sm "$wt/$WD" | cut -f1)
+  if [ "${mb:-0}" -gt 10 ]; then
+    log_line "$LOG" "Stop warn $wt: workspace ${mb}MB"
+    warn="workspace ${mb}MB, run /dotclaude:purge or move data files out"
+  fi
+done < <(find_worktrees "$CWD")
+
 if [ -n "$reason" ]; then
   log_line "$LOG" "Stop block $reason"
   block_stop "$reason"
 else
   log_line "$LOG" "Stop pass no uncommitted code on work branches"
+  if [ -n "$warn" ] && command -v jq >/dev/null 2>&1; then
+    jq -nc --arg c "$warn" '{hookSpecificOutput:{hookEventName:"Stop",additionalContext:$c}}'
+  fi
 fi
 exit 0
