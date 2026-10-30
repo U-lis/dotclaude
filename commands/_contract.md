@@ -68,7 +68,7 @@ The SPEC metadata block is the work's state. A new session reads it before askin
 
 `decisions` holds short tokens for operating decisions that would otherwise live only in conversation (for example `stacked-pr`, `deploy-before-merge`); commands read them before acting. `handoff` is one line the current session leaves for the next.
 
-GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`, `Blocked`.
+GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `Skipped`, `Blocked`. A phase whose review leaves Blockers open after one fix round is `Blocked`; the chain stops there.
 
 ## Language
 
@@ -88,7 +88,7 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Branch | `{type}/{keyword}` | `feature/user-auth` |
 | Worktree | `../{project_name}-{type}-{keyword}` | `../shop-feature-user-auth` |
 | Document directory | `{working_directory}/{doc_dir}` with `doc_dir = $(date +%Y_%m_%d)-{keyword}` | `.dc_workspace/2026_03_01-user-auth` |
-| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md` (GLOBAL.md is omitted for proportional work) | |
+| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md`, `REVIEW.md` (GLOBAL.md is omitted for proportional work) | |
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
 
@@ -118,6 +118,7 @@ The command that the user invoked is the orchestrator. It asks the user question
 | Implementing a phase, fixing validation errors, applying a pruner report to tests | `dotclaude:coders:coder-{language}` (`dotclaude:coders:coder-generic` for languages without a dedicated coder) |
 | Validating a phase and owning its validate-fix loop | `dotclaude:code-validator` |
 | Finding redundant tests and over-long comments (report only) | `dotclaude:pruner` |
+| Reviewing a diff on the five axes (correctness, scope, safety, maintainability, tests) after validator PASS and before a PR (report only) | `dotclaude:reviewer` |
 | Reading many files or searching the codebase to answer a question | the built-in `Explore` agent |
 
 Agents run with a fresh context and cannot ask the user anything. When an agent needs a decision, it stops and returns the question in its report; the orchestrator asks the user and calls the agent again with the answer.
@@ -132,7 +133,7 @@ Agent definitions name a model family, never a dated model id, so the plugin fol
 
 | Agents | `model` |
 |--------|---------|
-| designer, coders | `opus` |
+| designer, coders, reviewer | `opus` |
 | technical-writer, spec-validator, code-validator, pruner | `sonnet` |
 
 Lookups and wide reads go to `Explore` with `model: haiku` or `sonnet`. The main session decides; agents produce.
@@ -153,7 +154,7 @@ Phase decomposition does not need user review: after SPEC approval, design runs 
 |------|------|---------|
 | After SPEC approval, once | `{working_directory}/{doc_dir}/SPEC.md` | `docs: add SPEC.md for {keyword}` |
 | After design documents are written and pruned | `{working_directory}/{doc_dir}/*.md` | `docs: add design documents for {keyword}` |
-| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, and TEST documents the validator updated | `feat/fix/refactor({keyword}): complete phase {k}` |
+| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, TEST, SPEC, and REVIEW documents the validator and reviewer updated | `feat/fix/refactor({keyword}): complete phase {k}` |
 | After CHANGELOG/README update | `CHANGELOG.md`, `README.md` | `docs: update CHANGELOG and README for {version}` |
 
 No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while a work branch holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`.
@@ -168,7 +169,7 @@ code-validator owns the loop for one phase: validate, and on failure call the co
 
 `git reset --hard`, `git checkout -- <path>`, `git restore`, and `git stash` are not used to undo agent work, because they destroy uncommitted changes that may belong to another step. Revert by restoring from an explicit backup or `git show HEAD:<path>`. Never force-push. Never delete branches with `-D`.
 
-The pruner never modifies files. Its Bash use is read-only.
+The pruner and the reviewer never modify files. Their Bash use is read-only.
 
 ## Limits
 
