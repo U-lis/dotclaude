@@ -62,8 +62,9 @@ Worktree: {worktree_path}. All file operations happen there.
 PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md
 TEST: {working_directory}/{doc_dir}/PHASE_{phase_id}_TEST.md
 GLOBAL: {working_directory}/{doc_dir}/GLOBAL.md
-Work test-first: write the tests from TEST, run them and report that they fail, then implement until they pass. Do not commit.
-Report: files changed, tests added, the RED and GREEN run output, anything unresolved.
+Rules: {working_directory}/RULES.md (may be absent)
+Follow the procedure in _coder-base.md: read conventions, search for existing implementations, work test-first, self-review. Do not commit.
+Report in the _coder-base.md Report format: conventions read, existing-implementation results, tests with RED/GREEN output and pinned lines, self-review, decisions, anything unresolved.
 ```
 
 For a parallel phase, `{worktree_path}` is that phase's own worktree.
