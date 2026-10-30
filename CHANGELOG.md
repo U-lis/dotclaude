@@ -40,7 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- Single-document mode (`{working_directory}/{SUBJECT}.md`) for 1–2 phase work; every work produces SPEC.md, GLOBAL.md and PHASE files.
+- Single-document mode (`{working_directory}/{SUBJECT}.md`) for 1–2 phase work; every work produces SPEC.md and PHASE files, plus GLOBAL.md except for proportional work (≤ 2 FR, ≤ 3 files).
 - `templates/PHASE_PLAN.md` Completion Date / Completed By sections (never filled by any agent).
 
 ## [0.6.0] - 2026-09-30
