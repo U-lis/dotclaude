@@ -24,7 +24,7 @@ After init returns, check that `git worktree list` contains `../{project_name}-{
 
 On feedback, call technical-writer with it and review again (at most 3 rounds, Contract: Limits). If the SPEC's Decisions Required table still has open rows, resolve them in the same exchange; a recommended option is still the user's choice.
 
-**Step 4. Approve and commit.** Run `spec-meta.sh approve <spec>` (records `approved_at`, `approved_hash`, `stage: design`), then commit SPEC.md (Contract: Commits). This is the only SPEC commit.
+**Step 4. Approve and commit.** Run `spec-meta.sh approve <spec>` (records `approved_at`, `approved_hash`, `stage: design`), then commit SPEC.md (Contract: Commits; with `workspace_tracking: ignore` there is no commit and the snapshot rule applies). This is the only SPEC commit.
 
 ## Before design
 
@@ -34,7 +34,7 @@ Check, in the worktree: the branch is `{type}/{keyword}` and not `base_branch`; 
 
 6. Call designer with the SPEC path and the resolved `parallel_phases` value. It returns architecture decisions, the phase breakdown with dependencies and the FRs each phase completes, per-phase checklists, and an `OPEN` list. If `OPEN` is not `none`, ask the user all items in one AskUserQuestion and call designer again with the answers.
 7. Call technical-writer with the designer output and the target directory. When the designer output says `proportional: true`, technical-writer writes one PLAN and one TEST and no GLOBAL.md; run `spec-meta.sh decision <spec> add proportional` and skip spec-validator. code-validator still runs. It writes GLOBAL.md, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, and `PHASE_{k}.5_PLAN_MERGE.md` for parallel groups. Then call pruner in doc mode on the PLAN and TEST files; if it reports candidates, call technical-writer to apply them. Then call spec-validator; on issues, call technical-writer with the report and validate again, at most 3 rounds (Contract: Limits); if issues remain, show them to the user before continuing.
-8. Commit the design documents (Contract: Commits) and run `spec-meta.sh stage <spec> code`.
+8. Commit the design documents (Contract: Commits; with `workspace_tracking: ignore` take the snapshot described there instead) and run `spec-meta.sh stage <spec> code`.
 
 ## Code (Steps 9–10)
 
