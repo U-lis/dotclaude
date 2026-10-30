@@ -17,6 +17,8 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | `language` | `en_US` | Language of user-facing text (see Language) |
 | `version_files` | `[]` | Files checked by `/dotclaude:tagging`; empty means auto-detect |
 | `title_prefix` | `false` | Put `[확인요청]`/`[INPUT]` in the terminal title while waiting for the user |
+| `spec_review` | `editor` | How SPEC approval is collected: `editor` (open the file, approve in chat) or `ask` (AskUserQuestion) |
+| `default_work_type` | unset | `feature`, `bugfix`, or `refactor`; when set, init does not ask to confirm the inferred type |
 
 `/dotclaude:start-new` writes the resolved values plus `worktree_path` and `doc_dir` into SPEC.md as an HTML comment so later commands can read them without re-resolving:
 
@@ -120,7 +122,7 @@ Lookups and wide reads go to `Explore` with `model: haiku` or `sonnet`. The main
 
 These are the points where the orchestrator waits for the user, through AskUserQuestion, before continuing. Permission settings such as auto mode do not remove them, because each one fixes the scope of the work.
 
-1. SPEC review: Approve or Needs Revision. Revision loops through technical-writer, at most 3 times.
+1. SPEC review: approval in chat after the file is opened in an editor (`spec_review: editor`) or an Approve / Needs Revision question (`ask`). Revision loops through technical-writer, at most 3 times.
 2. SPEC "decisions required" items: the user picks, even when SPEC names a recommended option.
 3. Scope selection after SPEC approval: Design, Design → Code, or Design → Code → Docs.
 4. Integration method after the selected scope completes, unless scope was Design only: Direct Merge or Create PR.
@@ -152,9 +154,8 @@ The pruner never modifies files. Its Bash use is read-only.
 
 | Limit | Value |
 |-------|-------|
-| Clarifying questions during init | 5 per category |
+| Questions during init | 2 AskUserQuestion calls: work-type confirmation and one combined question for missing information |
 | SPEC revision loop | 3 |
-| Analysis summary refinement loop | 3 |
 | Codebase reads during init analysis | 10 files |
 | Validate-fix attempts per phase | 3 |
 | spec-validator rounds (validate, fix, validate) | 3 |

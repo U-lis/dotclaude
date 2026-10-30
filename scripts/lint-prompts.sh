@@ -90,7 +90,7 @@ dupe() { # <fixed-string> <allowed files...>
     done < <(grep -nF -- "$s" "$f")
   done
 }
-dupe 'git worktree add ../{project_name}-{type}-{keyword} -b' commands/_contract.md commands/_init-common.md
+dupe 'git worktree add ../{project_name}-{type}-{keyword} -b' commands/_contract.md commands/init.md
 for s in 'max 3' 'maximum 3' '3 attempts' '3 iterations'; do
   dupe "$s" commands/_contract.md agents/code-validator.md
 done

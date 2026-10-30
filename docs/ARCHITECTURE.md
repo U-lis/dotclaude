@@ -27,13 +27,8 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── validate-spec.md         # /dotclaude:validate-spec
 │   ├── purge.md                 # /dotclaude:purge
 │   ├── prune.md                 # /dotclaude:prune (report-only bloat analysis)
-│   ├── init-feature.md          # Internal: feature init (user-invocable: false)
-│   ├── init-bugfix.md           # Internal: bugfix init (user-invocable: false)
-│   ├── init-refactor.md         # Internal: refactor init (user-invocable: false)
-│   ├── init-github-issue.md     # Internal: GitHub issue init (user-invocable: false)
-│   ├── init-prefill.md          # Internal: prefill init (user-invocable: false)
-│   ├── _prefill-filters.md      # Internal: sensitive data filters for prefill (user-invocable: false)
-│   └── _init-common.md          # Internal: common init workflow (user-invocable: false)
+│   ├── init.md                  # Internal: intake, work type, analysis, SPEC draft
+│   └── _prefill-filters.md      # Internal: sensitive data filters for prefill (user-invocable: false)
 ├── agents/                      # Agent definitions (frontmatter-enabled)
 │   ├── designer.md              # Architecture and planning
 │   ├── technical-writer.md      # Documentation

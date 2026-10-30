@@ -55,22 +55,20 @@ See the [Configuration](#configuration) section below for available settings and
 /dotclaude:start-new
 
 # Orchestrator takes over:
-# 1. Asks work type (Feature/Bugfix/Refactor/GitHub Issue)
-# 2. Gathers requirements via step-by-step questions
-#    - If GitHub Issue: parses issue URL, auto-detects type, pre-fills fields
-#      and skips questions already answered in the issue body
-# 3. Asks target version (auto-filled from milestone if GitHub Issue)
-# 4. Creates and reviews SPEC with user
+# 1. Infers the work type (feature/bugfix/refactor) from your input and confirms it once
+# 2. Analyzes the codebase and drafts SPEC.md in a new worktree
+# 3. Asks one combined question for anything missing (including target version)
+# 4. Reviews the SPEC with you and commits it once approved
 # 5. Asks execution scope (Design only / Design+Code / Design+Code+Docs)
 # 6. Executes selected scope
 # 7. Asks post-completion integration (Direct Merge or Create PR)
 # 8. Returns final summary
 
-# Reuse current conversation context as initialization input (skip redundant Q&A):
-/dotclaude:start-new --prefill
-
-# Combine prefill with a GitHub issue URL (asks how to merge the two sources):
-/dotclaude:start-new --prefill https://github.com/owner/repo/issues/123
+# start-new accepts free text, a GitHub issue/PR URL or #N, a Jira key, or --prefill "<text>":
+/dotclaude:start-new "add CSV export to the report page"
+/dotclaude:start-new https://github.com/owner/repo/issues/123
+/dotclaude:start-new PROJ-42
+/dotclaude:start-new --prefill "<text from the current conversation>"
 
 # After merge, create version tag (verifies version consistency, pushes automatically):
 /dotclaude:tagging
@@ -78,7 +76,7 @@ See the [Configuration](#configuration) section below for available settings and
 /dotclaude:tagging 0.3.0
 ```
 
-**Note**: `--prefill` automatically detects the work type from the conversation, extracts pre-filled answers, and skips matching questions. Sensitive data (API keys, passwords, JWT tokens, etc.) is filtered before being passed to init commands.
+**Note**: `--prefill` text is filtered for sensitive data (API keys, passwords, JWT tokens, etc.) before anything else uses it; the unfiltered text is never written to disk.
 
 ### Manual Execution (Bypass Orchestrator)
 
@@ -141,7 +139,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | Command | Description |
 |---------|-------------|
 | `/dotclaude:configure` | Interactive configuration management |
-| `/dotclaude:start-new` | Entry point - calls orchestrator for full workflow. Supports `--prefill` to reuse prior conversation context and a GitHub issue URL argument |
+| `/dotclaude:start-new` | Entry point - accepts free text, a GitHub issue/PR URL or #N, a Jira key, or `--prefill "<text>"`; infers the work type and confirms it once, analyzes, asks one combined question for anything missing, then runs the full workflow |
 | `/dotclaude:design` | Transform SPEC into implementation plan |
 | `/dotclaude:validate-spec` | Validate document consistency (optional) |
 | `/dotclaude:code [phase]` | Execute coding for specified phase |
@@ -240,10 +238,10 @@ This variable is stored in SPEC.md metadata as `doc_dir` and used by downstream 
 
 | Step | Phase | Description |
 |------|-------|-------------|
-| 1 | Init | Work type |
-| 2 | Init | Run the init command (questions, analysis, target version, branch, SPEC draft) |
-| 3 | Init | SPEC review |
-| 4 | Init | Commit SPEC.md |
+| 1 | Init | Intake and work type (init) |
+| 2 | Init | Analysis and SPEC draft (init) |
+| 3 | Init | SPEC review (editor or ask) |
+| 4 | Init | Approve and commit SPEC |
 | 5 | Init | Scope |
 | 6 | Design | Designer analysis |
 | 7 | Design | Document creation via technical-writer |
