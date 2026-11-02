@@ -81,4 +81,33 @@ printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_
 out=$(run "$W"); empty "(o) dated dir of an ignored name -> no warn" "$out"
 printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*", "nomatch*"] }\n' >"$R/.claude/dotclaude-config.json"
 out=$(run "$W"); contains "(o) dated dir of another name -> warn" "$out" 'largest: 2026_02_02-other '
+# (q) workspace_size_warn_primary turns off the primary's warning only; each case runs on this same big fixture
+CFG="$R/.claude/dotclaude-config.json"
+cfg_warn() { printf '{ "working_directory": ".dc_workspace"%s }\n' "${1:+, \"workspace_size_warn_primary\": $1}" >"$CFG"; }
+mkdir -p "$R/.dc_workspace/big"; dd if=/dev/zero of="$R/.dc_workspace/big/p.bin" bs=1M count=11 status=none
+cfg_warn ""
+out=$(run "$R"); contains "(q) key unset -> primary warns" "$out" 'largest: big '
+contains "(q) primary warning names the key" "$out" 'workspace_size_warn_primary'
+cfg_warn true
+out=$(run "$R"); contains "(q) key true -> primary warns" "$out" 'largest: big '
+cfg_warn false
+out=$(run "$R"); empty "(q) key false -> primary silent" "$out"
+out=$(PATH=$NOJQ run "$R"); empty "(q) no jq: key false -> primary silent" "$out"
+ln -s "$R" "$T/x-alias"
+out=$(run "$T/x-alias"); empty "(q) key false -> primary silent through a symlinked cwd" "$out"
+before=$(wc -l <"$LOG"); run "$R" >/dev/null; after=$(wc -l <"$LOG")
+[ $((after - before)) = 1 ] && ok "(q) key false logs only the pass line" || ko "(q) key false log lines" "$before->$after"
+out=$(run "$W"); contains "(q) key false -> worktree warns" "$out" 'largest: 2026_02_02-other '
+case "$out" in *workspace_size_warn_primary*) ko "(q) worktree warning omits the key" "$out";; *) ok "(q) worktree warning omits the key";; esac
+# (r) the key leaves the block alone. .claude/ is untracked in this fixture and would count as code on a work branch, so exclude it.
+printf '.claude/\n' >"$T/excludes"; git -C "$R" config core.excludesFile "$T/excludes"
+git -C "$R" checkout -q -b feature/primary
+mkdir -p "$R/.dc_workspace/2026_01_03-primary"; cp "$DOC/SPEC.md" "$R/.dc_workspace/2026_01_03-primary/SPEC.md"
+out=$(run "$R"); empty "(r) key false, work branch, no code -> no block" "$out"
+echo code >"$R/app.py"
+out=$(run "$R"); contains "(r) key false, work branch, code -> block" "$out" '"decision":"block"'
+contains "(r) block names the file" "$out" 'app.py'
+rm -f "$R/app.py"; rm -rf "$R/.dc_workspace/2026_01_03-primary" "$R/.dc_workspace/big" "$T/x-alias"
+git -C "$R" checkout -q main; git -C "$R" branch -qd feature/primary; git -C "$R" config --unset core.excludesFile
+printf '{ "working_directory": ".dc_workspace" }\n' >"$CFG"
 finish

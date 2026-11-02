@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.2] - 2026-11-02
+
+### Added
+
+- `workspace_size_warn_primary` config (default `true`): `false` turns off the Stop hook's 10MB size warning on the primary checkout only. Worktree warnings, `workspace_size_ignore`, `/dotclaude:purge` archiving, and the uncommitted-code block do not change.
+
 ## [0.8.1] - 2026-11-02
 
 ### Fixed
