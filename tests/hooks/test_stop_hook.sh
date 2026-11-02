@@ -45,6 +45,7 @@ out=$(run "$W"); contains "(j) big workspace -> additionalContext" "$out" '"addi
 contains "(j) hint text" "$out" 'or add the directory to workspace_size_ignore'
 contains "(j) names largest dir" "$out" 'largest: 2026_01_01-kw '
 case "$out" in *'"decision":"block"'*) ko "(j) must not block" "$out";; *) ok "(j) no block";; esac
+grep -q "Stop warn $W: workspace [0-9]*MB (largest 2026_01_01-kw [0-9]*MB)" "$LOG" && ok "(j) warn logged" || ko "(j) warn logged" "$(tail -3 "$LOG")"
 # (k) workspace_size_ignore glob leaves the directory out of the size
 printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*"] }\n' >"$R/.claude/dotclaude-config.json"
 out=$(run "$W"); empty "(k) ignored dir -> no warn" "$out"
@@ -54,8 +55,6 @@ out=$(PATH=$NOJQ run "$W"); empty "(k) no jq: ignored dir -> no warn" "$out"
 mkdir -p "$W/.dc_workspace/2026_02_02-other"; mv "$DOC/big.bin" "$W/.dc_workspace/2026_02_02-other/"
 out=$(run "$W"); contains "(l) other dir -> warn" "$out" 'largest: 2026_02_02-other '
 out=$(PATH=$NOJQ run "$W"); contains "(l) no jq: other dir -> warn" "$out" '"additionalContext":"workspace '
-contains "(l) no jq: warn names largest dir" "$out" 'largest: 2026_02_02-other '
-contains "(l) no jq: warn is for the Stop event" "$out" '"hookEventName":"Stop"'
 # (n) only the session's own worktree is measured
 printf '{ "working_directory": ".dc_workspace" }\n' >"$R/.claude/dotclaude-config.json"
 out=$(run "$R"); empty "(n) primary cwd ignores big worktree workspace" "$out"

@@ -58,8 +58,7 @@ eq "cfg_get_list with jq" "$(cfg_get_list L)" "$want"
 eq "cfg_get_list with python3" "$(PATH=$NOJQ cfg_get_list L)" "$want"
 list '[]'
 cfg_get_list L >/dev/null; [ $? = 0 ] && ok "cfg_get_list empty -> 0" || ko "cfg_get_list empty -> 0" x
-eq "cfg_get_list unset -> nothing" "$(cfg_get_list NOPE)" ""
-cfg_get_list NOPE; [ $? = 0 ] && ok "cfg_get_list unset -> 0" || ko "cfg_get_list unset -> 0" x
+eq "cfg_get_list unset -> nothing" "$(cfg_get_list NOPE; echo "rc=$?")" "rc=0"
 for bad in '"a"' '{"a":1}' '["a",1]'; do
   list "$bad"
   cfg_get_list L >/dev/null; [ $? != 0 ] && ok "cfg_get_list $bad with jq -> non-zero" || ko "cfg_get_list $bad with jq -> non-zero" x

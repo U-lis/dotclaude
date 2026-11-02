@@ -17,6 +17,7 @@ Narrow the Stop hook size warning and move purge's workspace cleanup into a test
 - FR-9
 - FR-10
 - NFR-1
+- NFR-2
 
 ---
 
@@ -51,17 +52,19 @@ Replace the prose cleanup in `commands/purge.md` with script calls and document 
 
 ## Completion Checklist
 
+- [x] `commands/purge.md` and `commands/merge.md` stop and report on any non-zero exit of `files` or `preserve`, leaving that worktree and all unprocessed items: verified in commands/purge.md:221-236 and commands/merge.md:13
 - [x] Stop hook measures the session worktree only (`hooks/check-validation-complete.sh`): verified in hooks/check-validation-complete.sh:53-54
 - [x] `workspace_size_ignore` is read and applied (`hooks/check-validation-complete.sh`): verified in hooks/check-validation-complete.sh:49 and :58
 - [x] `hooks/workspace-archive.sh` has `files`, `preserve`, `deps` with `plan` and `apply`: verified in hooks/workspace-archive.sh:4-6
-- [x] `ARCHIVED.md` rows are written in the primary checkout (`hooks/workspace-archive.sh`): verified in hooks/workspace-archive.sh:241-242
+- [x] `ARCHIVED.md` rows are written in the primary checkout (`hooks/workspace-archive.sh`): verified in hooks/workspace-archive.sh:249-250 and :294
 - [x] `cfg_get` reads `$CLAUDE_CONFIG_DIR` (`hooks/_lib.sh`): verified in hooks/_lib.sh:75
-- [x] `commands/purge.md` calls `workspace-archive.sh` for Compact workspace, Preserve documents and Dependency directories: verified in commands/purge.md:222-237
+- [x] `commands/purge.md` calls `workspace-archive.sh` for Compact workspace, Preserve documents and Dependency directories: verified in commands/purge.md:238-255
 - [x] `workspace_size_ignore` and `workspace_archive_dir` are in `commands/_contract.md`, `commands/configure.md`, `README.md`: verified in commands/_contract.md (2 hits), commands/configure.md (3), README.md (3)
-- [x] `tests/hooks/run_all.sh` and `scripts/lint-prompts.sh` pass: verified by run (exit 0, 322 pass)
+- [x] `tests/hooks/run_all.sh` and `scripts/lint-prompts.sh` pass: verified by run (exit 0, 349 pass)
+
 
 ---
 
 ## Notes
 
-Status: Blocked. Two Blockers are open after the second review (`REVIEW.md`, rows 1 and 2). Do not release or run `/dotclaude:purge` from this code until they are resolved.
+Status: Blocked. One Blocker is open after the third review (`REVIEW.md`, third round, row 2): a worktree whose directory is gone stops every purge. No data is lost. Do not release until the user decides.

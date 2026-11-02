@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dotclaude:purge` moves bulky files out of `{working_directory}` through `hooks/workspace-archive.sh`: logs and text data are gzipped, images, spreadsheets and test output are moved, to `{workspace_archive_dir}/{primary checkout name}/{doc_dir}/`, with a verified copy before deletion and an `ARCHIVED.md` row per file. `workspace_archive_dir` has no default; purge asks.
 - `/dotclaude:purge` deletes non-symlink `.venv`/`venv` directories in remaining worktrees (re-linked to the primary when `worktree.share_from_base` is on).
 - Preserve documents adds a `YYYY_MM_DD-` prefix to an undated doc dir copied from a removed worktree, and runs through `hooks/workspace-archive.sh preserve`.
+- `/dotclaude:purge` and `/dotclaude:merge` stop and report when `preserve` or a confirmed `files apply` exits non-zero, leaving that worktree and everything not yet processed.
 - `$CLAUDE_CONFIG_DIR/dotclaude-config.json` is read between `~/.claude` and the repository config.
 
 ### Changed

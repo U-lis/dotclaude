@@ -6,8 +6,8 @@ worktree_path: .
 doc_dir: 2026_11_02-workspace-size-ignore
 target_version: 0.8.0
 stage: code
-approved_at: 2026-11-02T07:16:31Z
-approved_hash: fae776f606431091077eac7b13842f61b9d97055395da6d9e17dd56c3677d49f
+approved_at: 2026-11-02T08:39:22Z
+approved_hash: 9ee123d7bf71f936fae737ffb6d7e21a46c4d7ca9cea2202874e02383b80914c
 decisions: []
 handoff: ""
 -->
@@ -44,10 +44,12 @@ handoff: ""
 ## Non-Functional Requirements
 
 - [x] NFR-1: 복사본 검증에 실패하거나 내용이 다른 파일이 목적지에 있으면 원본을 지우지 않고 exit 1로 보고한다.
+- [x] NFR-2: `files`나 `preserve`가 어떤 이유로든 0이 아닌 값으로 끝나거나 실행되지 못하면 purge는 그 자리에서 중지하고 보고한다. 해당 worktree와 아직 처리하지 않은 항목은 건드리지 않으며, 원인을 고친 뒤 다시 실행해도 안전하다.
 
 ---
 
 ## Out of Scope
 
+- 작업 폴더 안의 `.git`, `.venv`, `venv`, `node_modules` 보관 (옮기지 않으며, preserve는 건너뛴 폴더를 표시만 한다)
 - 메인에 이미 있는 날짜 없는 폴더의 이름 변경 (초기 생성분으로 보존)
 - 프로젝트별 로컬 purge 커맨드 (dotclaude 저장소 밖)

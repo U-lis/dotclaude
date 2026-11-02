@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# Move bulky non-document files out of {working_directory} and report or drop real virtualenvs.
+# Move bulky non-document files out of {working_directory} and report or drop .venv/venv directories.
 #
 #   workspace-archive.sh files plan|apply <path> [--removing <worktree>]... [--exclude <glob>]... [--date YYYY_MM_DD]
 #   workspace-archive.sh preserve plan|apply <worktree> [--date YYYY_MM_DD]
 #   workspace-archive.sh deps  plan|apply <repo> [--removing <worktree>]... [--current <worktree>]
 #
 # --date is the prefix for undated doc dirs and the ledger date; default today, computed once per run.
-# Nested .git, .venv, venv and node_modules are never entered.
+# Nested .git, .venv, venv and node_modules directories are never entered, so they are not archived.
 #
 # files: <path> is the primary checkout or a worktree. Destination is
 #   {workspace_archive_dir}/{primary checkout name}/{doc_dir}/{relative path}[.gz]
@@ -24,13 +24,15 @@
 #   An undated doc dir the primary does not have gets a date prefix ({date}-{name}), so the record
 #   shows when the work was handled. `files` run on a worktree uses the same name for the archive
 #   and ARCHIVED.md. A differing destination is a conflict unless the source is tracked and clean,
-#   which git holds. The top-level .hook.log and __pycache__ contents are skipped.
+#   which git holds. The top-level .hook.log and __pycache__ contents are skipped. A copy reaches
+#   its destination whole or not at all, so a re-run sees no false conflict.
 # deps: non-symlink .venv/venv at the root of staying worktrees. The session's worktree (from $PWD)
 #   and --current are skipped; a subdirectory stands for its worktree.
 #
 # files and deps plan print "<action>\t<size bytes>\t<path>" and change nothing.
 # preserve prints "copy|conflict\t<path in worktree>\t<path in primary>", relative to
-#   {working_directory}; its plan changes nothing and exits as apply would.
+#   {working_directory}, and "skip-dep\t<dir in worktree>\t-" per directory it did not enter, which
+#   does not affect the exit status; its plan changes nothing and exits as apply would.
 # Exit: 0 ok, 1 some items failed or conflict (originals kept), 2 usage or refused,
 #   3 workspace_archive_dir unset or not absolute on apply.
 set -u
@@ -89,11 +91,13 @@ staying() {
   return 0
 }
 
+DEP_DIRS=(-name .git -o -name .venv -o -name venv -o -name node_modules)
+
 # walk <dir> <find tests...> : print matching paths, NUL separated, outside repositories and dependency trees.
 walk() {
   local dir=$1; shift
   find "$dir" -mindepth 1 \
-    \( -name .git -o -name .venv -o -name venv -o -name node_modules \) -prune -o \
+    -type d \( "${DEP_DIRS[@]}" \) -prune -o \
     \( "$@" \) -print0
 }
 
@@ -122,6 +126,9 @@ same_file() {
 if [ "$KIND" = preserve ]; then
   [ "$ROOT" != "$PRIMARY" ] || { echo "preserve needs a worktree, not the primary" >&2; exit 2; }
   [ -d "$ROOT/$WD" ] || exit 0
+  while IFS= read -r -d '' d; do
+    printf 'skip-dep\t%s\t-\n' "${d#"$ROOT/$WD/"}"
+  done < <(find "$ROOT/$WD" -mindepth 1 -type d \( "${DEP_DIRS[@]}" \) -prune -print0)
   while IFS= read -r -d '' f; do
     rel=${f#"$ROOT/$WD/"}
     [ "$rel" != .hook.log ] || continue
@@ -138,7 +145,8 @@ if [ "$KIND" = preserve ]; then
     fi
     printf 'copy\t%s\t%s\n' "$rel" "$to"
     [ "$MODE" = apply ] || continue
-    { mkdir -p "$(dirname "$dest")" && cp -Pp -- "$f" "$dest"; } || { echo "FAIL $f" >&2; fails=$((fails + 1)); }
+    tmp="$dest.tmp.$$"
+    { mkdir -p "$(dirname "$dest")" && cp -Pp -- "$f" "$tmp" && mv -- "$tmp" "$dest"; } || { rm -f -- "$tmp"; echo "FAIL $f" >&2; fails=$((fails + 1)); }
   done < <(walk "$ROOT/$WD" -type f -o -type l)
   [ "$fails" = 0 ] && exit 0 || exit 1
 fi
@@ -271,6 +279,7 @@ archive_one() {
   local src=$1 doc=$2 rel=$3 method=$4 bytes=$5 dest tmp s existing
   dest="$ARCHIVE/$REPO/$doc/$rel"
   [ "$method" = gzip ] && dest="$dest.gz"
+  [ "$(realpath -m -- "$dest")" != "$(realpath -m -- "$src")" ] || { echo "FAIL $src: archive destination is the source itself" >&2; return 1; }
   mkdir -p "$(dirname "$dest")" || return 1
   s=$(sha <"$src") || return 1
   if [ -e "$dest" ]; then

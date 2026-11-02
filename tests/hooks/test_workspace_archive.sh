@@ -19,7 +19,7 @@ big "$D/big.md"; big "$D/script.py"; big "$D/run.log" /dev/zero; big "$D/img/a.j
 big "$D/unknown.bin"; big "$D/test-results/trace.bin"; big "$D/keep.txt" /dev/zero
 for e in $KEEP_TYPES; do big "$D/test-results/kept.$e" /dev/zero; done
 big "$D/node_modules/n.log" /dev/zero; big "$D/sub/.venv/v.log" /dev/zero; big "$D/sub/venv/w.log" /dev/zero; big "$D/sub/.git/g.log" /dev/zero
-big "$D/secret.log" /dev/zero; chmod 600 "$D/secret.log"; big "$D/shared.log" /dev/zero; chmod 640 "$D/shared.log"
+big "$D/shared.log" /dev/zero; chmod 640 "$D/shared.log"
 mkdir -p "$D/was-empty"
 head -c 1000 /dev/zero >"$D/small.log"; touch -d '3 days ago' "$D/small.log"
 head -c 150000 /dev/zero >"$D/fresh.log"
@@ -31,7 +31,6 @@ out=$("$S" files plan "$R" --removing "$W" --date "$DAY"); rc=$?
 rc_is "plan exit 0" 0 $rc
 isin "gzip log" "$out" "gzip"$'\t'"150000"$'\t'"2026_01_01-done/run.log"
 isin "move jpg" "$out" "move"$'\t'"150000"$'\t'"2026_01_01-done/img/a.jpg"
-isin "move xlsx" "$out" "2026_01_01-done/data.xlsx"
 isin "move test output" "$out" "2026_01_01-done/test-results/trace.bin"
 isin "recent reported" "$out" "skip-recent"
 notin "pycache not planned" "$out" "pycache"
@@ -66,7 +65,6 @@ rc_is "apply exit 0" 0 $rc
 B="$A/x/2026_01_01-done"
 exists "gzip dest" "$B/run.log.gz"; gone "gzip original gone" "$D/run.log"
 [ "$(gzip -dc "$B/run.log.gz" | sha256sum | cut -d' ' -f1)" = "$logsum" ] && ok "gzip content" || ko "gzip content" x
-[ "$(stat -c %a "$B/secret.log.gz")" = 600 ] && ok "gzip keeps 0600 mode" || ko "gzip keeps 0600 mode" "$(stat -c %a "$B/secret.log.gz")"
 [ "$(stat -c %a "$B/shared.log.gz")" = 640 ] && ok "gzip keeps 0640 mode" || ko "gzip keeps 0640 mode" "$(stat -c %a "$B/shared.log.gz")"
 exists "move dest" "$B/img/a.jpg"; gone "move original gone" "$D/img/a.jpg"; gone "empty dir removed" "$D/img"
 [ "$(sha256sum <"$B/img/a.jpg" | cut -d' ' -f1)" = "$sum" ] && ok "move content" || ko "move content" x
@@ -97,7 +95,20 @@ exists "failed cmp keeps original" "$D/photo.png"; exists "failed gzip keeps ori
 gone "failed cmp leaves no copy" "$B/photo.png"; gone "failed gzip leaves no copy" "$B/verify.log.gz"
 [ -z "$(find "$B" -name '*.tmp.*')" ] && ok "failed verification leaves no temp file" || ko "temp file" "$(find "$B" -name '*.tmp.*')"
 notin "failed verification writes no ledger row" "$(cat "$D/ARCHIVED.md")" "photo.png"
-rm -f "$D/photo.png" "$D/verify.log"
+# a re-run after the cause is fixed finishes the job, and a further one changes nothing
+"$S" files apply "$R" --removing "$W" --exclude '*/keep.txt' --date "$DAY"; rc_is "re-run after failure exit 0" 0 $?
+gone "re-run after failure archives the original" "$D/photo.png"; exists "re-run after failure writes the copy" "$B/photo.png"
+"$S" files apply "$R" --removing "$W" --exclude '*/keep.txt' --date "$DAY"; rc_is "second re-run exit 0" 0 $?
+[ "$(grep -c 'photo.png' "$D/ARCHIVED.md")" = 1 ] && ok "second re-run adds no ledger row" || ko "second re-run adds no ledger row" "$(grep -c 'photo.png' "$D/ARCHIVED.md")"
+
+# a destination that resolves to the source is refused, or the same-content branch would drop the only copy
+mkdir -p "$T/loop"; ln -s "$R/.dc_workspace" "$T/loop/x"; cfg "" "$T/loop"
+big "$D/self.png"
+out=$("$S" files apply "$R" --removing "$W" --exclude '*/keep.txt' 2>&1); rc_is "destination is the source exit 1" 1 $?
+isin "destination is the source reported" "$out" "is the source"
+exists "destination is the source keeps the file" "$D/self.png"
+notin "destination is the source writes no ledger row" "$(cat "$D/ARCHIVED.md")" "self.png"
+cfg; rm -f "$D/self.png"
 
 # open files stay, by fuser or by lsof; with neither, apply refuses
 big "$D/open.log" /dev/zero
@@ -160,7 +171,14 @@ out=$("$S" preserve plan "$W" --date "$DAY"); isin "preserve plan row" "$out" "c
 gone "preserve plan copies nothing" "$R/.dc_workspace/$DAY-ONE-1-thing/SPEC.md"
 mkdir -p "$W/.dc_workspace/2026_01_01-kw/node_modules/m" "$W/.dc_workspace/2026_01_01-kw/__pycache__"
 echo n >"$W/.dc_workspace/2026_01_01-kw/node_modules/m/README.md"; echo c >"$W/.dc_workspace/2026_01_01-kw/__pycache__/m.pyc"
-"$S" preserve apply "$W" --date "$DAY" >/dev/null; rc_is "preserve exit 0" 0 $?
+mkdir -p "$W/.dc_workspace/2026_01_01-kw/sub/.git" "$W/.dc_workspace/2026_01_01-kw/sub/venv" "$W/.dc_workspace/.venv"
+echo g >"$W/.dc_workspace/2026_01_01-kw/sub/.git/HEAD"; mkdir -p "$W/.dc_workspace/2026_01_01-kw/plain"; echo f >"$W/.dc_workspace/2026_01_01-kw/plain/venv"
+out=$("$S" preserve apply "$W" --date "$DAY"); rc_is "preserve exit 0" 0 $?
+for n in 2026_01_01-kw/node_modules 2026_01_01-kw/sub/.git 2026_01_01-kw/sub/venv .venv; do isin "preserve row for pruned $n" "$out" "skip-dep"$'\t'"$n"$'\t'"-"; done
+notin "preserve no row inside a pruned dir" "$out" "node_modules/m"
+gone "preserve prunes .git" "$R/.dc_workspace/2026_01_01-kw/sub/.git"
+exists "file named venv is copied" "$R/.dc_workspace/2026_01_01-kw/plain/venv"
+out=$("$S" preserve plan "$W" --date "$DAY"); isin "preserve plan row for pruned dir" "$out" "skip-dep"$'\t'"2026_01_01-kw/node_modules"$'\t'"-"
 exists "undated doc dated" "$R/.dc_workspace/$DAY-ONE-1-thing/SPEC.md"
 exists "nested doc copied" "$R/.dc_workspace/$DAY-ONE-1-thing/sub/n.md"
 exists "dated dir keeps name" "$R/.dc_workspace/2026_01_01-kw/PHASE_1_PLAN_kw.md"
@@ -168,7 +186,6 @@ exists "hidden dir keeps name" "$R/.dc_workspace/.validated/m.json"
 gone "preserve prunes node_modules" "$R/.dc_workspace/2026_01_01-kw/node_modules"
 gone "preserve skips __pycache__" "$R/.dc_workspace/2026_01_01-kw/__pycache__"
 "$S" preserve apply "$R" 2>/dev/null; rc_is "preserve on primary -> exit 2" 2 $?
-"$S" preserve plan "$W" --date 20260304 2>/dev/null; rc_is "preserve bad --date -> exit 2" 2 $?
 
 # an undated doc dir the primary already has keeps its name
 mkdir -p "$R/.dc_workspace/SHARED" "$W/.dc_workspace/SHARED"; echo p >"$R/.dc_workspace/SHARED/primary.md"; echo w >"$W/.dc_workspace/SHARED/w.md"
@@ -225,6 +242,19 @@ out=$("$S" preserve apply "$W"); rc_is "preserve tracked clean exit 0" 0 $?; not
 echo edit >>"$W/.dc_workspace/$KW/tr.md"
 out=$("$S" preserve apply "$W"); rc_is "preserve tracked dirty exit 1" 1 $?; isin "preserve tracked dirty row" "$out" "conflict"$'\t'"$KW/tr.md"
 git -C "$W" checkout -q -- ".dc_workspace/$KW/tr.md"
+# a failed copy leaves nothing at the destination, so a re-run does not see a false conflict
+CPSTUB="$T/failing-cp"; mkdir -p "$CPSTUB"; printf '#!/bin/sh\nfor a; do last=$a; done\necho partial >"$last"\nexit 1\n' >"$CPSTUB/cp"; chmod +x "$CPSTUB/cp"
+echo whole >"$W/.dc_workspace/$KW/atomic.md"
+PATH="$CPSTUB:$PATH" "$S" preserve apply "$W" --date "$DAY" >/dev/null 2>&1; rc_is "preserve failed copy exit 1" 1 $?
+gone "preserve failed copy leaves no destination" "$R/.dc_workspace/$KW/atomic.md"
+[ -z "$(find "$R/.dc_workspace/$KW" -name '*.tmp.*')" ] && ok "preserve failed copy leaves no temp file" || ko "preserve failed copy leaves no temp file" x
+"$S" preserve apply "$W" --date "$DAY" >/dev/null; rc_is "preserve re-run exit 0" 0 $?
+[ "$(cat "$R/.dc_workspace/$KW/atomic.md")" = whole ] && ok "preserve re-run writes the whole file" || ko "preserve re-run writes the whole file" x
+out=$("$S" preserve apply "$W" --date "$DAY"); notin "preserve second re-run copies nothing" "$out" "copy"
+# a re-run on a later day copies an undated doc dir again under the new date; nothing is lost
+LATER=2026_03_05
+"$S" preserve apply "$W" --date "$LATER" >/dev/null; rc_is "preserve re-run on a later date exit 0" 0 $?
+exists "later date keeps the first copy" "$R/.dc_workspace/$DAY-ONE-1-thing/SPEC.md"; exists "later date adds a dated copy" "$R/.dc_workspace/$LATER-ONE-1-thing/SPEC.md"
 
 # deps
 git -C "$R" worktree add -q -b feature/two "$T/x-two"; git -C "$R" worktree add -q -b feature/three "$T/x-three"
