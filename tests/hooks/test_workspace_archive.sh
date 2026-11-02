@@ -43,12 +43,40 @@ exists "plan keeps original" "$D/run.log"; gone "plan writes no archive" "$A"
 printf '{ "working_directory": ".dc_workspace" }\n' >"$R/.claude/dotclaude-config.json"
 out=$("$S" files apply "$R" --removing "$W" 2>&1); rc=$?
 rc_is "unset dir -> exit 3" 3 $rc; isin "unset dir reported" "$out" "is not set"
-exists "unset dir keeps original" "$D/run.log"
+exists "unset dir keeps original" "$D/run.log"; gone "unset dir creates nothing" "$A"
 cfg "" rel/arch
 out=$(cd "$T" && "$S" files apply "$R" --removing "$W" 2>&1); rc=$?
 rc_is "relative dir -> exit 3" 3 $rc; isin "relative dir reported" "$out" "absolute"
 gone "relative dir creates nothing" "$T/rel"; exists "relative dir keeps original" "$D/run.log"
 cfg
+
+# having nothing to do is not a failure: a missing path is skipped with a row and a warning
+MISS="$T/no-such-worktree"
+for kind in files preserve; do
+  for mode in plan apply; do
+    out=$("$S" "$kind" "$mode" "$MISS" 2>"$T/err"); rc=$?
+    rc_is "missing path: $kind $mode -> exit 0" 0 $rc
+    isin "missing path: $kind $mode row" "$out" "skip-missing"$'\t'"-"$'\t'"$MISS"
+    isin "missing path: $kind $mode warns" "$(cat "$T/err")" "$MISS"
+  done
+done
+gone "missing path creates nothing" "$MISS"
+# a path that exists but is not a checkout is still an error, and the message names it
+mkdir -p "$T/not-a-checkout"
+out=$("$S" files apply "$T/not-a-checkout" 2>&1); rc=$?
+rc_is "not a checkout -> exit 2" 2 $rc; isin "not a checkout names the path" "$out" "not a git checkout: $T/not-a-checkout"
+"$S" preserve apply "$T/not-a-checkout" 2>/dev/null; rc_is "not a checkout, preserve -> exit 2" 2 $?
+# with no candidates the archive location does not matter
+EMPTY="$T/no-candidates"; mkdir -p "$EMPTY/.claude" "$EMPTY/.dc_workspace/2026_01_01-small"
+git -C "$EMPTY" init -q -b main; git -C "$EMPTY" config user.email t@t; git -C "$EMPTY" config user.name t
+echo s >"$EMPTY/.dc_workspace/2026_01_01-small/SPEC.md"; git -C "$EMPTY" commit -q --allow-empty -m init
+printf '{ "working_directory": ".dc_workspace" }\n' >"$EMPTY/.claude/dotclaude-config.json"
+before=$(find "$EMPTY" -path "$EMPTY/.git" -prune -o -print | sort)
+"$S" files apply "$EMPTY"; rc_is "unset dir, no candidates -> exit 0" 0 $?
+printf '{ "working_directory": ".dc_workspace", "workspace_archive_dir": "rel/arch" }\n' >"$EMPTY/.claude/dotclaude-config.json"
+(cd "$T" && "$S" files apply "$EMPTY"); rc_is "relative dir, no candidates -> exit 0" 0 $?
+gone "no candidates creates no relative dir" "$T/rel"
+[ "$(find "$EMPTY" -path "$EMPTY/.git" -prune -o -print | sort)" = "$before" ] && ok "no candidates changes nothing" || ko "no candidates changes nothing" x
 
 # --date form and a working_directory that is the repository itself are refused
 "$S" files plan "$R" --date 2026-03-04 2>/dev/null; rc_is "bad --date -> exit 2" 2 $?

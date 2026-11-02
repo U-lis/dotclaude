@@ -87,7 +87,11 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
       git log -1 --format="%ai %s" {branch}
 
 8. Classify worktrees
-   -> For each non-main worktree:
+   -> A registered worktree whose directory is gone is a "missing worktree", with nothing to archive:
+      - Warn, and skip preserve, files, the uncommitted-changes check and git worktree remove for it
+      - It is not a failure and does not stop the purge; git worktree prune clears it in step 11
+      - Its branch stays subject to the normal branch rules
+   -> For each other non-main worktree:
       - If its branch is in the merged-and-deployed set: mark as "merged-and-deployed worktree"
       - If its branch no longer exists (orphaned): mark as "orphaned worktree"
       - Otherwise: leave it alone (not a candidate for removal)
@@ -109,6 +113,9 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
       - {path} ({branch}) [merged-and-deployed | orphaned]
       - {path} ({branch}) -- SKIPPED: has uncommitted changes
 
+      ### Missing Worktrees (directory gone; nothing to archive, pruned)
+      - {path} ({branch})
+
       ### Local Branches to Delete (merged AND deployed)
       - {branch}
 
@@ -128,11 +135,12 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
       ### Dependency Directories ({total size})
       - {worktree}/{name} ({size}) -- delete[, then symlink to primary]
 
-   -> If no merged branches, no eligible worktrees, no compaction candidates and no dependency directories:
+   -> If no merged branches, no eligible or missing worktrees, no compaction candidates and no dependency directories:
       Display "No merged branches to clean up."
       Skip to unmerged branch warnings, then end workflow.
 
 10. User confirmation
+    -> A category with no candidates (Compact with no gzip or move rows, Dependency with no rows) is not confirmed, is not asked about, and does not run
     -> Use AskUserQuestion:
        question: "How would you like to proceed with the cleanup?"
        options:
@@ -206,6 +214,7 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
        # Purge Complete
 
        - Worktrees removed: {count} (skipped: {count}, failed: {count})
+       - Missing worktrees pruned: {count}
        - Local branches deleted: {count} (skipped: {count}, failed: {count})
        - Remote branches deleted: {count} (skipped: {count}, failed: {count})
        - Workspace files archived: {count}, {size} freed (under {workspace_archive_dir}/{repo}/)
@@ -220,7 +229,7 @@ Resolve `{base_branch}` as in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md` (Con
 
 ## Stop on archive failure
 
-Any non-zero exit of `preserve` (1, 2, 3, 126, 127, anything) or of a confirmed `files apply`, on a worktree or on the primary, stops the purge at that point. Do not remove that worktree, do not process further worktrees, and do not run the primary pass, `deps`, or any local or remote branch deletion that has not run yet. End the workflow with this report instead of step 12:
+Any non-zero exit of `preserve` (1, 2, 3, 126, 127, anything) or of a confirmed `files apply`, on a worktree or on the primary, stops the purge at that point. So does a call that did not complete (killed, timed out, or never started). Do not remove that worktree, do not process further worktrees, and do not run the primary pass, `deps`, or any local or remote branch deletion that has not run yet. End the workflow with this report instead of step 12:
 
 ```
 # Purge Stopped
@@ -233,7 +242,7 @@ Any non-zero exit of `preserve` (1, 2, 3, 126, 127, anything) or of a confirmed 
 
 Nothing already done is rolled back. Re-running purge after the cause is fixed is safe: `files` finds no archived original again and completes a file whose copy already sits at the destination, and `preserve` is silent on files it already copied. A failed copy leaves nothing at its destination. On a later day a new `{date}` makes an undated doc dir arrive a second time under the new date, next to the first copy; nothing is overwritten or lost.
 
-If the Compact category was not confirmed, or was skipped because no location was given, `files` did not run and that is not a failure. `git worktree remove` failing is a different case and keeps report-and-continue.
+Having nothing to do is not a failure. If the Compact category had no candidates, was not confirmed, or was skipped because no location was given, `files` did not run. A missing worktree skips `files` and `preserve`, and a `skip-missing` row with exit 0 from either means the same: warn, report it as a missing worktree, and go on. `git worktree remove` failing is a different case and keeps report-and-continue.
 
 ## Preserve documents
 
@@ -246,7 +255,7 @@ Before a worktree is removed (by purge, and by `/dotclaude:merge` step 6), run `
 - Plan, for the primary and each eligible worktree: `workspace-archive.sh files plan {path} --removing {wt}... --date {date}`, one `--removing` per eligible worktree. It prints `<action>\t<bytes>\t<path>` and changes nothing. Actions: `gzip` (logs and text data), `move` (images, video, spreadsheets, archives, test output; these do not compress), and `skip-recent`, `skip-open`, `skip-ignored`, `skip-in-flight` (left alone). `__pycache__` contents are neither archived nor deleted. A warning on stderr names a precondition that apply will refuse on, which would stop the purge; show it in the preview.
 - `.txt`, `.json`, `.csv`, `.sql`, `.html` and `.xml` can be work records rather than dumps. Name those in the preview and ask; pass the ones to keep as `--exclude '{doc_dir}/{file}'` on every `files` call, and for an undated worktree doc dir also as `--exclude '{date}-{doc_dir}/{file}'`, the name preserve gives it in the primary.
 - `workspace_archive_dir` unset or not an absolute path after `~` expands, and there are `gzip` or `move` rows: ask for it in step 10, and write the answer to the global config file (Contract: Configuration). No answer means this category is skipped; never pick a location yourself.
-- Apply: `workspace-archive.sh files apply {wt} --date {date} [--exclude ...]` on each confirmed worktree before it is removed, then `workspace-archive.sh files apply {primary} --removing {wt}... --date {date} [--exclude ...]` after all removals, with one `--removing` per worktree actually removed, so a worktree whose `git worktree remove` failed keeps its doc dirs in flight. Exit 1 means some files failed and their originals remain. Exit 2 means the script refused before changing anything (`workspace_size_ignore` unreadable, no `fuser` or `lsof`, no `jq` or `python3`, or a `{working_directory}` outside the repository). Exit 3 is an unset or relative `workspace_archive_dir`. Any non-zero exit stops the purge (Stop on archive failure).
+- Apply: `workspace-archive.sh files apply {wt} --date {date} [--exclude ...]` on each confirmed worktree before it is removed, then `workspace-archive.sh files apply {primary} --removing {wt}... --date {date} [--exclude ...]` after all removals, with one `--removing` per worktree actually removed, so a worktree whose `git worktree remove` failed keeps its doc dirs in flight. Exit 1 means some files failed and their originals remain. Exit 2 means the script refused before changing anything (`workspace_size_ignore` unreadable, no `fuser` or `lsof`, no `jq` or `python3`, or a `{working_directory}` outside the repository). Exit 3 is an unset or relative `workspace_archive_dir` with a file to archive; with none, apply exits 0 and changes nothing. Any non-zero exit stops the purge (Stop on archive failure).
 
 Files land in `{workspace_archive_dir}/{primary checkout name}/{doc_dir}/{relative path}[.gz]`. Each gets a row in `{working_directory}/{doc_dir}/ARCHIVED.md` in the primary (original, location, bytes, sha256, date, method). Originals go only after the copy is verified, then the directories that emptied, up to the doc dir. Doc dirs matching `workspace_size_ignore` stay, and `YYYY_MM_DD-{name}` also matches when `{name}` does.
 
@@ -276,14 +285,14 @@ Files land in `{workspace_archive_dir}/{primary checkout name}/{doc_dir}/{relati
 | EC-7 | Remote branch deletion fails (permission denied, branch protected) | Report failure, continue with next branch |
 | EC-8 | User cancels at confirmation step | Abort all cleanup, display "No changes made" |
 | EC-9 | Current branch is a merged branch | Exclude from deletion candidates (cannot delete checked-out branch) |
-| EC-10 | Worktree path no longer exists on disk | `git worktree prune` handles this; include in cleanup |
+| EC-10 | Worktree path no longer exists on disk | Nothing to archive: warn, skip `preserve`, `files` and `git worktree remove`, do not stop; `git worktree prune` clears it, the result report lists it, and its branch follows the normal rules |
 | EC-11 | Latest local tag has NOT been pushed to remote | Branches merged after the previous remote tag are protected; report them as "Merged but not yet deployed" |
 | EC-12 | No tags exist at all (local or remote) | Set `NO_TAGS=true`, skip tag deployment check, treat all merged branches as safe to delete, warn user |
 | EC-14 | Branch was squash-merged (`git branch --merged` does not list it) | A merged PR from `gh pr list --state merged --head` counts as merged |
 | EC-13 | Explicit version argument tag does not exist | HALT with error. Do NOT proceed with cleanup. |
 | EC-15 | A copy fails verification, or a different file already sits at the destination | The script keeps the original and exits 1; stop the purge (Stop on archive failure) |
 | EC-16 | `{working_directory}` is tracked (`workspace_tracking: commit`) | Tracked files are not candidates; only untracked files are archived |
-| EC-17 | `workspace_archive_dir` unset or relative and no answer | Skip the category; originals stay. `files` did not run, so this is not a failure |
+| EC-17 | `workspace_archive_dir` unset or relative, with candidates, and no answer | Skip the category; originals stay. `files` did not run, so this is not a failure. With no candidates nothing is asked |
 | EC-18 | Preserve finds a different file at the destination and git does not hold the source | Report the `conflict` row, overwrite nothing, stop the purge (Stop on archive failure) |
 | EC-19 | The script refuses with exit 2 (`workspace_size_ignore` unreadable, no `fuser` or `lsof`, no `jq` or `python3`, `{working_directory}` outside the repository) | That call changed nothing; stop the purge (Stop on archive failure) |
 

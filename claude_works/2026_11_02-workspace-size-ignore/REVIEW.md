@@ -22,6 +22,8 @@ Second and final review (static). All 12 first-review items are fixed. BLOCKERS:
 
 ## Phase 1, third round
 
+User decision on 2026-11-02: having nothing to do is not a failure, so rows 2, 3 and 4 skip, warn and report. A fourth round was run on that basis.
+
 Review after the user-authorized third round (static, plus read-only plan calls). The stop rule holds: after an archive failure no path reaches `git worktree remove` or a branch deletion. BLOCKERS: 1.
 
 | # | Axis | Severity | Location | Finding |
@@ -42,3 +44,19 @@ Review after the user-authorized third round (static, plus read-only plan calls)
 | 16 | tests | Minor | `tests/hooks/test_workspace_archive.sh` | Exit 2 for a missing worktree and exit 3 with no candidates are unpinned. |
 | 17 | tests | Minor | `PHASE_1_TEST.md:66-67` | Rows named "...which stops the purge" pin only the script's exit. |
 | 18 | tests | Minor | `tests/hooks/test_workspace_archive.sh:116-117` | The open-file tests need both `fuser` and `lsof`. |
+
+## Phase 1, fourth round
+
+Narrow review of the fourth-round diff (static trace). BLOCKERS: 0. The five targeted cases are fixed, and a non-zero or incomplete call still stops purge and merge cleanup.
+
+| # | Axis | Severity | Location | Finding |
+|---|------|----------|----------|---------|
+| 1 | correctness | Minor | `commands/merge.md:13`; `hooks/workspace-archive.sh:72-76` | Merge gates removal on the exit code alone, so a `preserve` returning `skip-missing` exit 0 falls through to `git worktree remove`. It needs a path mismatch within the step or a flapping mount; no documented flow reaches it. |
+| 2 | correctness | Minor | `commands/purge.md:90-93`, `:116`, `:200`; `commands/merge.md:13` | A temporarily unmounted worktree is treated as gone: prune drops its registration, its files survive, and later purges no longer list it. A locked worktree is not pruned but would be reported as pruned. |
+| 3 | correctness | Minor | `hooks/workspace-archive.sh:72` | `[ ! -e ]` is also true for access errors, dangling symlinks and an empty argument. |
+| 4 | scope | Minor | `SPEC.md` | `check-approved` exits 1 after the validator ticks a checkbox. Existing behavior, seen in every round; it gates only the design stage. |
+| 6 | maintainability | Minor | `commands/purge.md:249` | The Preserve documents row list omits `skip-missing`. |
+
+## Full diff
+
+The third-round review above covered the full branch diff against `main`, and the fourth-round review covered the rest. Open: 0 Blockers; third-round rows 7-18 and fourth-round rows 1-6 stay as follow-ups.

@@ -29,12 +29,14 @@
 # deps: non-symlink .venv/venv at the root of staying worktrees. The session's worktree (from $PWD)
 #   and --current are skipped; a subdirectory stands for its worktree.
 #
+# files and preserve on a path that does not exist print "skip-missing\t-\t<path>", warn on stderr
+#   and exit 0.
 # files and deps plan print "<action>\t<size bytes>\t<path>" and change nothing.
 # preserve prints "copy|conflict\t<path in worktree>\t<path in primary>", relative to
 #   {working_directory}, and "skip-dep\t<dir in worktree>\t-" per directory it did not enter, which
 #   does not affect the exit status; its plan changes nothing and exits as apply would.
 # Exit: 0 ok, 1 some items failed or conflict (originals kept), 2 usage or refused,
-#   3 workspace_archive_dir unset or not absolute on apply.
+#   3 workspace_archive_dir unset or not absolute on apply with a file to archive.
 set -u
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || exit 2
 # shellcheck source=_lib.sh
@@ -66,7 +68,14 @@ while [ $# -gt 0 ]; do
   esac
 done
 DATE=${DATE:-$(date +%Y_%m_%d)}
-ROOT=$(git -C "$ROOT" rev-parse --show-toplevel 2>/dev/null) || { echo "not a git checkout: $ROOT" >&2; exit 2; }
+# A worktree whose directory is gone has nothing to archive, which is not a failure.
+if [ ! -e "$ROOT" ] && [ "$KIND" != deps ]; then
+  printf 'skip-missing\t-\t%s\n' "$ROOT"
+  echo "warning: $ROOT does not exist; nothing to archive" >&2
+  exit 0
+fi
+GIVEN=$ROOT
+ROOT=$(git -C "$GIVEN" rev-parse --show-toplevel 2>/dev/null) || { echo "not a git checkout: $GIVEN" >&2; exit 2; }
 export HOOK_CWD=$ROOT
 PRIMARY=$(find_worktrees "$ROOT" | head -1 | cut -f1)
 [ -n "$PRIMARY" ] || exit 2
@@ -207,13 +216,14 @@ file_open() {
 
 ARCHIVE=$(cfg_get workspace_archive_dir "")
 case "$ARCHIVE" in \~|\~/*) ARCHIVE="$HOME${ARCHIVE#\~}" ;; esac
-if [ "$MODE" = apply ]; then
+# require_archive_dir : called at each candidate, so nothing to archive needs no location.
+require_archive_dir() {
   [ -n "$ARCHIVE" ] || { echo "workspace_archive_dir is not set" >&2; exit 3; }
   case "$ARCHIVE" in
     /*) ;;
     *) echo "workspace_archive_dir must be an absolute path, not '$ARCHIVE'" >&2; exit 3 ;;
   esac
-fi
+}
 REPO=$(basename "$PRIMARY")
 
 # in_flight <doc_dir> : for the primary checkout, true when a staying worktree holds the same doc dir.
@@ -327,6 +337,7 @@ for entry in "$WS"/* "$WS"/.[!.]*; do
       [ "$MODE" = plan ] && printf 'skip-open\t%s\t%s\n' "$bytes" "$doc/$rel"; continue
     fi
     if [ "$MODE" = plan ]; then printf '%s\t%s\t%s\n' "$method" "$bytes" "$doc/$rel"; continue; fi
+    require_archive_dir
     if archive_one "$f" "$outdoc" "$rel" "$method" "$bytes"; then
       remove_emptied "$(dirname "$f")" "$entry"
     else

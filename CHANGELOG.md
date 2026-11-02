@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `/dotclaude:purge` deletes non-symlink `.venv`/`venv` directories in remaining worktrees (re-linked to the primary when `worktree.share_from_base` is on).
 - Preserve documents adds a `YYYY_MM_DD-` prefix to an undated doc dir copied from a removed worktree, and runs through `hooks/workspace-archive.sh preserve`.
 - `/dotclaude:purge` and `/dotclaude:merge` stop and report when `preserve` or a confirmed `files apply` exits non-zero, leaving that worktree and everything not yet processed.
+- Having nothing to do is not a failure: a worktree whose directory is gone is warned about, pruned and reported; an empty archive category does not run; a merge with no separate worktree skips preserve and removal.
 - `$CLAUDE_CONFIG_DIR/dotclaude-config.json` is read between `~/.claude` and the repository config.
 
 ### Changed

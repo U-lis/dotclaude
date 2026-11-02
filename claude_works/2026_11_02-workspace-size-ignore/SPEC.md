@@ -5,9 +5,9 @@ language: ko_KR
 worktree_path: .
 doc_dir: 2026_11_02-workspace-size-ignore
 target_version: 0.8.0
-stage: code
-approved_at: 2026-11-02T08:39:22Z
-approved_hash: 9ee123d7bf71f936fae737ffb6d7e21a46c4d7ca9cea2202874e02383b80914c
+stage: pr
+approved_at: 2026-11-02T09:29:28Z
+approved_hash: 5d923de5ac61173ba4989c16e1d58c941070592bac1d3aa26d1e09cac0945075
 decisions: []
 handoff: ""
 -->
@@ -45,6 +45,7 @@ handoff: ""
 
 - [x] NFR-1: 복사본 검증에 실패하거나 내용이 다른 파일이 목적지에 있으면 원본을 지우지 않고 exit 1로 보고한다.
 - [x] NFR-2: `files`나 `preserve`가 어떤 이유로든 0이 아닌 값으로 끝나거나 실행되지 못하면 purge는 그 자리에서 중지하고 보고한다. 해당 worktree와 아직 처리하지 않은 항목은 건드리지 않으며, 원인을 고친 뒤 다시 실행해도 안전하다.
+- [x] NFR-3: 할 일이 없는 경우는 실패가 아니다. 디렉터리가 사라진 worktree, 압축 대상이 없는 경우(위치 설정이 없어도), 별도 worktree가 없는 머지는 건너뛰고 경고한 뒤 다음으로 넘어가며 결과 보고에 적는다.
 
 ---
 
