@@ -52,8 +52,14 @@ check_own_worktree
 IGN=()
 mapfile -t IGN < <(cfg_get_list workspace_size_ignore)
 
+# workspace_size_warn_primary: false turns the size warning off on the primary only. git reports both paths
+# with symlinks resolved, so they compare as strings.
+on_primary() { [ "$wt" = "$PRIMARY" ]; }
+measure=true
+on_primary && [ "$(cfg_get workspace_size_warn_primary true)" = false ] && measure=false
+
 warn=""
-if [ -n "$wt" ] && [ -d "$wt/$WD" ]; then
+if [ "$measure" = true ] && [ -n "$wt" ] && [ -d "$wt/$WD" ]; then
   kb=0; top=""; topkb=0
   while IFS=$'\t' read -r k p; do
     rel=${p#"$wt/$WD/"}
@@ -65,6 +71,7 @@ if [ -n "$wt" ] && [ -d "$wt/$WD" ]; then
   if [ "$mb" -gt 10 ]; then
     log_line "$LOG" "Stop warn $wt: workspace ${mb}MB (largest $top $((topkb / 1024))MB)"
     warn="workspace ${mb}MB in $wt (largest: $top $((topkb / 1024))MB); run /dotclaude:purge, move data files out, or add the directory to workspace_size_ignore"
+    on_primary && warn="$warn; workspace_size_warn_primary: false turns this off on the primary"
   fi
 fi
 

@@ -14,7 +14,8 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 |-----|---------|---------|
 | `working_directory` | `.dc_workspace` | Directory for work documents, relative to the repository root |
 | `workspace_tracking` | `commit` | `commit` tracks `{working_directory}` in git; `ignore` keeps it in `.gitignore` and takes snapshots instead of commits (see Commits) |
-| `workspace_size_ignore` | `[]` | Globs matched against top-level entries of `{working_directory}` (e.g. `2026_06_29-exam-vision-eval`, `ONE-*`), and `YYYY_MM_DD-{name}` also matches when `{name}` does; matches are left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving |
+| `workspace_size_ignore` | `[]` | Globs matched against top-level entries of `{working_directory}` (e.g. `2026_06_29-exam-vision-eval`, `ONE-*`), and `YYYY_MM_DD-{name}` also matches when `{name}` does; matches are left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving. A primary checkout full of doc dirs is `workspace_size_warn_primary`'s case: `*` here would also turn off the worktree warning and purge archiving |
+| `workspace_size_warn_primary` | `true` | `false` turns off the Stop hook's 10MB size warning when the session's worktree is the primary checkout; worktree warnings, `workspace_size_ignore`, `/dotclaude:purge` archiving, and the uncommitted-code block do not change |
 | `workspace_archive_dir` | unset | Where `/dotclaude:purge` puts files moved out of `{working_directory}`, as `{dir}/{primary checkout name}/{doc_dir}/...`; `~` expands. Unset means purge asks, and never chooses |
 | `base_branch` | `main` | Branch that work branches fork from and merge into |
 | `language` | `en_US` | Language of user-facing text (see Language) |

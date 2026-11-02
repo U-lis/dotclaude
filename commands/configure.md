@@ -37,7 +37,8 @@ Ask, each defaulting to the current value:
 - `pr.labels` (comma-separated list), `pr.assignee` (default `@me`, empty for none), `pr.reviewers` (comma-separated list).
 - `worktree.share_from_base`: boolean, default on.
 - `workspace_tracking`: `commit` (default) or `ignore`. `ignore` keeps `{working_directory}` in `.gitignore` and takes snapshots instead of document commits.
-- `workspace_size_ignore`: comma-separated globs for top-level entries of `{working_directory}` that the Stop hook's 10MB size warning skips and `/dotclaude:purge` does not archive (`YYYY_MM_DD-{name}` also matches when `{name}` does); empty (the default) covers everything. Stored as a JSON array.
+- `workspace_size_ignore`: comma-separated globs for top-level entries of `{working_directory}` that the Stop hook's 10MB size warning skips and `/dotclaude:purge` does not archive (`YYYY_MM_DD-{name}` also matches when `{name}` does); empty (the default) covers everything. Stored as a JSON array. To silence a primary checkout full of doc dirs, use `workspace_size_warn_primary`; `*` here would also turn off the worktree warning and purge archiving.
+- `workspace_size_warn_primary`: boolean, default on. Off turns off the Stop hook's 10MB size warning on the primary checkout only; worktree warnings and purge archiving do not change.
 - `workspace_archive_dir`: directory purge moves bulky workspace files to, as `{dir}/{primary checkout name}/...`. Unset by default.
 - `parallel_phases`: boolean, default off. When on, the designer may propose parallel phase groups.
 
@@ -61,6 +62,6 @@ Inside a git repository, ask whether to edit the project coding rules; the file 
 
 ## Step 5: Save and confirm
 
-Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `workspace_size_ignore`, `workspace_archive_dir`, `parallel_phases` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
+Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `workspace_size_ignore`, `workspace_size_warn_primary`, `workspace_archive_dir`, `parallel_phases` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
 
 Report write errors (permissions, invalid directory) with the path and stop; do not retry silently.
