@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Stop hook: block when a work-branch worktree has uncommitted code (outside working_directory).
+# Stop hook: block when the session's worktree, on a work branch, has uncommitted code (outside working_directory).
 # Fail open on any error.
 exec 2>/dev/null
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || exit 0
@@ -18,11 +18,15 @@ PRIMARY=$(find_worktrees "$CWD" | head -1 | cut -f1)
 [ -n "$PRIMARY" ] || exit 0
 LOG="$PRIMARY/$WD/.hook.log"
 
+# Both checks cover only the worktree this session works in; others may belong to other sessions (#113).
+wt=$(git -C "$CWD" rev-parse --show-toplevel)
+br=$(git -C "$CWD" branch --show-current)
+
 reason=""
-while IFS=$'\t' read -r wt br; do
-  [ -n "$wt" ] || continue
-  work_branch "$br" || continue
-  [ "$br" = "$BASE" ] && continue
+check_own_worktree() {
+  [ -n "$wt" ] || return
+  work_branch "$br" || return
+  [ "$br" = "$BASE" ] && return
   files=()
   while IFS= read -r line; do
     p=${line:3}; p=${p##* -> }; p=${p#\"}; p=${p%\"}
@@ -31,26 +35,24 @@ while IFS=$'\t' read -r wt br; do
   if [ ${#files[@]} -gt 0 ]; then
     spec=$("$HERE/spec-meta.sh" find "$wt")
     if [ -z "$spec" ]; then
-      log_line "$LOG" "Stop skip $wt on $br: no SPEC.md (not dotclaude work)"; continue
+      log_line "$LOG" "Stop skip $wt on $br: no SPEC.md (not dotclaude work)"; return
     fi
     stage=$("$HERE/spec-meta.sh" stage "$spec")
     case "$stage" in
       code|local_test|test_deploy|remote_test) ;;
-      *) log_line "$LOG" "Stop skip $wt on $br: stage '${stage:-none}' has no phase in flight"; continue ;;
+      *) log_line "$LOG" "Stop skip $wt on $br: stage '${stage:-none}' has no phase in flight"; return ;;
     esac
     e="${files[0]}"; [ ${#files[@]} -gt 1 ] && e="$e, ${files[1]}"
     reason="Uncommitted code in $wt on $br: ${#files[@]} file(s), e.g. $e. Run code-validator for the current phase and commit on PASS, or tell the user why the work stays uncommitted."
-    break
   fi
-done < <(find_worktrees "$CWD")
+}
+check_own_worktree
 
 # workspace_size_ignore: JSON array of globs relative to {working_directory}; matches are left out of the size.
 IGN=()
 mapfile -t IGN < <(cfg_get_list workspace_size_ignore)
 
-# Size warning covers only the worktree this session works in.
 warn=""
-wt=$(git -C "$CWD" rev-parse --show-toplevel)
 if [ -n "$wt" ] && [ -d "$wt/$WD" ]; then
   kb=0; top=""; topkb=0
   while IFS=$'\t' read -r k p; do

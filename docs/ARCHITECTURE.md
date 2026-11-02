@@ -60,7 +60,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── _lib.sh                  # Shared helpers (JSON, config, worktrees, fail-open)
 │   ├── init-config.sh           # SessionStart: global config + language line
 │   ├── spec-meta.sh             # SPEC metadata block reader/writer (state)
-│   ├── check-validation-complete.sh  # Stop: uncommitted code in a dotclaude worktree
+│   ├── check-validation-complete.sh  # Stop: uncommitted code in the session's dotclaude worktree
 │   ├── guard-commit.sh          # PreToolUse Bash: code commit needs .validated marker
 │   ├── guard-design.sh          # PreToolUse Agent: designer needs approved SPEC
 │   └── title-prefix.sh          # Terminal title prefix while waiting for the user
