@@ -92,7 +92,7 @@ body_hash() {
 
 cmd_find() {
   local root=${1:-.} wd="" cfg line branch kw d
-  for cfg in "$root/.claude/dotclaude-config.json" "$HOME/.claude/dotclaude-config.json"; do
+  for cfg in "$root/.claude/dotclaude-config.json" "${CLAUDE_CONFIG_DIR:-$HOME/.claude}/dotclaude-config.json" "$HOME/.claude/dotclaude-config.json"; do
     if [ -f "$cfg" ]; then
       line=$(grep '"working_directory"' "$cfg" | head -n1 | sed -n 's/.*"working_directory"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')
       if [ -n "$line" ]; then wd=$line; break; fi

@@ -56,6 +56,9 @@ _resolve_language() {
 
 # Read global config first (lower priority)
 _resolve_language "$GLOBAL_CONFIG"
+if [ -n "${CLAUDE_CONFIG_DIR:-}" ] && [ "$CLAUDE_CONFIG_DIR" != "$HOME/.claude" ]; then
+  _resolve_language "$CLAUDE_CONFIG_DIR/dotclaude-config.json"
+fi
 
 # Read local config second (higher priority, overrides global)
 if [ -n "$LOCAL_CONFIG" ]; then

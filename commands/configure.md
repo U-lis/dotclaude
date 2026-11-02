@@ -7,7 +7,7 @@ Edit dotclaude settings at global or local scope. User-facing text follows Contr
 
 ## Step 1: Load
 
-Read `~/.claude/dotclaude-config.json` and, when inside a git repository, `<git_root>/.claude/dotclaude-config.json` (`git rev-parse --show-toplevel`). Merge defaults < global < local and show the result. A file that is not valid JSON is reported and treated as absent; an unreadable file likewise.
+Read `~/.claude/dotclaude-config.json`, `$CLAUDE_CONFIG_DIR/dotclaude-config.json` when that variable is set, and, when inside a git repository, `<git_root>/.claude/dotclaude-config.json` (`git rev-parse --show-toplevel`). Merge defaults < global < local and show the result. A file that is not valid JSON is reported and treated as absent; an unreadable file likewise.
 
 ## Step 2: Scope
 
@@ -37,6 +37,8 @@ Ask, each defaulting to the current value:
 - `pr.labels` (comma-separated list), `pr.assignee` (default `@me`, empty for none), `pr.reviewers` (comma-separated list).
 - `worktree.share_from_base`: boolean, default on.
 - `workspace_tracking`: `commit` (default) or `ignore`. `ignore` keeps `{working_directory}` in `.gitignore` and takes snapshots instead of document commits.
+- `workspace_size_ignore`: comma-separated globs for top-level entries of `{working_directory}` that the Stop hook's 10MB size warning skips and `/dotclaude:purge` does not archive (`YYYY_MM_DD-{name}` also matches when `{name}` does); empty (the default) covers everything. Stored as a JSON array.
+- `workspace_archive_dir`: directory purge moves bulky workspace files to, as `{dir}/{primary checkout name}/...`. Unset by default.
 - `parallel_phases`: boolean, default off. When on, the designer may propose parallel phase groups.
 
 Validate `stop_after` and `integration` against the allowed values above and re-ask only the invalid item. Stage commands are stored as entered.
@@ -59,6 +61,6 @@ Inside a git repository, ask whether to edit the project coding rules; the file 
 
 ## Step 5: Save and confirm
 
-Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `parallel_phases` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
+Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `workspace_size_ignore`, `workspace_archive_dir`, `parallel_phases` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
 
 Report write errors (permissions, invalid directory) with the path and stop; do not retry silently.

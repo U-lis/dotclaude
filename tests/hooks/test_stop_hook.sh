@@ -42,7 +42,33 @@ out=$(run "$T/nogit"); rc=$?; empty "non-git cwd silent" "$out"; [ $rc = 0 ] && 
 git -C "$W" checkout -q -- . 2>/dev/null; rm -f "$W/app.py"
 dd if=/dev/zero of="$DOC/big.bin" bs=1M count=11 status=none
 out=$(run "$W"); contains "(j) big workspace -> additionalContext" "$out" '"additionalContext":"workspace '
-contains "(j) hint text" "$out" 'run /dotclaude:purge or move data files out'
+contains "(j) hint text" "$out" 'or add the directory to workspace_size_ignore'
+contains "(j) names largest dir" "$out" 'largest: 2026_01_01-kw '
 case "$out" in *'"decision":"block"'*) ko "(j) must not block" "$out";; *) ok "(j) no block";; esac
-grep -q 'Stop warn .*: workspace [0-9]*MB' "$LOG" && ok "(j) warn logged" || ko "(j) warn log" "$(tail -3 "$LOG")"
+grep -q "Stop warn $W: workspace [0-9]*MB (largest 2026_01_01-kw [0-9]*MB)" "$LOG" && ok "(j) warn logged" || ko "(j) warn logged" "$(tail -3 "$LOG")"
+# (k) workspace_size_ignore glob leaves the directory out of the size
+printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*"] }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run "$W"); empty "(k) ignored dir -> no warn" "$out"
+NOJQ=$(tool_path jq)
+out=$(PATH=$NOJQ run "$W"); empty "(k) no jq: ignored dir -> no warn" "$out"
+# (l) a non-ignored directory still counts
+mkdir -p "$W/.dc_workspace/2026_02_02-other"; mv "$DOC/big.bin" "$W/.dc_workspace/2026_02_02-other/"
+out=$(run "$W"); contains "(l) other dir -> warn" "$out" 'largest: 2026_02_02-other '
+out=$(PATH=$NOJQ run "$W"); contains "(l) no jq: other dir -> warn" "$out" '"additionalContext":"workspace '
+# (n) only the session's own worktree is measured
+printf '{ "working_directory": ".dc_workspace" }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run "$R"); empty "(n) primary cwd ignores big worktree workspace" "$out"
+mkdir -p "$R/.dc_workspace/big"; dd if=/dev/zero of="$R/.dc_workspace/big/p.bin" bs=1M count=11 status=none
+rm -rf "$W/.dc_workspace/2026_02_02-other"
+out=$(run "$W"); empty "(n) worktree cwd ignores big primary workspace" "$out"
+out=$(run "$R"); contains "(n) primary cwd warns on its own workspace" "$out" "largest: big "
+rm -rf "$R/.dc_workspace/big"; mkdir -p "$W/.dc_workspace/2026_02_02-other"; dd if=/dev/zero of="$W/.dc_workspace/2026_02_02-other/big.bin" bs=1M count=11 status=none
+# (m) trailing slash in the pattern is accepted
+printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*", "2026_02_02-other/"] }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run "$W"); empty "(m) trailing slash pattern -> no warn" "$out"
+# (o) a dated entry counts as ignored when its undated name matches, as preserve renames it
+printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*", "oth*"] }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run "$W"); empty "(o) dated dir of an ignored name -> no warn" "$out"
+printf '{ "working_directory": ".dc_workspace", "workspace_size_ignore": ["2026_01_*", "nomatch*"] }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run "$W"); contains "(o) dated dir of another name -> warn" "$out" 'largest: 2026_02_02-other '
 finish

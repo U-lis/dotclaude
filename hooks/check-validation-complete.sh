@@ -44,23 +44,33 @@ while IFS=$'\t' read -r wt br; do
   fi
 done < <(find_worktrees "$CWD")
 
+# workspace_size_ignore: JSON array of globs relative to {working_directory}; matches are left out of the size.
+IGN=()
+mapfile -t IGN < <(cfg_get_list workspace_size_ignore)
+
+# Size warning covers only the worktree this session works in.
 warn=""
-while IFS=$'\t' read -r wt br; do
-  [ -n "$wt" ] && [ -d "$wt/$WD" ] || continue
-  mb=$(du -sm "$wt/$WD" | cut -f1)
-  if [ "${mb:-0}" -gt 10 ]; then
-    log_line "$LOG" "Stop warn $wt: workspace ${mb}MB"
-    warn="workspace ${mb}MB, run /dotclaude:purge or move data files out"
+wt=$(git -C "$CWD" rev-parse --show-toplevel)
+if [ -n "$wt" ] && [ -d "$wt/$WD" ]; then
+  kb=0; top=""; topkb=0
+  while IFS=$'\t' read -r k p; do
+    rel=${p#"$wt/$WD/"}
+    ignored_entry "$rel" "${IGN[@]}" && continue
+    kb=$((kb + k))
+    [ "$k" -gt "$topkb" ] && { topkb=$k; top=$rel; }
+  done < <(find "$wt/$WD" -mindepth 1 -maxdepth 1 -exec du -sk {} + 2>/dev/null)
+  mb=$((kb / 1024))
+  if [ "$mb" -gt 10 ]; then
+    log_line "$LOG" "Stop warn $wt: workspace ${mb}MB (largest $top $((topkb / 1024))MB)"
+    warn="workspace ${mb}MB in $wt (largest: $top $((topkb / 1024))MB); run /dotclaude:purge, move data files out, or add the directory to workspace_size_ignore"
   fi
-done < <(find_worktrees "$CWD")
+fi
 
 if [ -n "$reason" ]; then
   log_line "$LOG" "Stop block $reason"
   block_stop "$reason"
 else
   log_line "$LOG" "Stop pass no uncommitted code on work branches"
-  if [ -n "$warn" ] && command -v jq >/dev/null 2>&1; then
-    jq -nc --arg c "$warn" '{hookSpecificOutput:{hookEventName:"Stop",additionalContext:$c}}'
-  fi
+  [ -z "$warn" ] || stop_context "$warn"
 fi
 exit 0
