@@ -10,6 +10,15 @@ ko() { echo "FAIL: $1 ($2)"; fails=$((fails+1)); }
 contains() { case "$2" in *"$3"*) ok "$1";; *) ko "$1" "no [$3] in [$2]";; esac; }
 empty() { [ -z "$2" ] && ok "$1" || ko "$1" "unexpected output [$2]"; }
 finish() { [ "$fails" = 0 ] && exit 0 || { echo "$fails failure(s)"; exit 1; }; }
+# tool_path <absent>... : print a dir for PATH that links the tools the hooks use, minus the named ones.
+tool_path() {
+  local d t; d=$(mktemp -d -p "$T" path.XXXX)
+  for t in bash env git awk sed grep find stat du cut head tail date dirname basename mkdir mv rm cp cmp gzip sha256sum realpath rmdir chmod cat ls touch tr wc sort jq python3 fuser lsof; do
+    case " $* " in *" $t "*) continue;; esac
+    command -v "$t" >/dev/null && ln -s "$(command -v "$t")" "$d/$t"
+  done
+  printf '%s' "$d"
+}
 
 mk_fixture() {
   R="$T/x"; W="$T/x-feature-kw"

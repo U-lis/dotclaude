@@ -134,6 +134,8 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `pr.reviewers` | array | `[]` | PR reviewers |
 | `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
 | `workspace_tracking` | string | `commit` | `commit` tracks `{working_directory}` in git. `ignore` adds it to `.gitignore`; design commit points then write `.snapshots/*.tar.gz` (newest 5 kept) instead |
+| `workspace_size_ignore` | array | `[]` | Globs for top-level entries of `{working_directory}` left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving, e.g. `["2026_06_29-exam-vision-eval", "ONE-*"]`; `YYYY_MM_DD-{name}` also matches when `{name}` does |
+| `workspace_archive_dir` | string | unset | Destination for files `/dotclaude:purge` moves out of `{working_directory}`: `{dir}/{primary checkout name}/{doc_dir}/...`, with an `ARCHIVED.md` row per file in the doc dir. Purge asks when unset |
 | `parallel_phases` | boolean | `false` | Allow the designer to propose parallel phase groups (`{k}A`/`{k}B` plus merge `{k}.5`); when false, phases are sequential unless you ask |
 
 #### Version Files
@@ -196,7 +198,7 @@ Note: Orchestrator workflow is now integrated into `/dotclaude:start-new` comman
 | Event | Script | Behavior |
 |-------|--------|----------|
 | `SessionStart` | `init-config.sh` | Creates the global config if missing and prints `[dotclaude] language: …` |
-| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Also warns (no block) when a `{working_directory}` exceeds 10MB. Logs to `{working_directory}/.hook.log` |
+| `Stop` | `check-validation-complete.sh` | Blocks ending the turn (once) when a dotclaude worktree whose SPEC stage is `code`…`remote_test` holds uncommitted code outside `{working_directory}`. Also warns (no block) when the `{working_directory}` of the session's own worktree exceeds 10MB, naming the largest entry; entries matching `workspace_size_ignore` are not counted. Logs to `{working_directory}/.hook.log` |
 | `PreToolUse` Bash | `guard-commit.sh` | Denies `git commit` of code on a work branch unless `.validated/PHASE_{k}` exists for the phase named in the message (code-validator writes it on PASS). Documents-only commits pass |
 | `PreToolUse` Write, Edit, MultiEdit, Bash | `guard-workspace.sh` | Denies writing (or redirecting, `tee`, `cp`/`mv`) non-document files (not `.md`/`.json`/`.log`/snapshot `.tar.gz`) and report or variant names (`COMPLETION_REPORT.md`, `*_W2.md`, `*__2`) under `{working_directory}` |
 | `PreToolUse` Agent | `guard-design.sh` | Denies calling `dotclaude:designer` when the SPEC is not approved (`spec-meta.sh check-approved`) |

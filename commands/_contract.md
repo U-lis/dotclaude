@@ -8,12 +8,14 @@ Every rule below is defined once, here. Commands and agents reference a section 
 
 ## Configuration
 
-Values resolve in this order, later entries overriding earlier ones: built-in defaults, `~/.claude/dotclaude-config.json`, `<git_root>/.claude/dotclaude-config.json`, then the `dotclaude-config` metadata block at the top of the work's `SPEC.md`.
+Values resolve in this order, later entries overriding earlier ones: built-in defaults, `~/.claude/dotclaude-config.json`, `$CLAUDE_CONFIG_DIR/dotclaude-config.json` (when set; this is the global config file to write when it is set), `<git_root>/.claude/dotclaude-config.json`, then the `dotclaude-config` metadata block at the top of the work's `SPEC.md`.
 
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `working_directory` | `.dc_workspace` | Directory for work documents, relative to the repository root |
 | `workspace_tracking` | `commit` | `commit` tracks `{working_directory}` in git; `ignore` keeps it in `.gitignore` and takes snapshots instead of commits (see Commits) |
+| `workspace_size_ignore` | `[]` | Globs matched against top-level entries of `{working_directory}` (e.g. `2026_06_29-exam-vision-eval`, `ONE-*`), and `YYYY_MM_DD-{name}` also matches when `{name}` does; matches are left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving |
+| `workspace_archive_dir` | unset | Where `/dotclaude:purge` puts files moved out of `{working_directory}`, as `{dir}/{primary checkout name}/{doc_dir}/...`; `~` expands. Unset means purge asks, and never chooses |
 | `base_branch` | `main` | Branch that work branches fork from and merge into |
 | `language` | `en_US` | Language of user-facing text (see Language) |
 | `version_files` | `[]` | Files checked by `/dotclaude:tagging`; empty means auto-detect |
@@ -92,7 +94,7 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
 
-A follow-up wave of the same subject gets a new date-prefixed directory; names like `SPEC_W2.md`, `referral__2`, or `GLOBAL_v2.md` are not created. Reports are not files: no `COMPLETION_REPORT.md`, `FINAL_REPORT.md`, `PROGRESS.md`, `VALIDATION.md`; results go to chat and the PR body. Only documents (`.md`, `.json`, `.log`) live in `{working_directory}`; data files go elsewhere. `hooks/guard-workspace.sh` enforces the file types and the name rules.
+Preserve documents (`/dotclaude:purge`) adds today's date prefix to an undated doc dir copied from a removed worktree, unless the primary already has that name. A follow-up wave of the same subject gets a new date-prefixed directory; names like `SPEC_W2.md`, `referral__2`, or `GLOBAL_v2.md` are not created. Reports are not files: no `COMPLETION_REPORT.md`, `FINAL_REPORT.md`, `PROGRESS.md`, `VALIDATION.md`; results go to chat and the PR body. Only documents (`.md`, `.json`, `.log`) live in `{working_directory}`; data files go elsewhere. `hooks/guard-workspace.sh` enforces the file types and the name rules.
 
 `{project_name}` is the directory name of the repository root. `{keyword}` is a short kebab-case slug derived from the work description.
 
