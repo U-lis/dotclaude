@@ -14,8 +14,11 @@ out=$(run "$W"); rc=$?; empty "docs only -> pass" "$out"; [ $rc = 0 ] && ok "doc
 echo code >"$W/app.py"
 out=$(run "$W"); contains "uncommitted code -> block" "$out" '"decision":"block"'
 contains "reason mentions file" "$out" 'app.py'
-# also from primary cwd (any worktree of repo)
-out=$(run "$R"); contains "block seen from primary cwd" "$out" '"decision":"block"'
+# not from the primary cwd: another worktree's work is not this session's
+out=$(run "$R"); empty "dirty worktree -> no block from primary cwd" "$out"
+# from a subdirectory of the session's worktree
+mkdir -p "$W/sub/dir"
+out=$(run "$W/sub/dir"); contains "subdirectory of worktree -> block" "$out" '"decision":"block"'
 # (c) stop_hook_active
 out=$(run "$W" true); empty "stop_hook_active -> silent" "$out"
 # (e) log
@@ -40,6 +43,13 @@ mkdir -p "$T/nogit"
 out=$(run "$T/nogit"); rc=$?; empty "non-git cwd silent" "$out"; [ $rc = 0 ] && ok "non-git exit 0" || ko "non-git exit" $rc
 # (j) workspace over 10MB -> warn, no block
 git -C "$W" checkout -q -- . 2>/dev/null; rm -f "$W/app.py"
+# (p) a worktree session is not blocked by a different dirty worktree, whose own session is
+W2="$T/x-feature-other"; git -C "$R" worktree add -q -b feature/other "$W2"
+mkdir -p "$W2/.dc_workspace/2026_01_02-other"; cp "$DOC/SPEC.md" "$W2/.dc_workspace/2026_01_02-other/SPEC.md"
+echo code >"$W2/other.py"
+out=$(run "$W"); empty "(p) other dirty worktree -> no block" "$out"
+out=$(run "$W2"); contains "(p) dirty worktree's own session -> block" "$out" '"decision":"block"'
+git -C "$R" worktree remove --force "$W2"
 dd if=/dev/zero of="$DOC/big.bin" bs=1M count=11 status=none
 out=$(run "$W"); contains "(j) big workspace -> additionalContext" "$out" '"additionalContext":"workspace '
 contains "(j) hint text" "$out" 'or add the directory to workspace_size_ignore'
