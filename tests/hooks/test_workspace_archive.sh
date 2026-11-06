@@ -87,9 +87,11 @@ done
 cfg
 
 # apply, with --exclude
+LEDGER="$R/.dc_workspace/review-ledger.log"; big "$LEDGER" /dev/zero; ledgersum=$(sha256sum <"$LEDGER" | cut -d' ' -f1)
 sum=$(sha256sum <"$D/img/a.jpg" | cut -d' ' -f1); logsum=$(sha256sum <"$D/run.log" | cut -d' ' -f1)
 "$S" files apply "$R" --removing "$W" --exclude '*/keep.txt' --date "$DAY"; rc=$?
 rc_is "apply exit 0" 0 $rc
+[ "$(sha256sum <"$LEDGER" 2>/dev/null | cut -d' ' -f1)" = "$ledgersum" ] && ok "top-level review-ledger.log stays in place" || ko "top-level review-ledger.log stays in place" "$(ls -la "$R/.dc_workspace")"
 B="$A/x/2026_01_01-done"
 exists "gzip dest" "$B/run.log.gz"; gone "gzip original gone" "$D/run.log"
 [ "$(gzip -dc "$B/run.log.gz" | sha256sum | cut -d' ' -f1)" = "$logsum" ] && ok "gzip content" || ko "gzip content" x
