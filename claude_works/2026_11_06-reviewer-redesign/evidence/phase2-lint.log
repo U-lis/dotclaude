@@ -1,0 +1,43 @@
+
+ALL-CAPS emphasis tokens per file (max 4)
+FILE                                 COUNT
+commands/_agent-prompts.md           0
+commands/code.md                     0
+commands/_coder-base.md              0
+commands/configure.md                0
+commands/_contract.md                0
+commands/design.md                   0
+commands/init.md                     0
+commands/merge.md                    0
+commands/_prefill-filters.md         0
+commands/pr.md                       0
+commands/prune.md                    0
+commands/purge.md                    1
+commands/review.md                   0
+commands/start-new.md                0
+commands/tagging.md                  3
+commands/update-docs.md              0
+commands/validate-spec.md            0
+agents/code-validator.md             0
+agents/designer.md                   0
+agents/pruner.md                     0
+agents/reviewer.md                   0
+agents/spec-validator.md             0
+agents/technical-writer.md           0
+agents/coders/generic.md             0
+agents/coders/javascript.md          0
+agents/coders/python.md              0
+agents/coders/rust.md                0
+agents/coders/sql.md                 0
+agents/coders/svelte.md              0
+templates/EVIDENCE.md                0
+templates/GLOBAL.md                  0
+templates/PHASE_MERGE.md             0
+templates/PHASE_PLAN.md              0
+templates/PHASE_TEST.md              0
+templates/RULES.md                   0
+templates/SPEC.md                    0
+templates/WORKER_RULES.md            0
+
+Total bytes in scope: 176383 (ceiling 220000)
+OK

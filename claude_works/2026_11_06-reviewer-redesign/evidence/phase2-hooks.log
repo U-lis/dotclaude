@@ -1,0 +1,441 @@
+=== test_guard_commit.sh
+PASS: (a) no marker -> deny
+PASS: deny reason mentions PHASE_1
+PASS: (b) marker -> allow
+PASS: (g) no phase -> deny
+PASS: (e) -C with marker -> allow
+PASS: cd form, missing marker -> deny
+PASS: (c) docs only -> allow
+PASS: (d) main -> allow
+PASS: (f) non-commit -> allow
+PASS: hook.log written
+=== test_guard_design.sh
+PASS: (a) unapproved -> deny
+PASS: (b) approved -> allow
+PASS: (c) edited after approve -> deny
+PASS: (d) other agent -> allow
+PASS: (e) no SPEC -> allow
+PASS: fallback find -> deny
+=== test_guard_review.sh
+PASS: bind: Write STATUS.md allowed
+PASS: bind: agent_id -> r1 path
+PASS: bind: r2 Write does not rebind
+PASS: bind: agent_id sanitized
+PASS: bind: other file does not bind
+PASS: bind: non-round directory does not bind
+PASS: bind: path outside reviews/{target}/r{n} does not bind
+PASS: empty: notion MCP denied
+PASS: empty: deny names Restatement
+PASS: empty: atlassian MCP denied (case folded)
+PASS: empty: SPEC Read denied
+PASS: empty: PLAN Read denied
+PASS: empty: other Read allowed
+PASS: empty: MCP outside globs allowed
+PASS: deny logged
+PASS: bind logged
+PASS: agent_type dotclaude:designer: MCP silent
+PASS: agent_type dotclaude:designer: SPEC Read silent
+PASS: agent_type -null: MCP silent
+PASS: agent_type -null: SPEC Read silent
+PASS: agent_type -missing: MCP silent
+PASS: agent_type -missing: SPEC Read silent
+PASS: main session naming the reviewer in input: silent
+PASS: filled: notion MCP allowed
+PASS: filled: SPEC Read allowed
+PASS: filled: PLAN Read allowed
+PASS: allow logged
+PASS: concurrent: A (filled) allowed
+PASS: concurrent: B (empty) denied
+PASS: r1 restatement does not open the r2 gate
+PASS: unbound: MCP denied
+PASS: unbound: message names STATUS.md
+PASS: unbound: message names Restatement
+PASS: unbound deny logged
+PASS: unbound: SPEC Read allowed
+PASS: unbound: PLAN Read allowed
+PASS: unbound: MCP outside globs allowed
+PASS: config: configured glob denied
+PASS: config: default glob no longer applies
+PASS: unreadable STATUS.md: allowed
+PASS: malformed JSON: silent
+PASS: no agent_id: treated as unbound
+PASS: no binding, no STATUS.md: silent
+PASS: non-reviewer input calls no jq
+=== test_guard_workspace.sh
+PASS: Write .md -> allow
+PASS: Write .jsonl -> deny
+PASS: deny reason text
+PASS: Bash > .csv -> deny
+PASS: Bash > .log -> allow
+PASS: Bash tee .txt -> deny
+PASS: Bash cp .bin -> deny
+PASS: outside workspace -> allow
+PASS: Bash outside workspace -> allow
+PASS: .validated -> allow
+PASS: snapshot tar.gz -> allow
+PASS: report file -> deny
+PASS: FINAL_REPORT.md -> deny
+PASS: PROGRESS.md -> deny
+PASS: VALIDATION.md -> deny
+PASS: _W2 variant -> deny
+PASS: __2 dir -> deny
+PASS: GLOBAL.md -> allow
+PASS: no-git cwd -> allow
+PASS: bad input -> allow
+=== test_lib_cfg.sh
+PASS: flat key
+PASS: nested stages.stop_after
+PASS: nested stages.local_test
+PASS: nested pr.assignee
+PASS: nested false boolean
+PASS: missing nested -> default
+PASS: missing parent -> default
+PASS: local overrides global
+PASS: no CLAUDE_CONFIG_DIR -> ~/.claude
+PASS: CLAUDE_CONFIG_DIR overrides ~/.claude
+PASS: ~/.claude still supplies other keys
+PASS: repo overrides CLAUDE_CONFIG_DIR
+PASS: find: ~/.claude without CLAUDE_CONFIG_DIR
+PASS: find: CLAUDE_CONFIG_DIR over ~/.claude
+PASS: find: repository over CLAUDE_CONFIG_DIR
+PASS: init-config: ~/.claude without CLAUDE_CONFIG_DIR
+PASS: init-config: CLAUDE_CONFIG_DIR over ~/.claude
+PASS: init-config: repository over CLAUDE_CONFIG_DIR
+PASS: json_get l: python3 matches jq
+PASS: json_get d: python3 matches jq
+PASS: json_get s: python3 matches jq
+PASS: json_get t: python3 matches jq
+PASS: json_get null: python3 empty
+PASS: cfg_get_list with jq
+PASS: cfg_get_list with python3
+PASS: cfg_get_list empty -> 0
+PASS: cfg_get_list unset -> nothing
+PASS: cfg_get_list "a" with jq -> non-zero
+PASS: cfg_get_list "a" with python3 -> non-zero
+PASS: cfg_get_list {"a":1} with jq -> non-zero
+PASS: cfg_get_list {"a":1} with python3 -> non-zero
+PASS: cfg_get_list ["a",1] with jq -> non-zero
+PASS: cfg_get_list ["a",1] with python3 -> non-zero
+PASS: cfg_get_list without a parser -> non-zero
+PASS: match_any_glob glob
+PASS: match_any_glob trailing slash
+PASS: match_any_glob no globs
+PASS: match_any_glob ignores no date prefix
+PASS: ignored_entry undated
+PASS: ignored_entry dated
+PASS: ignored_entry full name
+PASS: ignored_entry other name
+PASS: ignored_entry other date form
+PASS: stop_context with jq
+PASS: stop_context with python3
+=== test_spec_meta.sh
+PASS: find none
+PASS: find one
+PASS: find many branch match
+PASS: find many newest fallback
+PASS: find custom working_directory (empty)
+PASS: find custom working_directory
+PASS: get existing
+PASS: get absent key
+PASS: get missing file
+PASS: set update
+PASS: set add
+PASS: set idempotent
+PASS: set preserves body
+PASS: no-block set creates block
+PASS: no-block set keeps body bytes
+PASS: unterminated block set
+PASS: hash unaffected by meta
+PASS: hash changes on body edit
+PASS: hash no block = whole file
+PASS: check-approved before approve
+PASS: not approved msg
+PASS: check-approved after approve
+PASS: approve sets stage
+PASS: approved msg
+PASS: check-approved after edit
+PASS: changed msg
+PASS: stage get
+PASS: stage set
+PASS: stage set persisted
+PASS: stage invalid
+PASS: stage invalid lists allowed
+PASS: stage unchanged after invalid
+PASS: handoff roundtrip quotes
+PASS: handoff stored escaped
+PASS: decision list deduped
+PASS: decision stored
+PASS: decision invalid token
+PASS: decision list empty
+PASS: help
+ALL PASS
+=== test_stop_hook.sh
+PASS: clean worktree -> pass
+PASS: docs only -> pass
+PASS: docs only exit 0
+PASS: uncommitted code -> block
+PASS: reason mentions file
+PASS: dirty worktree -> no block from primary cwd
+PASS: subdirectory of worktree -> block
+PASS: stop_hook_active -> silent
+PASS: hook.log has lines (5)
+PASS: log has block and pass
+PASS: log appended per run
+PASS: (h) stage design -> pass
+PASS: skip reason logged
+PASS: (i) stage code -> block
+PASS: (g) no SPEC -> pass
+PASS: non-git cwd silent
+PASS: non-git exit 0
+PASS: (p) other dirty worktree -> no block
+PASS: (p) dirty worktree's own session -> block
+PASS: (j) big workspace -> additionalContext
+PASS: (j) hint text
+PASS: (j) names largest dir
+PASS: (j) no block
+PASS: (j) warn logged
+PASS: (k) ignored dir -> no warn
+PASS: (k) no jq: ignored dir -> no warn
+PASS: (l) other dir -> warn
+PASS: (l) no jq: other dir -> warn
+PASS: (n) primary cwd ignores big worktree workspace
+PASS: (n) worktree cwd ignores big primary workspace
+PASS: (n) primary cwd warns on its own workspace
+PASS: (m) trailing slash pattern -> no warn
+PASS: (o) dated dir of an ignored name -> no warn
+PASS: (o) dated dir of another name -> warn
+PASS: (q) key unset -> primary warns
+PASS: (q) primary warning names the key
+PASS: (q) key true -> primary warns
+PASS: (q) key false -> primary silent
+PASS: (q) no jq: key false -> primary silent
+PASS: (q) key false -> primary silent through a symlinked cwd
+PASS: (q) key false logs only the pass line
+PASS: (q) key false -> worktree warns
+PASS: (q) worktree warning omits the key
+PASS: (r) key false, work branch, no code -> no block
+PASS: (r) key false, work branch, code -> block
+PASS: (r) block names the file
+=== test_title_prefix.sh
+PASS: Notification en -> [INPUT]
+PASS: ko -> [확인요청]
+PASS: AskUserQuestion -> prefix
+PASS: UserPromptSubmit -> plain name
+PASS: --event arg
+PASS: other notification type -> nothing
+PASS: title_prefix unset -> nothing
+=== test_workspace_archive.sh
+PASS: plan exit 0
+PASS: gzip log
+PASS: move jpg
+PASS: move test output
+PASS: recent reported
+PASS: pycache not planned
+PASS: SPEC.md not picked
+PASS: big.md not picked
+PASS: script.py not picked
+PASS: small.log not picked
+PASS: unknown.bin not picked
+PASS: tracked.log not picked
+PASS: .tsx under test output stays
+PASS: .jsx under test output stays
+PASS: .java under test output stays
+PASS: .kt under test output stays
+PASS: .c under test output stays
+PASS: .h under test output stays
+PASS: .cpp under test output stays
+PASS: .rb under test output stays
+PASS: .css under test output stays
+PASS: .scss under test output stays
+PASS: .yaml under test output stays
+PASS: .yml under test output stays
+PASS: .toml under test output stays
+PASS: node_modules/n.log pruned
+PASS: sub/.venv/v.log pruned
+PASS: sub/venv/w.log pruned
+PASS: sub/.git/g.log pruned
+PASS: plan keeps original
+PASS: plan writes no archive
+PASS: unset dir -> exit 3
+PASS: unset dir reported
+PASS: unset dir keeps original
+PASS: unset dir creates nothing
+PASS: relative dir -> exit 3
+PASS: relative dir reported
+PASS: relative dir creates nothing
+PASS: relative dir keeps original
+PASS: missing path: files plan -> exit 0
+PASS: missing path: files plan row
+PASS: missing path: files plan warns
+PASS: missing path: files apply -> exit 0
+PASS: missing path: files apply row
+PASS: missing path: files apply warns
+PASS: missing path: preserve plan -> exit 0
+PASS: missing path: preserve plan row
+PASS: missing path: preserve plan warns
+PASS: missing path: preserve apply -> exit 0
+PASS: missing path: preserve apply row
+PASS: missing path: preserve apply warns
+PASS: missing path creates nothing
+PASS: not a checkout -> exit 2
+PASS: not a checkout names the path
+PASS: not a checkout, preserve -> exit 2
+PASS: unset dir, no candidates -> exit 0
+PASS: relative dir, no candidates -> exit 0
+PASS: no candidates creates no relative dir
+PASS: no candidates changes nothing
+PASS: bad --date -> exit 2
+PASS: working_directory . -> exit 2
+PASS: working_directory ./ -> exit 2
+PASS: working_directory sub/.. -> exit 2
+PASS: working_directory .. -> exit 2
+PASS: apply exit 0
+PASS: top-level review-ledger.log stays in place
+PASS: gzip dest
+PASS: gzip original gone
+PASS: gzip content
+PASS: gzip keeps 0640 mode
+PASS: move dest
+PASS: move original gone
+PASS: empty dir removed
+PASS: move content
+PASS: SPEC.md stays
+PASS: small.log stays
+PASS: fresh.log stays
+PASS: tracked.log stays
+PASS: excluded file stays
+PASS: pycache left alone
+PASS: dir the script did not empty stays
+PASS: ledger row
+PASS: ledger method
+PASS: ledger date from --date
+PASS: conflict exit 1
+PASS: conflict keeps original
+PASS: conflict reported
+PASS: same content -> original gone
+PASS: failed verification exit 1
+PASS: failed verification reported
+PASS: failed cmp keeps original
+PASS: failed gzip keeps original
+PASS: failed cmp leaves no copy
+PASS: failed gzip leaves no copy
+PASS: failed verification leaves no temp file
+PASS: failed verification writes no ledger row
+PASS: re-run after failure exit 0
+PASS: re-run after failure archives the original
+PASS: re-run after failure writes the copy
+PASS: second re-run exit 0
+PASS: second re-run adds no ledger row
+PASS: destination is the source exit 1
+PASS: destination is the source reported
+PASS: destination is the source keeps the file
+PASS: destination is the source writes no ledger row
+PASS: open file reported
+PASS: open file reported by lsof
+PASS: open file stays
+PASS: no fuser or lsof -> apply exit 2
+PASS: no fuser or lsof reported
+PASS: no fuser or lsof keeps file
+PASS: no fuser or lsof archives nothing
+PASS: no fuser or lsof -> plan exit 0
+PASS: no fuser or lsof -> plan warns
+PASS: worktree dest under repo name
+PASS: ledger in primary
+PASS: no ledger in worktree
+PASS: emptied subdir removed
+PASS: emptied doc dir stays
+PASS: in-flight reported
+PASS: ignored reported
+PASS: in-flight stays
+PASS: ignored stays
+PASS: no jq: ignored reported
+PASS: no jq: ignored stays
+PASS: no jq or python3: preserve -> exit 2
+PASS: no jq or python3 -> exit 2
+PASS: no jq or python3: ignored stays
+PASS: unreadable ignore "ign" -> exit 2
+PASS: unreadable ignore "ign" reported
+PASS: no jq: unreadable ignore "ign" -> exit 2
+PASS: unreadable ignore "ign": file stays
+PASS: unreadable ignore -> plan warns
+PASS: tilde expanded
+PASS: undated archive dest dated
+PASS: ledger beside dated docs
+PASS: no undated ledger dir
+PASS: preserve plan row
+PASS: preserve plan copies nothing
+PASS: preserve exit 0
+PASS: preserve row for pruned 2026_01_01-kw/node_modules
+PASS: preserve row for pruned 2026_01_01-kw/sub/.git
+PASS: preserve row for pruned 2026_01_01-kw/sub/venv
+PASS: preserve row for pruned .venv
+PASS: preserve no row inside a pruned dir
+PASS: preserve prunes .git
+PASS: file named venv is copied
+PASS: preserve plan row for pruned dir
+PASS: undated doc dated
+PASS: nested doc copied
+PASS: dated dir keeps name
+PASS: hidden dir keeps name
+PASS: preserve prunes node_modules
+PASS: preserve skips __pycache__
+PASS: preserve on primary -> exit 2
+PASS: existing undated: archive keeps name
+PASS: existing undated: ledger keeps name
+PASS: existing undated: no dated archive
+PASS: existing undated: preserve keeps name
+PASS: existing undated: no dated copy
+PASS: exclude matches a worktree's name
+PASS: exclude matches the dated name
+PASS: excluded file stays after rename
+PASS: undated dir ignored reported
+PASS: ignored dir copied under the dated name
+PASS: dated dir of an ignored name reported
+PASS: dated dir of an ignored name stays
+PASS: dated dir of an ignored name is not archived
+PASS: preserve plan conflict exit 1
+PASS: preserve plan conflict row
+PASS: preserve conflict exit 1
+PASS: preserve conflict row
+PASS: preserve never overwrites
+PASS: conflict still copies the rest
+PASS: preserve same content exit 0
+PASS: preserve same content no row
+PASS: preserve skips hook log exit 0
+PASS: preserve skips hook log
+PASS: hook log untouched
+PASS: preserve tracked clean exit 0
+PASS: preserve tracked clean no row
+PASS: preserve tracked clean keeps primary
+PASS: preserve tracked dirty exit 1
+PASS: preserve tracked dirty row
+PASS: preserve failed copy exit 1
+PASS: preserve failed copy leaves no destination
+PASS: preserve failed copy leaves no temp file
+PASS: preserve re-run exit 0
+PASS: preserve re-run writes the whole file
+PASS: preserve second re-run copies nothing
+PASS: preserve re-run on a later date exit 0
+PASS: later date keeps the first copy
+PASS: later date adds a dated copy
+PASS: deps lists real .venv
+PASS: deps lists real venv
+PASS: deps skips current
+PASS: deps skips symlink
+PASS: deps skips primary
+PASS: deps plan keeps
+PASS: deps skips session worktree
+PASS: deps session still lists others
+PASS: deps skips session from a subdirectory
+PASS: deps --current subdirectory
+PASS: deps --current still lists others
+PASS: deps exit 0
+PASS: relinked to primary
+PASS: relative link
+PASS: no primary venv -> deleted only
+PASS: current kept
+PASS: symlink kept
+PASS: removing skipped
+PASS: share off -> no link
+PASS: usage exit 2
+ALL PASSED

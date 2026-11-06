@@ -1,0 +1,6 @@
+# Usage: python3 -I phase2-cols.py.log EVIDENCE.md -> prints "label<TAB>raw<TAB>commit<TAB>command" per data row (splits on unescaped |)
+import re,sys
+for l in open(sys.argv[1]):
+    if not l.startswith('| local') and not l.startswith('| remote'): continue
+    c=[x.strip() for x in re.split(r'(?<!\\)\|',l.strip())[1:-1]]
+    print(c[1].split(':')[0][:40],c[5],c[6],c[3],sep='\t')

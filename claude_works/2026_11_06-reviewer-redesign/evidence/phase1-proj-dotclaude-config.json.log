@@ -1,0 +1,1 @@
+{ "working_directory": ".dc_workspace", "review": { "intent_tools": ["*godot__get_godot_version*"] } }

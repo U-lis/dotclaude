@@ -33,6 +33,8 @@ For each row of the TEST matrix: write the test, run it and confirm it fails, wr
 
 A test exists to pin production behavior. Do not write a test that cannot fail (asserting a mock's own return value, `assert True`, a skipped or empty test), and do not change production code only to make a test pass; if a test in the TEST document looks wrong, report it instead.
 
+Record each failing and passing run as a row in the `## coder` section of `EVIDENCE.md` next to the PLAN (Contract: Evidence). In the commit column write the value Contract: Evidence gives for an uncommitted phase.
+
 ## 4. Self-review
 
 Before reporting, check each item and put the result in the report:
@@ -43,6 +45,7 @@ Before reporting, check each item and put the result in the report:
 4. Existing implementations: the step 2 results are recorded.
 5. Scope: no change outside the PLAN's FR/NFR list and the phase's files.
 6. Tests: no production code was changed to make a test pass.
+7. Evidence: every run reported under Tests Added has its row in the coder section of EVIDENCE.md (Contract: Evidence).
 
 Comments and docstrings state only the "why" that the code cannot show, in 1–5 lines.
 
@@ -63,7 +66,8 @@ Never edit `.env`; add new variables to `.env.example` and list them in the repo
 ## Implemented: checklist items done
 ## Files Modified: {file}: {what}
 ## Tests Added: {test ref}: RED {summary} → GREEN; pins {file:line}
-## Self-review: items 1–6, each ok or the exception
+## Self-review: items 1–7, each ok or the exception
+## Evidence: EVIDENCE.md rows added to the coder section (Contract: Evidence)
 ## Decisions: {choice}: {reason} (if any)
 ## Notes: refactoring signals, suspected wrong tests, anything unresolved
 ## Environment Changes: {VAR}: {purpose} (if any)

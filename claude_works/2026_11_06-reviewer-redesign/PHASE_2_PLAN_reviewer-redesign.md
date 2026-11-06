@@ -63,12 +63,12 @@ Keep the added Evidence section short; other files only refer to it by section n
 
 ## Completion Checklist
 
-- [ ] The template has the eight FR-8 columns and the four author sections: `templates/EVIDENCE.md`
-- [ ] Evidence states location, template path, writers, the no-command-no-evidence rule, the outside-flow verification form, and the reviewer round-directory rule: `commands/_contract.md` section "Evidence"
-- [ ] The Documents row lists `EVIDENCE.md`: `commands/_contract.md`
-- [ ] The coder steps and Report point to "Contract: Evidence" without restating it: `commands/_coder-base.md`
-- [ ] Run stages say the orchestrator writes one row per stage run, referring to "Contract: Evidence": `commands/start-new.md`
-- [ ] E1-E6 rows exist in the new form: `claude_works/2026_11_06-reviewer-redesign/EVIDENCE.md`
+- [x] The template has the eight FR-8 columns and the four author sections: verified in templates/EVIDENCE.md:7,5,10,15,20
+- [x] Evidence states location, template path, writers, the no-command-no-evidence rule, the outside-flow verification form, and the reviewer round-directory rule: verified in commands/_contract.md:167-173
+- [x] The Documents row lists `EVIDENCE.md`: verified in commands/_contract.md:94
+- [x] The coder steps and Report point to "Contract: Evidence" without restating it: verified in commands/_coder-base.md:36,48,70
+- [x] Run stages say the orchestrator writes one row per stage run, referring to "Contract: Evidence": verified in commands/start-new.md:62
+- [x] E1-E6 rows exist in the new form: verified in claude_works/2026_11_06-reviewer-redesign/EVIDENCE.md:9-14
 
 ---
 
@@ -89,3 +89,4 @@ exit 0 (rule i: every ${CLAUDE_PLUGIN_ROOT} path exists)
 ## Notes
 
 - Evidence rows written by the reviewer in phases 3-6 land in round directories, not in this file's reviewer section.
+- These rules come from the user decisions `evidence-raw-output-in-doc-dir` and `evidence-commit-filled-by-orchestrator` (2026-11-06) and from the phase 2 review (secrets redaction, commit wiring).

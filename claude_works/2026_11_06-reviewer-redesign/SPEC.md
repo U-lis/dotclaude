@@ -9,7 +9,7 @@ github_issue: 117
 stage: code
 approved_at: 2026-11-06T08:21:55Z
 approved_hash: bb255d824d624be2f6ed0fb7f8a1238c5402e845a6cf779c8891943303614823
-decisions: []
+decisions: ["warn-commit-ok-for-markdown-phases", "evidence-raw-output-in-doc-dir", "evidence-commit-filled-by-orchestrator"]
 handoff: "설계 문서 13개 작성, 검증 통과(마지막 경고 1건 수정). SPEC 본문이 D-6~D-10(원장 finding 줄은 reviewer가 직접 append)과 회차 용어로 바뀌어 재승인 대기. 재승인 후 approve, 설계 문서 커밋, stage code, phase 1 시작."
 -->
 # reviewer 재설계 - Specification
@@ -36,7 +36,7 @@ handoff: "설계 문서 13개 작성, 검증 통과(마지막 경고 1건 수정
 - [ ] FR-5: PR 깊이 의도 자료는 reviewer가 직접 읽는다. reviewer의 도구 선언은 Jira와 Notion MCP 도구 사용을 허용해야 하고, 호출 프롬프트에는 대상과 티켓 키만 담기며 의도 자료의 내용은 담기지 않는다. 자료는 PRD(주로 Notion), Jira 설명과 코멘트, SPEC(있을 때), 그리고 SPEC 메타데이터에 `github_issue`가 있거나 PR 본문이 이슈를 링크할 때의 GitHub 이슈다. 읽지 못한 자료는 "확인하지 못한 것"에 적고 scope는 읽은 자료까지만 판단한다.
 - [ ] FR-6: `/dotclaude:review`는 인자가 없으면 현재 브랜치를 PR 깊이로, `#N`이나 URL이면 그 PR을 PR 깊이로 리뷰한 뒤 기존 코멘트 처리 단계를 그대로 잇는다(읽기, 분류, 제안은 자동; 수정, 답글, resolve는 사용자가 말한 뒤에만, `commands/review.md:35-50`). reviewer와 review 단계는 GitHub에 아무것도 쓰지 않으며 `commands/review.md:57`(예외 사례 2)의 reviewer 표 게시 제안을 없앤다. 팀원 PR은 보고서로 리뷰가 끝난다.
 - [ ] FR-7: 로컬 재실행(기획서 6장 "재실행 범위"). PR 깊이 reviewer는 테스트 러너와 격리된 테스트 DB, 로컬 docker DB 위의 서버 기동 후 호출을 스스로 실행하며, 임시 worktree에서 실행하고 끝나면 지운다. 터널이나 공유 DB가 필요한 확인, QA, 발송, 배포는 실행하지 않고 "실행 요청"으로만 낸다. 저장소의 기본 기동 명령이 터널을 쓰더라도 로컬 설정으로 띄운다. 환경 기동 방법은 대상 저장소의 Makefile, README, CLAUDE.md에서 찾으며 새 설정 키를 만들지 않는다. reviewer가 찾은 빠진 엣지는 임시 worktree 안에 테스트 코드로 써서 러너로 돌린다. 리뷰 대상 브랜치의 코드는 절대 수정하지 않는다(P4).
-- [ ] FR-8: 증거 보고서. 신규 `templates/EVIDENCE.md`, 위치 `{working_directory}/{doc_dir}/EVIDENCE.md`. 한 행은 단계(local/remote), 확인한 행동, 사전 데이터 준비, 실행한 명령 또는 조작, 결과 요약, 원본 출력 경로, 실행 시점의 커밋, 작성 주체이며 다른 사람이 그대로 따라 해 같은 결과를 볼 수 있어야 한다. 명령과 출력이 없는 행은 증거로 치지 않는다. 쓰는 주체는 coder(`commands/_coder-base.md`), run 단계의 오케스트레이터(`commands/start-new.md` Run stages), dotclaude 흐름 밖의 검증 역할 세션, 그리고 reviewer다. reviewer는 이 작업의 `{doc_dir}/EVIDENCE.md`를 읽을 수 있지만 쓰지 않으며, 자기 재실행 행은 자기 회차 디렉터리의 `EVIDENCE.md`에만 쓴다. `commands/_contract.md`에 양식 경로와 작성 규칙을 정의하는 절을 둔다. 팀원 PR에는 이 파일이 없고 CI 결과와 PR 본문 테스트 설명은 주장으로 읽으며, reviewer의 재실행 행은 회차 디렉터리의 EVIDENCE.md에만 남는다.
+- [x] FR-8: 증거 보고서. 신규 `templates/EVIDENCE.md`, 위치 `{working_directory}/{doc_dir}/EVIDENCE.md`. 한 행은 단계(local/remote), 확인한 행동, 사전 데이터 준비, 실행한 명령 또는 조작, 결과 요약, 원본 출력 경로, 실행 시점의 커밋, 작성 주체이며 다른 사람이 그대로 따라 해 같은 결과를 볼 수 있어야 한다. 명령과 출력이 없는 행은 증거로 치지 않는다. 쓰는 주체는 coder(`commands/_coder-base.md`), run 단계의 오케스트레이터(`commands/start-new.md` Run stages), dotclaude 흐름 밖의 검증 역할 세션, 그리고 reviewer다. reviewer는 이 작업의 `{doc_dir}/EVIDENCE.md`를 읽을 수 있지만 쓰지 않으며, 자기 재실행 행은 자기 회차 디렉터리의 `EVIDENCE.md`에만 쓴다. `commands/_contract.md`에 양식 경로와 작성 규칙을 정의하는 절을 둔다. 팀원 PR에는 이 파일이 없고 CI 결과와 PR 본문 테스트 설명은 주장으로 읽으며, reviewer의 재실행 행은 회차 디렉터리의 EVIDENCE.md에만 남는다.
 - [ ] FR-9: 리뷰 디렉터리(사용자 결정 2026-11-06). 모든 PR 깊이 리뷰(내 작업, 팀원 PR)는 주 체크아웃의 다음 구조에 쓴다. worktree에서 돌아도 주 체크아웃 경로를 쓴다.
   ```
   {working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/

@@ -91,7 +91,7 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Branch | `{type}/{keyword}` | `feature/user-auth` |
 | Worktree | `../{project_name}-{type}-{keyword}` | `../shop-feature-user-auth` |
 | Document directory | `{working_directory}/{doc_dir}` with `doc_dir = $(date +%Y_%m_%d)-{keyword}` | `.dc_workspace/2026_03_01-user-auth` |
-| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md`, `REVIEW.md` (GLOBAL.md is omitted for proportional work) | |
+| Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md`, `REVIEW.md`, `EVIDENCE.md` (GLOBAL.md is omitted for proportional work) | |
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
 
@@ -157,12 +157,23 @@ Phase decomposition does not need user review: after SPEC approval, design runs 
 |------|------|---------|
 | After SPEC approval, once | `{working_directory}/{doc_dir}/SPEC.md` | `docs: add SPEC.md for {keyword}` |
 | After design documents are written and pruned | `{working_directory}/{doc_dir}/*.md` | `docs: add design documents for {keyword}` |
-| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, TEST, SPEC, and REVIEW documents the validator and reviewer updated | `feat/fix/refactor({keyword}): complete phase {k}` |
-| After CHANGELOG/README update | `CHANGELOG.md`, `README.md` | `docs: update CHANGELOG and README for {version}` |
+| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, TEST, SPEC, REVIEW, and `EVIDENCE.md` documents the coder, validator, and reviewer updated, with the `evidence/*.log` files its rows cite | `feat/fix/refactor({keyword}): complete phase {k}` |
+| After CHANGELOG/README update | `CHANGELOG.md`, `README.md`, and the last phase's EVIDENCE.md hash edit | `docs: update CHANGELOG and README for {version}` |
 
 No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while the session's own worktree, on a work branch, holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`.
 
 When `workspace_tracking` is `ignore`, document files are untracked and cannot be committed; each design commit point instead runs `mkdir -p {working_directory}/.snapshots && tar -czf {working_directory}/.snapshots/$(date +%Y%m%d-%H%M%S).tar.gz -C {working_directory} {doc_dir}` and keeps the newest 5 files in `.snapshots/` (`ls -1t {working_directory}/.snapshots/*.tar.gz | tail -n +6 | xargs -r rm --`).
+
+## Evidence
+
+`{working_directory}/{doc_dir}/EVIDENCE.md` records checks that someone else can repeat and get the same result. Its first writer creates it from `${CLAUDE_PLUGIN_ROOT}/templates/EVIDENCE.md`; each writer appends rows to its own section: the coder (`## coder`), the orchestrator, one row per run stage it ran (`## orchestrator (run stages)`), and a verification session outside the dotclaude flow, which uses the same form (`## verification session`). The reviewer reads `{doc_dir}/EVIDENCE.md` and never writes it, because it lies inside the worktree under review; its own rerun rows go to the `EVIDENCE.md` of its review round directory.
+
+- A row without a command and a raw output path is not evidence; it is read as a claim.
+- Raw outputs are saved as `.log` files under `{working_directory}/{doc_dir}/evidence/` (a reviewer's under its round directory), never under a temporary or session path, so a row stays checkable after the session ends; the row's raw output path is relative to the repository root.
+- A row written while its phase is still uncommitted carries `phase {k} (uncommitted)` in the commit column; right after the phase commit the orchestrator replaces that value with the commit hash in EVIDENCE.md, and the row then counts as evidence for that commit. That edit is committed with the next phase's commit, or with the CHANGELOG/README docs commit after the last phase.
+- Secrets (credentials, tokens, cookies, env dumps) are redacted from raw output before it is saved, because the files are committed when the workspace is tracked.
+- A row whose commit differs from the head under review is stale evidence: it shows the behavior at that commit only.
+- A team member's PR has no EVIDENCE.md; its CI results and the test statements in its PR body are read as claims.
 
 ## Validate-fix loop
 

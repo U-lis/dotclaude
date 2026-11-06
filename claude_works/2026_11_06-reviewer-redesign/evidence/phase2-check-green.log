@@ -1,0 +1,33 @@
+PASS R1 template header 8 columns
+PASS R1 section ## coder
+PASS R1 section ## orchestrator (run stages)
+PASS R1 section ## verification session
+PASS R1 section ## reviewer
+PASS R1 contract names template path
+PASS R1 lint exit 0
+PASS R2 no command or raw output is not evidence
+PASS R3 commit differs from head is stale
+PASS R4 E1 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E2 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E3 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E4 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E5 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E6 row has command, evidence/ raw path, commit 6b84393, author
+PASS R4 E3 substitute-tool caveat
+PASS R5 coder-base refers to Contract: Evidence (>=3)
+PASS R5 start-new Run stages refers
+PASS R5 no restating in producers
+PASS R5 Documents row lists EVIDENCE.md
+PASS R6 contract: .log under {doc_dir}/evidence/, round dir for reviewer, no temp path, repo-relative
+PASS R6 every raw output cell is repo-relative under evidence/ and exists
+PASS R6 no /tmp in any raw output cell
+PASS R7 contract: phase {k} (uncommitted), orchestrator replaces after phase commit
+PASS R7 coder-base commit column refers to Contract: Evidence
+PASS R7 coder-base does not restate the rule
+PASS R7 phase 2 rows carry phase 2 (uncommitted)
+PASS R8 Commits phase row lists EVIDENCE.md and evidence/*.log
+PASS R8 contract names the commit that carries the replaced hash
+PASS R8 code.md and start-new refer to Contract: Evidence at the phase commit
+PASS R9 secrets are redacted before raw output is saved
+PASS R10 phase 2 rows exist and no Command cell contains /tmp
+passed=32 failed=0

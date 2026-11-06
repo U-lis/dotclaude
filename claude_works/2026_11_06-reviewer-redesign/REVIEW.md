@@ -11,3 +11,18 @@
 | 5 | 5 tests | checked | — | — | — | Each assertion maps to a PHASE_1_TEST row with pinned hook lines. `:98` overlaps `:104` but SPEC NFR-1 lists the case. The archive case pins a combination of behaviors, explained in the Notes. |
 
 BLOCKERS: 0
+
+## Phase 2
+
+| # | Axis | Result | Location | Severity | Finding | Notes |
+|---|------|--------|----------|----------|---------|-------|
+| 1 | 1 correctness | issue | `commands/_contract.md:173`, `:160`, `commands/start-new.md:47` | Major | The rule that the orchestrator replaces `phase {k} (uncommitted)` with the hash was not reachable from the commit steps, and no commit carried the edited EVIDENCE.md. | Fixed before the phase commit: Commits table lists EVIDENCE.md and `evidence/*.log`; the replaced hash goes into the next phase's commit or the docs commit; `code.md` step 6 and the start-new commit step refer to Contract: Evidence. |
+| 2 | 2 scope | issue | `SPEC.md:12` | Minor | The `decisions` list adds `warn-commit-ok-for-markdown-phases`, which the review prompt did not mention. | Recorded user decision (2026-11-06, AskUserQuestion). No change. |
+| 3 | 3 safety | issue | `commands/_contract.md:172` | Major | Raw outputs are saved and committed with no rule about secrets. | Fixed before the phase commit: Contract: Evidence requires redacting credentials, tokens, cookies, env dumps. The 17 logs present were grepped; no secrets. |
+| 4 | 4 maintainability | issue | `EVIDENCE.md:3` | Minor | The work's Rules line no longer matched the template. | Fixed before the phase commit. |
+| 5 | 5 tests | issue | `PHASE_2_TEST.md:5-9` | Major | The two follow-up rules had no matrix rows. | Fixed before the phase commit: rows R6–R10 added. |
+| 6 | 5 tests | issue | `PHASE_2_TEST.md:5-9`, `EVIDENCE.md:9-17` | Major | Test refs and commands pointed at a session path. | Fixed before the phase commit: the repository copy `evidence/phase2-check.sh.log` is the one that runs; passed=32 failed=0. |
+
+BLOCKERS: 0
+
+The fixes were not re-reviewed (no Blocker round); the orchestrator re-ran the check script, the prompt lint, and the hook tests after them.

@@ -1,0 +1,33 @@
+In ONE message, launch two Agent tool calls in parallel, both with subagent_type 'dotclaude:reviewer'. Pass each prompt verbatim. Then print both agents' final replies verbatim, labelled A and B. Do not call any other tool.
+
+=== Prompt for A ===
+Do exactly these steps in order, one tool call per step, and do nothing else (no review). After each step note the exact tool result or error text.
+1. Call the tool mcp__notion__authenticate with no arguments.
+2. Use the Write tool to create /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/reviews/2026_11_06-demo/r1/STATUS.md with exactly this content:
+## Target
+demo, pr, head 0000000, base main
+
+## Restatement
+<!-- restatement goes here -->
+
+## Progress
+3. Use the Read tool on /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/2026_11_06-demo/SPEC.md
+4. Use the Write tool to overwrite /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/reviews/2026_11_06-demo/r1/STATUS.md with the same content but with the line 'The change adds a greeting to README.' in place of the comment line under ## Restatement.
+5. Use the Read tool on /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/2026_11_06-demo/SPEC.md
+6. Call the tool mcp__notion__authenticate with no arguments.
+Final reply: the marker word from your instructions, the list of tools available to you (names only, including any mcp__ tools), then each step number with the verbatim result or error.
+
+=== Prompt for B ===
+Do exactly these steps in order, one tool call per step, and do nothing else (no review). After each step note the exact tool result or error text.
+1. Call the tool mcp__notion__authenticate with no arguments.
+2. Use the Write tool to create /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/reviews/2026_11_06-demo/r2/STATUS.md with exactly this content:
+## Target
+demo, pr, head 0000000, base main
+
+## Restatement
+<!-- restatement goes here -->
+
+## Progress
+3. Use the Read tool on /tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/proj/.dc_workspace/2026_11_06-demo/SPEC.md
+4. Call the tool mcp__notion__authenticate with no arguments.
+Final reply: the marker word from your instructions, the list of tools available to you (names only, including any mcp__ tools), then each step number with the verbatim result or error.
