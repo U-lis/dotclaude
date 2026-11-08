@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# PreToolUse(Write|Read|mcp__.*) hook: restatement gate for dotclaude:reviewer.
+# PreToolUse(Write|Read|Agent|mcp__.*) hook: restatement gate for dotclaude:reviewer.
 # A reviewer's first Write to {WD}/reviews/{target}/r{n}/STATUS.md binds its agent_id to that file;
-# until its "## Restatement" has content, intent MCP tools (review.intent_tools) and Reads of SPEC.md
-# and PHASE_*_PLAN_*.md are denied (intent MCP also while unbound). Not blocked: Bash or Grep reads of
-# SPEC and PLAN, and SPEC and PLAN Reads while unbound.
+# until its "## Restatement" has content, intent MCP tools (review.intent_tools), Agent calls (a subagent
+# would read for it) and Reads of SPEC.md and PHASE_*_PLAN_*.md are denied (intent MCP also while
+# unbound). Not blocked: Bash or Grep reads of SPEC and PLAN, and SPEC, PLAN and Agent calls while unbound.
 exec 2>/dev/null
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || exit 0
 # shellcheck source=_lib.sh
@@ -35,10 +35,11 @@ log_to() {
   wd=$(HOOK_CWD=$1 cfg_get working_directory .dc_workspace); wd=${wd%/}
   log_line "$primary/$wd/.hook.log" "$2"
 }
-# restatement_filled <STATUS.md> : true if "## Restatement" has a line that is neither blank nor an HTML comment.
+# restatement_filled <STATUS.md> : true if "## Restatement" (optionally followed by whitespace and text,
+# e.g. "## Restatement (diff only)") has a line that is neither blank nor an HTML comment.
 restatement_filled() {
   awk '
-    /^## / { in_r = ($0 ~ /^## Restatement[[:space:]]*$/); next }
+    /^## / { in_r = ($0 ~ /^## Restatement([[:space:]].*)?$/); next }
     !in_r { next }
     {
       line = $0
@@ -72,6 +73,8 @@ fi
 kind=""
 if [[ "$TOOL" == mcp__* ]]; then
   kind="mcp"
+elif [ "$TOOL" = Agent ]; then
+  kind="agent"
 elif [ "$TOOL" = Read ] && { [ "${FP##*/}" = SPEC.md ] || [[ "${FP##*/}" == PHASE_*_PLAN_*.md ]]; }; then
   kind="read"
 fi

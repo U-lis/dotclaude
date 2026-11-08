@@ -189,7 +189,7 @@ Shared rules (configuration, commits, limits, the validate-fix loop) are defined
 | spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
 | code-validator | Code quality + plan verification, with post-PASS pruning pass |
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
-| reviewer | Outside auditor that never modifies files: phase depth (scope and safety gate after each phase's validator PASS) and pr depth (restatement, intent comparison, ripple, reinvention, evidence check; verdict PASS / PASS+NOTES / FAIL before integration and in `/dotclaude:review`); each round writes `{working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/` |
+| reviewer | Outside auditor that writes only to its round directory and appends `finding` lines to the review ledger: phase depth (scope and safety gate after each phase's validator PASS) and pr depth (restatement, intent comparison, ripple, reinvention, evidence check; verdict PASS / PASS+NOTES / FAIL before integration and in `/dotclaude:review`); each round writes `{working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/` |
 | Coders | Language-specific implementation; `coder-generic` is the fallback for languages without a dedicated coder |
 
 Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`. Init creates `{working_directory}/RULES.md` from `templates/RULES.md` when missing; coders and the reviewer read it as the project's coding rules.

@@ -35,7 +35,7 @@
         ]
       },
       {
-        "matcher": "Write|Read|mcp__.*",
+        "matcher": "Write|Read|Agent|mcp__.*",
         "hooks": [
           { "type": "command", "command": "\"${CLAUDE_PLUGIN_ROOT}\"/hooks/guard-review.sh" }
         ]

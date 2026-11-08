@@ -48,6 +48,7 @@ out=$(run dotclaude:reviewer agentA Read "$SPEC"); contains "empty: SPEC Read de
 out=$(run dotclaude:reviewer agentA Read "$PLAN"); contains "empty: PLAN Read denied" "$out" "$deny"
 out=$(run dotclaude:reviewer agentA Read "$DOC/GLOBAL.md"); empty "empty: other Read allowed" "$out"
 out=$(run dotclaude:reviewer agentA mcp__slack__x); empty "empty: MCP outside globs allowed" "$out"
+out=$(run dotclaude:reviewer agentA Agent); contains "empty: Agent call denied" "$out" "$deny"
 grep -q 'guard-review deny agentA mcp__notion__search' "$R/.dc_workspace/.hook.log" && ok "deny logged" || ko "deny logged" "$(cat "$R/.dc_workspace/.hook.log" 2>&1)"
 grep -q "guard-review bind agentA $S1" "$R/.dc_workspace/.hook.log" && ok "bind logged" || ko "bind logged" x
 
@@ -64,6 +65,13 @@ status "$S1" "$FILLED_BODY"
 out=$(run dotclaude:reviewer agentA mcp__notion__search); empty "filled: notion MCP allowed" "$out"
 out=$(run dotclaude:reviewer agentA Read "$SPEC"); empty "filled: SPEC Read allowed" "$out"
 out=$(run dotclaude:reviewer agentA Read "$PLAN"); empty "filled: PLAN Read allowed" "$out"
+out=$(run dotclaude:reviewer agentA Agent); empty "filled: Agent call allowed" "$out"
+# a heading with trailing text after whitespace is still the Restatement section
+printf '## Target\nkw\n\n## Restatement (diff only)\nAdds a gate.\n## Progress\n' >"$S1"
+out=$(run dotclaude:reviewer agentA Read "$SPEC"); empty "heading with suffix: filled, SPEC Read allowed" "$out"
+printf '## Target\nkw\n\n## Restatements\nAdds a gate.\n## Restatement\n\n## Progress\n' >"$S1"
+out=$(run dotclaude:reviewer agentA Read "$SPEC"); contains "heading without whitespace before suffix: not the section" "$out" "$deny"
+status "$S1" "$FILLED_BODY"
 grep -q 'guard-review allow agentA mcp__notion__search' "$R/.dc_workspace/.hook.log" && ok "allow logged" || ko "allow logged" x
 
 # concurrency: A bound to r1 (filled), B bound to r2 of the same target (empty)
@@ -80,6 +88,7 @@ grep -q 'guard-review deny agentC mcp__notion__search unbound' "$R/.dc_workspace
 out=$(run dotclaude:reviewer agentC Read "$SPEC"); empty "unbound: SPEC Read allowed" "$out"
 out=$(run dotclaude:reviewer agentC Read "$PLAN"); empty "unbound: PLAN Read allowed" "$out"
 out=$(run dotclaude:reviewer agentC mcp__slack__x); empty "unbound: MCP outside globs allowed" "$out"
+out=$(run dotclaude:reviewer agentC Agent); empty "unbound: Agent call allowed" "$out"
 
 # configured review.intent_tools replaces the defaults
 printf '{ "working_directory": ".dc_workspace", "review": { "intent_tools": ["*slack*"] } }\n' >"$R/.claude/dotclaude-config.json"
