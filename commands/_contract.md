@@ -94,10 +94,13 @@ Reason: SPEC.md is the one document the user reviews and approves, so it must be
 | Documents | `SPEC.md`, `GLOBAL.md`, `PHASE_{k}_PLAN_{keyword}.md`, `PHASE_{k}_TEST.md`, `PHASE_{k}.5_PLAN_MERGE.md`, `REVIEW.md`, `EVIDENCE.md` (GLOBAL.md is omitted for proportional work) | |
 | Phase id | sequential `{k}`, parallel `{k}A`/`{k}B`, merge `{k}.5` | `3A`, `3.5` |
 | Parallel worktree | `../{project_name}-{type}-{keyword}-{phase}` on branch `{type}/{keyword}-{phase}` forked from `{type}/{keyword}` | |
+| Review round directory | `{primary}/{working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/`, holding only `REVIEW.md`, `STATUS.md`, `EVIDENCE.md` and the `.log` outputs its EVIDENCE rows cite | `.dc_workspace/reviews/2026_11_06-ONE-7384/r2/` |
 
 Preserve documents (`/dotclaude:purge`) adds today's date prefix to an undated doc dir copied from a removed worktree, unless the primary already has that name. A follow-up wave of the same subject gets a new date-prefixed directory; names like `SPEC_W2.md`, `referral__2`, or `GLOBAL_v2.md` are not created. Reports are not files: no `COMPLETION_REPORT.md`, `FINAL_REPORT.md`, `PROGRESS.md`, `VALIDATION.md`; results go to chat and the PR body. Only documents (`.md`, `.json`, `.log`) live in `{working_directory}`; data files go elsewhere. `hooks/guard-workspace.sh` enforces the file types and the name rules.
 
 `{project_name}` is the directory name of the repository root. `{keyword}` is a short kebab-case slug derived from the work description.
+
+A review round directory is the single place a PR-depth review writes. `{primary}` is the primary checkout, also when the review runs from a worktree. `{target}` is the first match of: a Jira key `[A-Z][A-Z0-9]+-[0-9]+` in the PR title, the same pattern in the head branch name, `pr-{N}`, the branch keyword (the part after `{type}/`), the full branch name; a matched Jira key is also the ticket key. The date is the run date, as in the document directory, and the path carries no time of day, so a run on a later date starts again at `r1`. `n` is 1 + the highest existing `r*` under that day's directory (1 when there is none); the orchestrator creates it with `mkdir` (no `-p`) and, if it already exists, retries with n+1, so two concurrent runs on the same target and day get different rounds; it passes only the path. The reviewer reads no other round directory, earlier rounds included.
 
 ## Worktree
 

@@ -4,11 +4,11 @@ description: Review the current diff on five axes with the reviewer agent, or tr
 
 # /dotclaude:review [PR URL | #N]
 
-Without an argument, review the current branch against `base_branch` and print the reviewer's table. With a pull request, review its diff, triage its existing review comments, and act on the rows the user approves. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`; the reviewer prompt is in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md` (reviewer).
+Without an argument, review the current branch against `base_branch` at PR depth and print the round's `REVIEW.md`. With a pull request, review it at PR depth, triage its existing review comments, and act on the rows the user approves. Shared rules are in `${CLAUDE_PLUGIN_ROOT}/commands/_contract.md`; the reviewer prompt is in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md` (reviewer).
 
 ## Configuration
 
-`base_branch`, `working_directory`, `worktree_path`, and `doc_dir` resolve as in Contract: Configuration (SPEC.md via `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh find`). The reviewer reports in English; show its table in the configured language, translating only the Finding and Notes prose and keeping paths, line numbers, axes, results, and severities as they are (Contract: Language).
+`base_branch`, `working_directory`, `worktree_path`, and `doc_dir` resolve as in Contract: Configuration (SPEC.md via `${CLAUDE_PLUGIN_ROOT}/hooks/spec-meta.sh find`). At PR depth the reviewer writes `REVIEW.md` in the configured language itself (Contract: Language); print it as written.
 
 ## Argument resolution
 
@@ -22,7 +22,7 @@ The PR mode needs `gh` installed and authenticated (as in `/dotclaude:pr` Prereq
 
 ## No argument: review the current diff
 
-Call `dotclaude:reviewer` with scope "the full branch diff", the worktree, `base_branch`, and the SPEC, RULES, and PLAN paths (each may be absent). Print the table and the `BLOCKERS: n` line. Nothing else happens; this mode changes no files.
+With changes present, call the reviewer as in PR mode step 2 (round directory, `Depth: pr`) with `Scope: the full branch diff including working-tree changes`, `Worktree: {current worktree}` and `Base: {base_branch}`, then print the round's `REVIEW.md`. Nothing else happens; the reviewed code is not changed.
 
 ## PR mode
 
@@ -31,7 +31,7 @@ Call `dotclaude:reviewer` with scope "the full branch diff", the worktree, `base
    - reviews: `gh api --paginate repos/{owner}/{repo}/pulls/N/reviews` (`id`, `state`, `body`, `user.login`);
    - thread state: `gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id isResolved comments(first:1){nodes{databaseId}}}}}}}' -F o={owner} -F r={repo} -F n=N`, which maps each top-level comment id to its thread id and resolved flag.
    Skip threads already resolved and comments that are replies (`in_reply_to_id` set). CodeRabbit comments (`user.login` `coderabbitai[bot]`) are treated like any reviewer's; their collapsed "nitpick" and "outside diff range" items inside a review body count as separate rows.
-2. **Review.** If the PR branch is checked out in a worktree of this repository, call the reviewer on it with `Base: {baseRefName}`; otherwise call it with `Diff source: gh pr diff N`. The reviewer's table is your own second opinion, not a list of comments to answer.
+2. **Review.** Compute and create the round directory (Contract: Names and paths, review round directory). Call `dotclaude:reviewer` with `Depth: pr` and scope `pull request #N`, filling the other fields as in the `## reviewer` template of `_agent-prompts.md`. If the PR branch is checked out in a worktree of this repository, pass that worktree with `Base: {baseRefName}`; otherwise the primary checkout with `Diff source: gh pr diff N`. Print the round's `REVIEW.md`. The review is your own second opinion, not a list of comments to answer.
 3. **Triage.** For each open comment, check it against the code at the PR head and decide:
 
    | # | Comment | Author | Location | Decision | Reason |
@@ -53,8 +53,8 @@ Call `dotclaude:reviewer` with scope "the full branch diff", the worktree, `base
 
 | # | Case | Behavior |
 |---|------|----------|
-| 1 | No argument, no changes | "Nothing to review." No agent call |
-| 2 | PR has no open review comments | Show only the reviewer table; offer to post it with `gh pr comment` (AskUserQuestion), nothing else |
+| 1 | No argument, no changes | "Nothing to review." No agent call, no round directory |
+| 2 | PR has no open review comments | Show only the review; nothing else |
 | 3 | PR is closed or merged | Show the tables; do not fix, reply, resolve, or push |
 | 4 | PR head is a fork the user cannot push to | Triage and reply only; report that fixes need the fork owner |
 | 5 | A comment's line is outside the current diff (outdated) | Check it against the current code; usually `ignore` with reason "already changed" |
@@ -66,8 +66,7 @@ Call `dotclaude:reviewer` with scope "the full branch diff", the worktree, `base
 ```
 # Review: {current diff | PR #N}
 
-{reviewer table}
-BLOCKERS: {n}
+{round REVIEW.md, ending with BLOCKERS: {n}}
 
 {PR mode: triage table}
 {PR mode, after acting: fixed {rows} in {sha}; replied {rows}; resolved {thread count}; pushed: yes | no (reason)}

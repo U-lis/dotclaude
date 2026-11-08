@@ -67,3 +67,31 @@ Meta-review of the new reviewer; counts only.
 - It could not run the repository's test suite because settings load cloud secrets at import, and used minimal-settings probes instead.
 
 Conclusion: the restatement gate, write scope and read-only behavior work as designed. Recall on combinatorial defects is the open weakness and is not addressed by prompt changes alone (relates to #110).
+
+## Phase 4
+
+| # | Axis | Result | Location | Severity | Finding | Notes |
+|---|------|--------|----------|----------|---------|-------|
+| 1 | 1 correctness | issue | `commands/review.md:25` | Major | No-argument mode now goes through PR depth, which can miss uncommitted and untracked changes. Line 17 defines the target as `{base_branch}...HEAD` plus uncommitted and untracked files, and "Nothing to review." is decided on that basis. But the PR-depth reviewer reads and runs the code in a temporary worktree at the head commit (`agents/reviewer.md:46`), and the prompt only passes `Base: {base_branch}` with scope "the full branch diff". | If a branch has only uncommitted work, the round reviews an empty or stale diff and nobody is told. Suggested direction: say in the prompt that no-argument mode includes the working-tree changes, or limit no-argument mode to committed changes. |
+| 2 | 1 correctness | issue | `commands/_contract.md:103` | Minor | The `{target}` fallback chain has no answer when no-argument mode runs on a branch without a `{type}/` prefix and without a Jira key. | Suggested direction: fall back to the full branch name. |
+| 3 | 1 correctness | issue | `commands/_contract.md:103` | Minor | The `n` rule (1 + highest existing `r*`, then `mkdir -p`) does not stop two runs on the same target on the same day from getting the same `r{n}`. | SPEC FR-4 says concurrent reviews are common. Suggested direction: plain `mkdir` and retry with `n+1`. |
+| 4 | 2 scope | checked | — | — | — | Every hunk in `commands/_contract.md` (row at line 97, rules at line 103) and `commands/review.md` (lines 7, 11, 25, 34, 56-57, 69) traces to FR-6/FR-9 and to PLAN Steps 1-2. Steps 3-9 match HEAD (phase4-check V10). |
+| 5 | 3 safety | checked | — | — | — | No migration, secret, permission or default-value change. The diff only removes a GitHub write: the `gh pr comment` offer in edge case 2 (`commands/review.md:57`). Ledger and round paths point to the primary checkout and are git-ignored (`.gitignore:9`). |
+| 6 | 4 maintainability | issue | `commands/review.md:34` | Minor | Step 2 repeats the reviewer prompt fields already in `commands/_agent-prompts.md:99-115`. | Against CLAUDE.md "Prompt hygiene". Keep only review.md-specific values and point to the template. |
+| 7 | 4 maintainability | issue | `commands/_contract.md:103` | Minor | "The reviewer reads and writes only its own round directory" repeats `commands/_contract.md:190` and `agents/reviewer.md:46`. | Small duplication inside the contract. |
+| 8 | 5 tests | issue | `claude_works/2026_11_06-reviewer-redesign/PHASE_4_TEST.md:7` | Major | Every TEST row is at the scenario layer, yet each one is backed only by grep content checks and marked "scenario run pending". Even so, the PLAN checklist says "verified", GLOBAL.md:159 says Complete, and SPEC FR-6/FR-9 are ticked. | The PLAN Expected Output asks for EVIDENCE rows for both runs (no-argument and `#3493`). Suggested direction: run both scenarios and record them, or leave FR-6/FR-9 open until they are run. |
+| 9 | 5 tests | issue | `claude_works/2026_11_06-reviewer-redesign/EVIDENCE.md` | Minor | `evidence/phase4-check-red.log` exists, but there is no EVIDENCE row for the RED run. | — |
+
+BLOCKERS: 0
+
+### Disposition
+
+- #1 fixed: `commands/review.md:25` passes scope "including working-tree changes" and the current worktree; `agents/reviewer.md:46` reviews in the given worktree for that scope; the `## reviewer` template line 102 gained that scope option.
+- #2 fixed: full branch name fallback.
+- #3 fixed: `mkdir` without `-p`, retry n+1.
+- #6 fixed: step 2 refers to the template.
+- #7 fixed: read rule kept, write rule stays at the contract's Who does what.
+- #9 no change needed: the RED row already existed at EVIDENCE.md:53.
+- #8 deferred: the live no-argument run is the pre-integration full-diff review of this branch, which is the same scenario, and the `#N` run goes to the verification session after phase 5 wiring. FR-6/FR-9 stay ticked on content checks (28 passed after the fix round), as accepted for the earlier markdown phases.
+
+Review run by the installed 0.8.1 reviewer.

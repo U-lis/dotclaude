@@ -156,7 +156,7 @@ commands/configure.md             # two keys (P6)
 | 1 | Restatement gate hook, tests, experiments E1-E6 | FR-4, NFR-1 | Complete | - |
 | 2 | Evidence template and contract | FR-8 | Complete | Phase 1 |
 | 3 | Reviewer rewrite and prompt template | FR-1, FR-2, FR-3, FR-5, FR-7, NFR-2, NFR-3 | Complete | Phase 2 |
-| 4 | Review part of `/dotclaude:review`, round directory rules | FR-6, FR-9 | Not Started | Phase 3 |
+| 4 | Review part of `/dotclaude:review`, round directory rules | FR-6, FR-9 | Complete | Phase 3 |
 | 5 | Phase-review and pre-integration wiring | FR-10, NFR-4 | Not Started | Phase 4 |
 | 6 | Ledger, knowledge records, dispositions, settings | FR-11, FR-12, FR-13, FR-14, NFR-5 | Not Started | Phase 5 |
 

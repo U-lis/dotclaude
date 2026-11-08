@@ -99,7 +99,7 @@ Return the report table and one status: PASS (marker created after the documents
 Phase review (`/dotclaude:code`, after code-validator PASS, changes uncommitted) uses `Depth: phase`; the full-diff review before integration and `/dotclaude:review` use `Depth: pr`. The prompt carries only targets and paths, never intent text (PRD, Jira, PR body content): the reviewer reads intent sources itself.
 
 ```
-Review {scope: phase {phase_id} (uncommitted changes) | the full branch diff | pull request #{n}}.
+Review {scope: phase {phase_id} (uncommitted changes) | the full branch diff | the full branch diff including working-tree changes | pull request #{n}}.
 Depth: {phase | pr}
 Worktree: {worktree_path}   (a pull request that is not checked out: the primary checkout)
 Base: {base_branch}   (or Diff source: gh pr diff {n})

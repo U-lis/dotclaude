@@ -52,12 +52,12 @@ The command must not pass previous round paths or findings to the reviewer; the 
 
 ## Completion Checklist
 
-- [ ] The round-directory row and the `{target}` and `n` rules exist once in Names and paths, with no time of day and primary-checkout rule: `commands/_contract.md`
-- [ ] No-argument mode and `#N`/URL mode call the reviewer with `Depth: pr` and a freshly created round directory, then print REVIEW.md: `commands/review.md`
-- [ ] The prompt passes target, ticket key, round directory, the ledger path and the id prefix `{target}-r{n}`, never earlier rounds or intent text: `commands/review.md`
-- [ ] The offer to post the reviewer table is removed: `commands/review.md`
-- [ ] The issue-not-PR message and "Nothing to review." are retained: `commands/review.md`
-- [ ] Steps 3-9 are unchanged in behavior and nothing is written to GitHub before the user answers: `commands/review.md`
+- [x] The round-directory row and the `{target}` and `n` rules exist once in Names and paths, with no time of day and primary-checkout rule: verified in commands/_contract.md:97
+- [x] No-argument mode and `#N`/URL mode call the reviewer with `Depth: pr` and a freshly created round directory, then print REVIEW.md: verified in commands/review.md:25
+- [x] The prompt passes target, ticket key, round directory, the ledger path and the id prefix `{target}-r{n}`, never earlier rounds or intent text: verified in commands/review.md:34
+- [x] The offer to post the reviewer table is removed: verified in commands/review.md:57
+- [x] The issue-not-PR message and "Nothing to review." are retained: verified in commands/review.md:18
+- [x] Steps 3-9 are unchanged in behavior and nothing is written to GitHub before the user answers: verified in commands/review.md:35
 
 ---
 
