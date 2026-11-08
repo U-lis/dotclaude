@@ -95,3 +95,28 @@ BLOCKERS: 0
 - #8 deferred: the live no-argument run is the pre-integration full-diff review of this branch, which is the same scenario, and the `#N` run goes to the verification session after phase 5 wiring. FR-6/FR-9 stay ticked on content checks (28 passed after the fix round), as accepted for the earlier markdown phases.
 
 Review run by the installed 0.8.1 reviewer.
+
+## Phase 5
+
+| # | Axis | Result | Location | Severity | Finding | Notes |
+|---|------|--------|----------|----------|---------|-------|
+| 1 | 1 correctness | issue | `commands/pr.md:68` | Major | Step 9f skips a new review when the latest round's STATUS.md `head` equals HEAD, but the reviewer writes that head early, in its Restate step (`agents/reviewer.md:50-61`), before REVIEW.md exists. If a round stopped partway, it still matches HEAD: 9f skips the call and builds Review notes from a REVIEW.md that is missing or incomplete. | Suggested direction: also require `{round}/REVIEW.md` to exist and end with a `BLOCKERS: n` line before skipping. |
+| 2 | 1 correctness | issue | `commands/pr.md:68` | Minor | On the skip path, 9f never runs the "BLOCKERS above 0 → AskUserQuestion" step, because that step only follows a fresh call. | Suggested direction: read `BLOCKERS: n` from the reused round's REVIEW.md and apply the same question. |
+| 3 | 1 correctness | issue | `commands/pr.md:68` | Minor | The glob `reviews/*-{target}` also matches another target that ends in `-{target}`. The Contract fixes the prefix as `{YYYY_MM_DD}-` (`commands/_contract.md:97`). | Suggested direction: match the date-shaped prefix. |
+| 4 | 1 correctness | issue | `commands/start-new.md:67` | Minor | The pre-integration review writes the `## Full diff` pointer line into `{doc_dir}/REVIEW.md` but does not say whether it is committed. If it is committed before `/dotclaude:pr`, HEAD moves past the round's `head`, 9f's skip check fails, and a second PR-depth round runs on the same code. | Suggested direction: state when the pointer is committed, or compare against the last commit that touched code. |
+| 5 | 2 scope | checked | — | — | — | Every change traces to PLAN Steps 1-3 (FR-10, NFR-4): `commands/code.md:30`, `commands/start-new.md:46,67`, `commands/pr.md:68-69,157,213`. Ledger count check, deferrals and knowledge are correctly left out for phase 6. |
+| 6 | 3 safety | n/a | — | — | — | Only prompt and document text changed. No migrations, defaults, permissions or secrets. `.validated/PHASE_{k}` and the commit guard are unchanged (`commands/code.md:29`). |
+| 7 | 4 maintainability | checked | — | — | — | The round-directory path and target rules are referenced as "Contract: Names and paths" and not restated. The prompt fields match the `## reviewer` template (`commands/_agent-prompts.md:101-115`). |
+| 8 | 5 tests | issue | `claude_works/2026_11_06-reviewer-redesign/SPEC.md` (FR-10, NFR-4) | Minor | FR-10 and NFR-4 are ticked, but every PHASE_5_TEST.md row says "scenario run pending". The only evidence is the grep check script. | Text checks fit a prompt repository; the ticks overstate verification until the scenario rows run. |
+
+BLOCKERS: 0
+
+### Disposition
+
+- #1 fixed: 9f skips only when STATUS.md `head` equals HEAD and REVIEW.md ends with `BLOCKERS: n`.
+- #2 fixed: the skip path reads BLOCKERS and asks the same question.
+- #3 fixed: date-shaped glob `????_??_??-{target}`.
+- #4 fixed with a deviation: `/dotclaude:pr` commits nothing, so the pointer line stays uncommitted until the next commit, which keeps HEAD equal to the round head (`commands/start-new.md:67`).
+- #8 deferred: scenario runs go to the verification session after phase 6, FR-10/NFR-4 stay ticked on content checks (29 passed after the fix round).
+
+Review run by the installed 0.8.1 reviewer.

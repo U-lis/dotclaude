@@ -62,15 +62,15 @@ Commit guard marker `.validated/PHASE_{k}`, the `BLOCKERS: {n}` parsing, one Blo
 
 ## Completion Checklist
 
-- [ ] The reviewer prompt in the phase-review step carries `Depth: phase`: `commands/code.md`
-- [ ] Step 10 reviewer prompt carries `Depth: phase`: `commands/start-new.md`
-- [ ] Run stages full-diff review uses `Depth: pr` with target, ticket key and a round directory, and writes the `## Full diff` pointer line: `commands/start-new.md`
-- [ ] 9f computes target and ticket key, creates the round directory per Contract: Names and paths, and passes target, ticket key and the path to the `Depth: pr` call: `commands/pr.md`
-- [ ] 9f skips when the STATUS.md `head` of the highest `r{n}` under the most recent `reviews/*-{target}` directory equals HEAD, and the old skip rule is gone: `commands/pr.md`
-- [ ] Review notes list PR-depth issue rows with `file:line`, ordered Blocker, Major, Minor: `commands/pr.md`
-- [ ] Review notes keep the carry-over of Major and Minor rows from phase reviews in `{doc_dir}/REVIEW.md` not already in the PR-depth report (same location and finding): `commands/pr.md`
-- [ ] Each reviewer prompt (phase review, Step 10, Run stages full diff, 9f) carries the ledger path and the id prefix (`{doc_dir}-p{k}` or `{target}-r{n}`): `commands/code.md`, `commands/start-new.md`, `commands/pr.md`
-- [ ] The `BLOCKERS: {n}` parse and the single-fix rule are unchanged: `commands/code.md`
+- [x] The reviewer prompt in the phase-review step carries `Depth: phase`: verified in commands/code.md:30
+- [x] Step 10 reviewer prompt carries `Depth: phase`: verified in commands/start-new.md:46
+- [x] Run stages full-diff review uses `Depth: pr` with target, ticket key and a round directory, and writes the `## Full diff` pointer line: verified in commands/start-new.md:67
+- [x] 9f computes target and ticket key, creates the round directory per Contract: Names and paths, and passes target, ticket key and the path to the `Depth: pr` call: verified in commands/pr.md:68
+- [x] 9f skips when the STATUS.md `head` of the highest `r{n}` under the most recent `reviews/*-{target}` directory equals HEAD, and the old skip rule is gone: verified in commands/pr.md:68
+- [x] Review notes list PR-depth issue rows with `file:line`, ordered Blocker, Major, Minor: verified in commands/pr.md:69
+- [x] Review notes keep the carry-over of Major and Minor rows from phase reviews in `{doc_dir}/REVIEW.md` not already in the PR-depth report (same location and finding): verified in commands/pr.md:69
+- [x] Each reviewer prompt (phase review, Step 10, Run stages full diff, 9f) carries the ledger path and the id prefix (`{doc_dir}-p{k}` or `{target}-r{n}`): verified in commands/code.md:30, start-new.md:46,67, pr.md:68
+- [x] The `BLOCKERS: {n}` parse and the single-fix rule are unchanged: verified in commands/code.md:30-31
 
 ---
 

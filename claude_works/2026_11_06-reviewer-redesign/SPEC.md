@@ -46,7 +46,7 @@ handoff: "phase 1~3 커밋 완료(c7bc235). D-11로 claude_works 커밋 범위 �
     *.log        (EVIDENCE 행이 가리키는 원본 출력; reviewer가 이 디렉터리에 쓴다)
   ```
   바깥 디렉터리의 날짜 형식은 작업 문서 디렉터리(`{YYYY_MM_DD}-{keyword}`, Contract: Names and paths)와 같고 경로 어디에도 시각을 넣지 않는다. `{target}`은 Jira 키가 있으면 그것, 없으면 `pr-{N}`, 그것도 없으면 브랜치 키워드다. 리뷰 한 회차마다 디렉터리 하나이며 오케스트레이터가 다음 `r{n}`(n = 1, 2, ...)을 만들고 프롬프트에는 그 경로만 넘긴다. 안의 파일 이름은 고정이며(`REVIEW.md`, `STATUS.md`, `EVIDENCE.md`), 그 밖에는 EVIDENCE 행이 가리키는 원본 출력 `.log` 파일만 둘 수 있다. reviewer는 자기 회차 디렉터리만 읽고 쓰며 앞 회차를 읽지 않는다(독립성: 뒤 회차가 앞 회차의 지적을 보면 안 된다). 고쳐졌는지는 현재 코드에서 새로 판단하고, 회차 사이의 변화는 원장에서 읽으며, 회차 간 자동 비교는 만들지 않는다. 다른 날짜의 리뷰는 새 날짜 디렉터리에서 r1로 시작한다. phase 리뷰는 현행대로 `{doc_dir}/REVIEW.md`에 추가한다.
-- [ ] FR-10: 호출 연결. `/dotclaude:code`와 start-new Step 10은 reviewer를 `Depth: phase`로, 통합 전 전체 diff 리뷰(`commands/start-new.md` Run stages, `commands/pr.md` 9f단계)는 `Depth: pr`로 호출한다. `commands/_agent-prompts.md`의 reviewer 템플릿은 Depth, 대상, 티켓 키, 회차 디렉터리 경로, 보류 목록, 원장 경로(`{primary}/{working_directory}/review-ledger.log`), finding id 접두사(PR 깊이 `{target}-r{n}`, 단계 깊이 `{doc_dir}-p{k}`)를 담는다.
+- [x] FR-10: 호출 연결. `/dotclaude:code`와 start-new Step 10은 reviewer를 `Depth: phase`로, 통합 전 전체 diff 리뷰(`commands/start-new.md` Run stages, `commands/pr.md` 9f단계)는 `Depth: pr`로 호출한다. `commands/_agent-prompts.md`의 reviewer 템플릿은 Depth, 대상, 티켓 키, 회차 디렉터리 경로, 보류 목록, 원장 경로(`{primary}/{working_directory}/review-ledger.log`), finding id 접두사(PR 깊이 `{target}-r{n}`, 단계 깊이 `{doc_dir}-p{k}`)를 담는다.
 
 ### Secondary Features
 - [ ] FR-11: 지식 기록(기획서 9장). 입력은 설정 `knowledge_dirs`의 기존 조사 문서와 주 체크아웃의 `{working_directory}/knowledge/`이며, 읽기와 쓰기 모두 worktree에서 돌아도 주 체크아웃 경로를 쓴다. 기록 한 건은 파일 하나(`{date}-{target}-{n}.md`: 사실 한 줄, `file:line`, 확인한 커밋, 출처 리뷰)이고 추측과 저장된 색인은 없다. 인용 전에 코드가 지금도 그런지 확인하고, 확인 커밋 이후 해당 경로가 바뀌었으면 "오래됨"으로 표시한다. reviewer는 지식 전체를 읽거나 맥락에 전체 색인을 만들지 않는다. 변경된 경로와 심볼로 지식 디렉터리를 검색해 일치하는 기록만 읽는다. reviewer는 보고서의 "새로 알게 된 것"에 후보를 내고 명령이 파일로 쓴다.
@@ -66,7 +66,7 @@ handoff: "phase 1~3 커밋 완료(c7bc235). D-11로 claude_works 커밋 범위 �
 - [x] NFR-3: reviewer는 GitHub에 쓰지 않고, 자기 회차 디렉터리(`REVIEW.md`, `STATUS.md`, `EVIDENCE.md`와 EVIDENCE 행이 가리키는 원본 출력 `.log` 파일)와 자기 임시 worktree, 그리고 원장에 `finding` 줄을 덧붙이는 것 밖에는 아무것도 쓰지 않는다. 작업의 `{doc_dir}/EVIDENCE.md`는 읽기만 하고, 원장에는 `finding` 줄을 셸 추가 쓰기(`printf ... >>`)로 덧붙이기만 하고(Write 도구로 쓰지 않는다) 읽지는 않는다(FR-12, NFR-5).
 
 ### Reliability
-- [ ] NFR-4: 기존 동작을 유지한다. `BLOCKERS: {n}` 파싱, phase당 Blocker 수정 1회, PR 코멘트 처리 단계, 커밋 가드 마커.
+- [x] NFR-4: 기존 동작을 유지한다. `BLOCKERS: {n}` 파싱, phase당 Blocker 수정 1회, PR 코멘트 처리 단계, 커밋 가드 마커.
 
 ### Performance
 - [ ] NFR-5: reviewer가 한 회차에 읽는 양은 리뷰 대상 변경의 크기에 따라서만 늘고 과거 리뷰의 수에는 늘지 않는다. 구체적으로: 자기 회차 디렉터리만 읽고, 원장은 읽지 않으며(reviewer는 `finding` 줄을 추가만 하고 `disposition` 줄은 명령이 추가한다), 지식은 목표 검색으로만 읽고, 그 작업의 EVIDENCE.md는 그 작업으로 한정되며 커밋이 리뷰 중인 head와 다른 행은 읽지 않고 오래됨으로 표시만 하고, 보류 목록은 그 작업으로 한정된다.
