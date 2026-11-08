@@ -10,7 +10,7 @@ stage: local_test
 approved_at: 2026-11-08T12:40:59Z
 approved_hash: 2279d76d33730b462a7cfca09f09c8224d5804d3a13541ac2c2f844e16b83e18
 decisions: ["warn-commit-ok-for-markdown-phases", "evidence-raw-output-ignored", "evidence-commit-filled-by-orchestrator"]
-handoff: "phase 1~3 커밋 완료(c7bc235). D-11로 claude_works 커밋 범위 축소(evidence/, .validated/, reviews/, 원장, knowledge/ 무시). 실행 하네스 원본은 1Hour_Back 회차 디렉터리 harness/에 있음. phase 4 coder 진행 중; 이후 validator, reviewer(phase depth), 커밋, phase 5, 6, Docs, 전체 diff 리뷰, PR. 미결: reviewer MCP 쓰기 도구 훅 차단 여부, 승인 해시 vs 체크박스 불일치는 별도 이슈."
+handoff: "phase 1~6, Docs, 전체 diff 리뷰(r1, PASS+NOTES)와 수정 라운드, #3493 head 재실행까지 커밋 완료. run stages 미설정. 대기: SPEC FR-10/FR-12 id 형식 변경 재승인, 'proceed' 뒤 /dotclaude:pr. 미결: reviewer 상속 MCP 쓰기 도구 훅 차단 여부(review.write_tools 제안), 승인 해시 vs 체크박스 불일치 별도 이슈, 개방 질문 체크 갱신."
 -->
 # reviewer 재설계 - Specification
 
