@@ -152,3 +152,7 @@ Review run by the installed 0.8.1 reviewer.
 - Phase 3 #7: README/review.md "report-only" wording, to the Docs step.
 - Phase 3 #8 / Phase 4 #8 / Phase 5 #8: live scenario runs, to the verification session after the full-diff review.
 - Phase 1 Minor: none open (lowercase globs, store check, header fixed in phase 6).
+
+## Full diff
+
+/home/ulismoon/Documents/dotclaude/dotclaude/claude_works/reviews/2026_11_08-reviewer-redesign/r1/REVIEW.md (head c1de986; PASS+NOTES, Blockers 0, Major 2, Minor 5; Major 1 and Minors 2-6 fixed in 3d7b91f, Major 7 addressed by the head re-run recorded in EVIDENCE.md)
