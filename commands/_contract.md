@@ -33,6 +33,8 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | `pr.reviewers` | `[]` | Pull request reviewers |
 | `parallel_phases` | false | Allow the designer to propose parallel phase groups ({k}A/{k}B plus merge {k}.5); when false, phases are sequential unless the user asks |
 | `worktree.share_from_base` | `true` | Init symlinks dependency directories from the primary checkout into the new worktree (see Worktree) |
+| `review.intent_tools` | `["*jira*","*atlassian*","*notion*"]` | Globs, matched case-insensitively against MCP tool names, of the intent tools `hooks/guard-review.sh` denies the reviewer until its restatement is written |
+| `knowledge_dirs` | `[]` | Directories of existing research documents the reviewer searches besides `{primary}/{working_directory}/knowledge/` (see Knowledge records); `~` expands |
 
 `/dotclaude:start-new` writes the resolved values plus `worktree_path` and `doc_dir` into SPEC.md as an HTML comment so later commands can read them without re-resolving:
 
@@ -178,6 +180,32 @@ When `workspace_tracking` is `ignore`, document files are untracked and cannot b
 - EVIDENCE.md rows are committed, so a row states the check and its result only; it does not quote code, findings or data from a repository other than the one being worked on (a run of a dotclaude agent against another repository is such a case). Where the raw output lives in the other repository's review round directory, the row cites that path.
 - A row whose commit differs from the head under review is stale evidence: it shows the behavior at that commit only.
 - A team member's PR has no EVIDENCE.md; its CI results and the test statements in its PR body are read as claims.
+
+## Review ledger
+
+`{primary}/{working_directory}/review-ledger.log` is one append-only event log for every review of the repository, also when the review runs from a worktree. Each line is one event, tab-separated, in this field order:
+
+```
+finding  id date target depth axis kind location severity verdict must_see
+disposition  id disposition defer_class cross later date
+```
+
+- `finding`: one line per issue row of a report. `id` is `{prefix}-{row}`, `{row}` being the row's `#`, so it is known without reading the ledger; the caller passes the prefix as `Finding id prefix`: `{YYYY_MM_DD}-{target}-r{n}` at pr depth, the same date, target and round as the round directory, and `{doc_dir}-p{k}-r{m}` at phase depth, `m` being the review call number within the phase (1 for the first call, 2 after the Blocker fix), so no two reviews share an id. `date` is `YYYY-MM-DD`; `depth` is `phase` or `pr`; `kind` is one of missing, unexplained, mismatch, side-effect, risk, reinvention, untested, defect; `verdict` is the report's verdict, `-` at phase depth; `must_see` is `yes` when the row is also under 사람이 직접 봐야 하는 곳, otherwise `no`.
+- `disposition`: points at a finding `id`. `disposition` is one of Finding dispositions; `defer_class` is `silent` or `loud` for `deferred`, otherwise `-`; `cross` is `coderabbit`, `human` or `none` (who else raised it); `later` is `missed` or `false-alarm` once known, otherwise `-`.
+
+The reviewer appends `finding` lines when it reports, at both depths; commands append `disposition` lines when the user states a disposition in the session, and leave the rest to a later retrospective. Both write with a shell append (`printf 'finding\t%s\t...\n' ... >> {ledger}`), never with Write or Edit. The reviewer never reads the ledger. A line is never edited: a changed disposition is a new line and a re-review adds new `finding` lines, so reversals stay visible.
+
+Count check, run by the command after each reviewer call: count the `finding` lines whose id starts with `{prefix}-` before and after the call; the increase must equal the report's issue rows (rows with severity Blocker, Major or Minor). On a mismatch, report the difference to the user and leave the ledger as it is.
+
+## Knowledge records
+
+Inputs are the directories in `knowledge_dirs` and `{primary}/{working_directory}/knowledge/` (the primary checkout's, also from a worktree). A record is one file `{date}-{target}-{n}.md` holding one fact line, its `file:line`, the confirmed commit and the source review (round directory); no guesses. No index is stored or built. The reviewer searches the inputs only for the change's changed paths and symbols and reads only the matching files. Before citing a record it checks the code still says so; when `git log {confirmed commit}..{head} -- {path}` lists commits, or the confirmed commit is not in the repository (`git cat-file -e {confirmed commit}` fails), the record is marked 오래됨 and not cited as fact.
+
+After a pr-depth review the command writes each fact under 새로 알게 된 것 of the report as a new record, without asking, only into `{primary}/{working_directory}/knowledge/` and never into a `knowledge_dirs` directory, `{n}` being 1 + the highest existing for that date and target.
+
+## Finding dispositions
+
+A finding on your own work is `accepted`, `deferred`, `rebutted` or `ignored` (`ignored` for duplicates and noise). A deferral needs a repro result (command and its output) and a class; without them the deferral is not accepted and the finding stays open. A silent omission (a result that is wrong or missing without an error) cannot be deferred; it is fixed, or a guard that raises an error is added so it becomes loud. A loud failure (an error the user sees) may be deferred: it is listed as a known limitation under `## Deferred` of `{working_directory}/{doc_dir}/REVIEW.md`, one row per finding with finding id, repro command, raw output path and class. Call a failure loud only after every input shape was checked. The PR body does not change. PR-depth callers pass the `## Deferred` rows as `Deferred`, and the reviewer reproduces each and judges its class again.
 
 ## Validate-fix loop
 

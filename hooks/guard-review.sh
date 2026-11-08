@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 # PreToolUse(Write|Read|mcp__.*) hook: restatement gate for dotclaude:reviewer.
-# A reviewer's first Write to {WD}/reviews/{target}/r{n}/STATUS.md binds its agent_id to that file.
-# Until that file's "## Restatement" section has content, the bound reviewer may not call intent MCP
-# tools (review.intent_tools) or Read SPEC.md / PHASE_*_PLAN_*.md; an unbound reviewer may not call
-# intent MCP tools. Known limitations: Bash or Grep reads of SPEC and PLAN are not blocked, and a
-# PR-depth reviewer that reads SPEC before creating STATUS.md is not blocked.
+# A reviewer's first Write to {WD}/reviews/{target}/r{n}/STATUS.md binds its agent_id to that file;
+# until its "## Restatement" has content, intent MCP tools (review.intent_tools) and Reads of SPEC.md
+# and PHASE_*_PLAN_*.md are denied (intent MCP also while unbound). Not blocked: Bash or Grep reads of
+# SPEC and PLAN, and SPEC and PLAN Reads while unbound.
 exec 2>/dev/null
 HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd) || exit 0
 # shellcheck source=_lib.sh
@@ -62,6 +61,8 @@ if [ "$TOOL" = Write ] && [ "${FP##*/}" = STATUS.md ]; then
   WD=$(HOOK_CWD=$base cfg_get working_directory .dc_workspace); WD=${WD%/}
   [[ "$revdir" == */"$WD"/reviews ]] || exit 0
   [ -d "$STORE" ] || mkdir -m 700 "$STORE" || exit 0
+  # The store sits in a shared temp directory: write only into a real directory this user owns.
+  [ ! -L "$STORE" ] && [ -O "$STORE" ] || exit 0
   # noclobber makes the first binding win atomically, also when two Writes race.
   (set -C; printf '%s' "$FP" >"$STORE/$AID") || exit 0
   log_to "$base" "guard-review bind $AID $FP"
@@ -77,12 +78,16 @@ fi
 [ -n "$kind" ] || exit 0
 
 BOUND=""
-[ -n "$AID" ] && [ -f "$STORE/$AID" ] && BOUND=$(cat "$STORE/$AID")
+# Same ownership test as the write side: a binding behind a planted store is not trusted.
+if [ -n "$AID" ] && [ -f "$STORE/$AID" ]; then
+  [ ! -L "$STORE" ] && [ -O "$STORE" ] || exit 0
+  BOUND=$(cat "$STORE/$AID")
+fi
 CTX=$CWD; [ -n "$BOUND" ] && CTX=$(nearest_dir "${BOUND%/*}")
 
 if [ "$kind" = mcp ]; then
   globs=$(HOOK_CWD=$CTX cfg_get_list review.intent_tools) || exit 0
-  if [ -n "$globs" ]; then mapfile -t GLOBS <<<"$globs"; else GLOBS=("${DEFAULT_INTENT_TOOLS[@]}"); fi
+  if [ -n "$globs" ]; then mapfile -t GLOBS <<<"${globs,,}"; else GLOBS=("${DEFAULT_INTENT_TOOLS[@]}"); fi
   match_any_glob "${TOOL,,}" "${GLOBS[@]}" || exit 0
 fi
 

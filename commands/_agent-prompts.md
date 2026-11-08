@@ -109,9 +109,9 @@ PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md (phase re
 Target: {target}
 Ticket: {ticket key | none}
 Round directory: {round directory}   (pr depth only)
-Deferred: {deferred findings | none}
+Deferred: {rows of ## Deferred in {working_directory}/{doc_dir}/REVIEW.md (pr depth) | none}
 Ledger: {primary}/{working_directory}/review-ledger.log
-Finding id prefix: {target}-r{n} (pr depth) | {doc_dir}-p{k} (phase depth)
+Finding id prefix: {YYYY_MM_DD}-{target}-r{n} (pr depth) | {doc_dir}-p{k}-r{m} (phase depth)   (Contract: Review ledger)
 ```
 
 ## technical-writer: DOCS_UPDATE

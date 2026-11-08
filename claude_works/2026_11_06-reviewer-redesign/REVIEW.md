@@ -120,3 +120,35 @@ BLOCKERS: 0
 - #8 deferred: scenario runs go to the verification session after phase 6, FR-10/NFR-4 stay ticked on content checks (29 passed after the fix round).
 
 Review run by the installed 0.8.1 reviewer.
+
+## Phase 6
+
+| # | Axis | Result | Location | Severity | Finding | Notes |
+|---|------|--------|----------|----------|---------|-------|
+| 1 | 1 correctness | issue | `commands/_contract.md:193` | Major | Finding ids can be the same for two different findings, so a `disposition` line cannot tell which finding it means. At phase depth the second review after a Blocker fix uses the same prefix `{doc_dir}-p{k}` and the same row numbers. At pr depth `{target}-r{n}` has no date, but `r{n}` restarts at `r1` each day, so `{target}-r1-1` repeats across days. | The id form comes from SPEC FR-12, so fixing it needs a SPEC change. Suggested direction: put the round's date in the pr prefix and a review-round counter in the phase prefix. |
+| 2 | 1 correctness | issue | `commands/_contract.md:204` | Minor | "the command writes each fact ... as a new record" never says which directory. The inputs are `knowledge_dirs` plus `{primary}/{WD}/knowledge/`, so a command could write into a user's research directory. | Suggested direction: state the primary `knowledge/` as the only write target. |
+| 3 | 1 correctness | issue | `commands/_contract.md:202` | Minor | The 오래됨 check `git log {confirmed commit}..{head} -- {path}` does not say what to do when the confirmed commit is not in the repository. git exits non-zero and nothing is listed, so the record is not marked 오래됨. | Suggested direction: treat a missing commit as 오래됨. |
+| 4 | 2 scope | checked | — | — | — | Every hunk traces to PLAN Steps 1-4 or to the three earlier-review Minors declared in scope. Knowledge records are written only at pr depth, matching FR-11. |
+| 5 | 3 safety | issue | `hooks/guard-review.sh:85` | Minor | The symlink/owner check protects only the binding write. The read side still runs `cat "$STORE/$AID"` without it, so a planted binding could point `restatement_filled` at a file another user controls. | Low risk (needs a guessed `agent_id`). Suggested direction: apply the same test before reading. |
+| 6 | 4 maintainability | issue | `hooks/guard-review.sh:6` | Minor | The header says only "a SPEC Read before STATUS.md exists" is not blocked, but an unbound reviewer's PLAN Reads are not blocked either. | Suggested direction: "SPEC and PLAN Reads while unbound". |
+| 7 | 4 maintainability | checked | — | — | — | The kind list and the ledger field order are defined only in `_contract.md:193`; `agents/reviewer.md:116` refers to them. Callers refer to the contract sections by name. |
+| 8 | 5 tests | checked | — | — | — | The two new hook cases fail before the hook edit and pass after it. The `-O` branch has no test (needs a second user). TEST rows point to content checks with "scenario run pending", as in phases 4-5. Content checks RED 4/37, GREEN 41/0. |
+
+BLOCKERS: 0
+
+### Disposition
+
+- #1 fixed: ids are now `{YYYY_MM_DD}-{target}-r{n}-{row}` and `{doc_dir}-p{k}-r{m}-{row}`, defined once in `commands/_contract.md:193`; SPEC FR-10/FR-12 wording aligned, re-approval requested.
+- #2 fixed: `commands/_contract.md:204` writes only into the primary `knowledge/`.
+- #3 fixed: `commands/_contract.md:202` treats a missing commit as 오래됨.
+- #5 fixed: read-side store check at `hooks/guard-review.sh:80-85`, new test case.
+- #6 fixed: header.
+
+Review run by the installed 0.8.1 reviewer.
+
+## Deferred
+
+- Phase 3 #5: `agents/reviewer.md` size (13.2 KB; lint 195.9 KB of 220 KB).
+- Phase 3 #7: README/review.md "report-only" wording, to the Docs step.
+- Phase 3 #8 / Phase 4 #8 / Phase 5 #8: live scenario runs, to the verification session after the full-diff review.
+- Phase 1 Minor: none open (lowercase globs, store check, header fixed in phase 6).

@@ -70,15 +70,15 @@ No change to `hooks/workspace-archive.sh`; the top-level ledger is never a candi
 
 ## Completion Checklist
 
-- [ ] The Configuration table has `review.intent_tools` and `knowledge_dirs` with the stated defaults: `commands/_contract.md`
-- [ ] "Review ledger" defines path, event fields, append-only writing (reviewer for `finding`, commands for `disposition`), new line for changed disposition, finding id forms, and the count check with its mismatch handling: `commands/_contract.md`
-- [ ] "Knowledge records" defines inputs, file naming and fields, no index, targeted search, stale marking, candidate writing without asking: `commands/_contract.md`
-- [ ] "Finding dispositions" defines the four dispositions, repro and class for deferral, the silent-vs-loud rule, `## Deferred` rows, no PR body change: `commands/_contract.md`
-- [ ] Both keys are offered and saved as JSON arrays: `commands/configure.md`
-- [ ] Reviewer rules: targeted knowledge search, stale marking, deferred re-check, read limits (own round only, no ledger, no stale evidence rows): `agents/reviewer.md`
-- [ ] Callers run the finding-line count check after each reviewer call (report mismatch, never edit the ledger), append no `finding` lines, and write knowledge files: `commands/review.md`, `commands/code.md`, `commands/start-new.md`, `commands/pr.md`
-- [ ] Step 4 of review appends `disposition` lines for dispositions stated in the session: `commands/review.md`
-- [ ] Phase deferrals go to `## Deferred` of `{doc_dir}/REVIEW.md`: `commands/code.md`
+- [x] The Configuration table has `review.intent_tools` and `knowledge_dirs` with the stated defaults: verified in `commands/_contract.md`
+- [x] "Review ledger" defines path, event fields, append-only writing (reviewer for `finding`, commands for `disposition`), new line for changed disposition, finding id forms, and the count check with its mismatch handling: verified in `commands/_contract.md`
+- [x] "Knowledge records" defines inputs, file naming and fields, no index, targeted search, stale marking, candidate writing without asking: verified in `commands/_contract.md`
+- [x] "Finding dispositions" defines the four dispositions, repro and class for deferral, the silent-vs-loud rule, `## Deferred` rows, no PR body change: verified in `commands/_contract.md`
+- [x] Both keys are offered and saved as JSON arrays: verified in `commands/configure.md`
+- [x] Reviewer rules: targeted knowledge search, stale marking, deferred re-check, read limits (own round only, no ledger, no stale evidence rows): verified in `agents/reviewer.md`
+- [x] Callers run the finding-line count check after each reviewer call (report mismatch, never edit the ledger), append no `finding` lines, and write knowledge files: verified in commands/review.md:34, commands/code.md:30, commands/start-new.md:46, commands/pr.md:68
+- [x] Step 4 of review appends `disposition` lines for dispositions stated in the session: verified in `commands/review.md`
+- [x] Phase deferrals go to `## Deferred` of `{doc_dir}/REVIEW.md`: verified in `commands/code.md`
 
 ---
 

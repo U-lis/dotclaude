@@ -85,6 +85,8 @@ out=$(run dotclaude:reviewer agentC mcp__slack__x); empty "unbound: MCP outside 
 printf '{ "working_directory": ".dc_workspace", "review": { "intent_tools": ["*slack*"] } }\n' >"$R/.claude/dotclaude-config.json"
 out=$(run dotclaude:reviewer agentB mcp__slack__x); contains "config: configured glob denied" "$out" "$deny"
 out=$(run dotclaude:reviewer agentB mcp__notion__search); empty "config: default glob no longer applies" "$out"
+printf '{ "working_directory": ".dc_workspace", "review": { "intent_tools": ["*Slack*"] } }\n' >"$R/.claude/dotclaude-config.json"
+out=$(run dotclaude:reviewer agentB mcp__slack__x); contains "config: configured glob matched case-folded" "$out" "$deny"
 printf '{ "working_directory": ".dc_workspace" }\n' >"$R/.claude/dotclaude-config.json"
 
 # fail open: unreadable STATUS.md, malformed input
@@ -96,6 +98,15 @@ out=$(run dotclaude:reviewer "" mcp__notion__search); contains "no agent_id: tre
 # no binding, no STATUS.md, non-reviewer: nothing
 rm -rf "$STORE" "$RV"
 out=$(run -null "" Read "$SPEC"); empty "no binding, no STATUS.md: silent" "$out"
+
+# a binding store that is a symlink (another user's planted path) is not written through
+EVIL="$T/evil"; mkdir -p "$EVIL"; ln -s "$EVIL" "$STORE"
+run dotclaude:reviewer agentZ Write "$S1" >/dev/null
+[ -e "$EVIL/agentZ" ] && ko "symlinked store: no binding written" "bound through symlink" || ok "symlinked store: no binding written"
+# read side: a binding planted behind the symlink is not trusted, so no deny comes from it
+status "$S1" "$EMPTY_BODY"; printf '%s' "$S1" >"$EVIL/agentP"
+out=$(run dotclaude:reviewer agentP Read "$SPEC"); empty "symlinked store: planted binding not read" "$out"
+rm -f "$STORE"
 
 # the cheap string check runs before any jq/python3 call
 SPY="$T/spy"; mkdir -p "$SPY"
