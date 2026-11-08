@@ -1,6 +1,6 @@
 # Evidence: {keyword}
 
-Rules: `_contract.md` section "Evidence". One row per check; Stage is `local` or `remote`; Raw output path is a repository-relative `.log` under `evidence/`; Commit is the short sha the check ran on, or the uncommitted-phase value.
+Rules: `_contract.md` section "Evidence". One row per check; Stage is `local` or `remote`; Raw output path is a repository-relative `.log` under `evidence/` (git-ignored; checked on the machine that ran it); Commit is the short sha the check ran on, or the uncommitted-phase value.
 
 ## coder
 

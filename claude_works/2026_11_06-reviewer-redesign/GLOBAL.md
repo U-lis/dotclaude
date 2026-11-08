@@ -72,7 +72,7 @@ One table with columns: stage (local/remote), behavior, data setup, command or a
 - New sections: "Review ledger", "Knowledge records", "Finding dispositions".
 - The ledger is tab-separated and append-only; no line is ever edited. Authors (user decision D-10): the reviewer appends one `finding` line per finding when it reports, with an append-only shell write (`printf ... >>`), at both depths (the single exception to "phase depth runs nothing"). It never reads the ledger and never rewrites it, so it must not use the Write tool on it. Reason: one author for the finding record and one place to implement instead of five call sites (`code.md`, start-new Step 10, start-new Run stages, `pr.md` 9f, `review.md`). Commands append only `disposition` lines (decided in the main session with the user).
 - Finding id is deterministic so no read is needed: `{target}-r{n}-{row}` for PR depth, `{doc_dir}-p{k}-{row}` for phase depth. The caller's prompt carries the ledger path and the id prefix (`{target}-r{n}` or `{doc_dir}-p{k}`).
-- Line format: the "Ledger lines" block in Data Model below is the single statement of it until phase 6 writes it into `_contract.md` "Review ledger"; phase 3 (reviewer) and phase 6 (contract) both reference it, neither restates the fields.
+- Line format: the "Ledger lines" block in Data Model below is the single statement of it. Phase 3 writes the field list and `kind` values into `agents/reviewer.md` (GLOBAL.md does not ship with the plugin), and phase 6 copies them into `commands/_contract.md` "Review ledger" as the single contract definition.
 - Count check by the calling command after the reviewer returns: the number of `finding` lines with this review's id prefix equals the number of `issue` rows in the report. On mismatch the command reports the difference to the user and does not fix the ledger.
 - Purge never archives the ledger: in `files` mode `hooks/workspace-archive.sh:317-318` loops only over top-level directories; `preserve` mode copies worktree to primary and skips only `.hook.log` (`:143`). Decision (user): no code change, a test pins the behavior.
 - Deferral list (FR-13 "known constraints"): the `## Deferred` section of `{doc_dir}/REVIEW.md`, no PR body change. Each row holds finding id, repro command and output path, class (silent or loud). Only loud rows are accepted.
@@ -98,6 +98,7 @@ ${TMPDIR:-/tmp}/dotclaude-review-$(id -u)/{agent_id}   content: absolute STATUS.
 ```
 finding      id date target depth axis kind location severity verdict must_see
 disposition  id disposition(accepted|deferred|rebutted|ignored) defer_class(silent|loud) cross(coderabbit|human|none) later(missed|false-alarm) date
+kind values (finding line): missing, unexplained, mismatch, side-effect, risk, reinvention, untested, defect
 ```
 
 ### Knowledge record (`{primary}/{WD}/knowledge/{date}-{target}-{n}.md`)
@@ -154,7 +155,7 @@ commands/configure.md             # two keys (P6)
 |-------|-------------|--------------|--------|--------------|
 | 1 | Restatement gate hook, tests, experiments E1-E6 | FR-4, NFR-1 | Complete | - |
 | 2 | Evidence template and contract | FR-8 | Complete | Phase 1 |
-| 3 | Reviewer rewrite and prompt template | FR-1, FR-2, FR-3, FR-5, FR-7, NFR-2, NFR-3 | Not Started | Phase 2 |
+| 3 | Reviewer rewrite and prompt template | FR-1, FR-2, FR-3, FR-5, FR-7, NFR-2, NFR-3 | Complete | Phase 2 |
 | 4 | Review part of `/dotclaude:review`, round directory rules | FR-6, FR-9 | Not Started | Phase 3 |
 | 5 | Phase-review and pre-integration wiring | FR-10, NFR-4 | Not Started | Phase 4 |
 | 6 | Ledger, knowledge records, dispositions, settings | FR-11, FR-12, FR-13, FR-14, NFR-5 | Not Started | Phase 5 |

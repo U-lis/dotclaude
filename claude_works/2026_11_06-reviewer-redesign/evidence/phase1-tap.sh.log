@@ -1,3 +1,0 @@
-#!/bin/bash
-jq -c '{tool_name, agent_type, agent_id, file_path:(.tool_input.file_path // null)}' >>/tmp/claude-1000/-home-ulismoon-Documents-dotclaude/dbbc667f-1c50-4c17-a5cf-2e6e9a4ebf40/scratchpad/phase1/tap.log
-exit 0

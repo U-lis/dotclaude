@@ -1,2 +1,9 @@
 # Local claude settings
 .claude/
+
+# Evidence raw outputs stay local (may contain reviewed-repository content)
+claude_works/*/evidence/
+claude_works/*/.validated/
+claude_works/review-ledger.log
+claude_works/knowledge/
+claude_works/reviews/

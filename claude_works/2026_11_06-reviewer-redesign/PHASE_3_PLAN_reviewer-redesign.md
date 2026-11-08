@@ -86,19 +86,19 @@ The Restatement heading in the skeleton must be exactly `## Restatement` (the ho
 
 ## Completion Checklist
 
-- [ ] The frontmatter has no `tools:` line and the description names both depths: `agents/reviewer.md`
-- [ ] Phase depth section: axes 1, 4, 5 answered `n/a (phase depth)`, no execution, no knowledge/PR/evidence reads, last line `BLOCKERS: {n}`: `agents/reviewer.md`
-- [ ] PR depth names Write of `STATUS.md` with the Target/Restatement/Progress skeleton as the first action: `agents/reviewer.md`
-- [ ] PR depth lists the FR-2 steps in order, the risk-zone checklist, the three impact labels, reinvention search with terms, and "교차 확인됨" dedupe: `agents/reviewer.md`
-- [ ] Intent sources are read by the reviewer and unreadable ones go under "확인하지 못한 것": `agents/reviewer.md`
-- [ ] Local re-run rules: temporary worktree removed at the end, local config, "실행 요청" for tunnel/shared checks, "실행하지 못함" with reason, no edits to the target branch: `agents/reviewer.md`
-- [ ] Report format sections, header and verdict rule (`FAIL` only when Blockers >= 1) match FR-3, ending with `BLOCKERS: {n}`; phase table stays English: `agents/reviewer.md`
-- [ ] Evidence rows without a command or raw output are reported under axis 5 and not counted as evidence, and rows whose commit differs from the reviewed head are reported as stale evidence: `agents/reviewer.md`
-- [ ] Evidence rows are written only to `{round}/EVIDENCE.md`; `{doc_dir}/EVIDENCE.md` is read-only; no `gh` write commands; both known gate limitations are stated: `agents/reviewer.md`
-- [ ] At both depths the reviewer appends one `finding` line per finding with `printf ... >>` to the ledger path from the prompt, with id `{prefix}-{row}`; it never reads or rewrites the ledger and does not use Write on it; the allowed write set names this append: `agents/reviewer.md`
-- [ ] The reviewer template keeps the Worktree, Base or Diff source, SPEC, RULES and PLAN path fields, adds Depth, target, ticket key, round directory, deferred list, ledger path and finding id prefix, and carries no intent text: `commands/_agent-prompts.md`
-- [ ] Language lists the PR-depth report; Who does what no longer says report only; Git safety is narrowed as specified: `commands/_contract.md`
-- [ ] The line no longer says "Report-only": `docs/ARCHITECTURE.md`
+- [x] The frontmatter has no `tools:` line and the description names both depths: verified in agents/reviewer.md:2-4
+- [x] Phase depth section: axes 1, 4, 5 answered `n/a (phase depth)`, no execution, no knowledge/PR/evidence reads, last line `BLOCKERS: {n}`: verified in agents/reviewer.md:29-36
+- [x] PR depth names Write of `STATUS.md` with the Target/Restatement/Progress skeleton as the first action: verified in agents/reviewer.md:50
+- [x] PR depth lists the FR-2 steps in order, the risk-zone checklist, the three impact labels, reinvention search with terms, and "교차 확인됨" dedupe: verified in agents/reviewer.md:65-87
+- [x] Intent sources are read by the reviewer and unreadable ones go under "확인하지 못한 것": verified in agents/reviewer.md:65
+- [x] Local re-run rules: temporary worktree removed at the end, local config, "실행 요청" for tunnel/shared checks, "실행하지 못함" with reason, no edits to the target branch: verified in agents/reviewer.md:46,81
+- [x] Report format sections, header and verdict rule (`FAIL` only when Blockers >= 1) match FR-3, ending with `BLOCKERS: {n}`; phase table stays English: verified in agents/reviewer.md:92-108
+- [x] Evidence rows without a command or raw output are reported under axis 5 and not counted as evidence, and rows whose commit differs from the reviewed head are reported as stale evidence: verified in agents/reviewer.md:79
+- [x] Evidence rows are written only to `{round}/EVIDENCE.md`; `{doc_dir}/EVIDENCE.md` is read-only; no `gh` write commands; both known gate limitations are stated: verified in agents/reviewer.md:83,120
+- [x] At both depths the reviewer appends one `finding` line per finding with `printf ... >>` to the ledger path from the prompt, with id `{prefix}-{row}`; it never reads or rewrites the ledger and does not use Write on it; the allowed write set names this append: verified in agents/reviewer.md:116
+- [x] The reviewer template keeps the Worktree, Base or Diff source, SPEC, RULES and PLAN path fields, adds Depth, target, ticket key, round directory, deferred list, ledger path and finding id prefix, and carries no intent text: verified in commands/_agent-prompts.md:99
+- [x] Language lists the PR-depth report; Who does what no longer says report only; Git safety is narrowed as specified: verified in commands/_contract.md
+- [x] The line no longer says "Report-only": verified in docs/ARCHITECTURE.md:39
 
 ---
 

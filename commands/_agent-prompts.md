@@ -96,16 +96,22 @@ Return the report table and one status: PASS (marker created after the documents
 
 ## reviewer
 
-Phase review (`/dotclaude:code`, after code-validator PASS, changes uncommitted), full-diff review (`/dotclaude:pr`), and `/dotclaude:review` use the same template; `{scope}` says which.
+Phase review (`/dotclaude:code`, after code-validator PASS, changes uncommitted) uses `Depth: phase`; the full-diff review before integration and `/dotclaude:review` use `Depth: pr`. The prompt carries only targets and paths, never intent text (PRD, Jira, PR body content): the reviewer reads intent sources itself.
 
 ```
 Review {scope: phase {phase_id} (uncommitted changes) | the full branch diff | pull request #{n}}.
-Worktree: {worktree_path}
+Depth: {phase | pr}
+Worktree: {worktree_path}   (a pull request that is not checked out: the primary checkout)
 Base: {base_branch}   (or Diff source: gh pr diff {n})
 SPEC: {working_directory}/{doc_dir}/SPEC.md (may be absent)
 RULES: {working_directory}/RULES.md (may be absent)
 PLAN: {working_directory}/{doc_dir}/PHASE_{phase_id}_PLAN_{keyword}.md (phase review) | all PHASE_*_PLAN_*.md in {working_directory}/{doc_dir}/ (full diff)
-Answer all five axes and end with BLOCKERS: n.
+Target: {target}
+Ticket: {ticket key | none}
+Round directory: {round directory}   (pr depth only)
+Deferred: {deferred findings | none}
+Ledger: {primary}/{working_directory}/review-ledger.log
+Finding id prefix: {target}-r{n} (pr depth) | {doc_dir}-p{k} (phase depth)
 ```
 
 ## technical-writer: DOCS_UPDATE

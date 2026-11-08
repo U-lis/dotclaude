@@ -13,7 +13,7 @@ Values resolve in this order, later entries overriding earlier ones: built-in de
 | Key | Default | Meaning |
 |-----|---------|---------|
 | `working_directory` | `.dc_workspace` | Directory for work documents, relative to the repository root |
-| `workspace_tracking` | `commit` | `commit` tracks `{working_directory}` in git; `ignore` keeps it in `.gitignore` and takes snapshots instead of commits (see Commits) |
+| `workspace_tracking` | `commit` | `commit` tracks `{working_directory}` in git, except `*/.validated/`, `*/evidence/`, `review-ledger.log`, `knowledge/` and `reviews/`, which stay ignored; `ignore` keeps it in `.gitignore` and takes snapshots instead of commits (see Commits) |
 | `workspace_size_ignore` | `[]` | Globs matched against top-level entries of `{working_directory}` (e.g. `2026_06_29-exam-vision-eval`, `ONE-*`), and `YYYY_MM_DD-{name}` also matches when `{name}` does; matches are left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving. A primary checkout full of doc dirs is `workspace_size_warn_primary`'s case: `*` here would also turn off the worktree warning and purge archiving |
 | `workspace_size_warn_primary` | `true` | `false` turns off the Stop hook's 10MB size warning when the session's worktree is the primary checkout; worktree warnings, `workspace_size_ignore`, `/dotclaude:purge` archiving, and the uncommitted-code block do not change |
 | `workspace_archive_dir` | unset | Where `/dotclaude:purge` puts files moved out of `{working_directory}`, as `{dir}/{primary checkout name}/{doc_dir}/...`; `~` expands. Unset means purge asks, and never chooses |
@@ -77,7 +77,7 @@ GLOBAL.md Phase Overview Status uses `Not Started`, `In Progress`, `Complete`, `
 
 The SessionStart hook prints `[dotclaude] language: {code}`. If it printed nothing, the language is `en_US`.
 
-Written in the configured language: everything the user reads directly. That is conversation, AskUserQuestion labels and descriptions, status and error messages, reports, `SPEC.md`, and pull request titles and bodies.
+Written in the configured language: everything the user reads directly. That is conversation, AskUserQuestion labels and descriptions, status and error messages, reports, `SPEC.md`, the PR-depth review report (`REVIEW.md` of a review round directory), and pull request titles and bodies.
 
 Written in English regardless of the setting: documents that only agents consume and project-facing files. That is `GLOBAL.md`, `PHASE_*_PLAN_*.md`, `PHASE_*_TEST.md`, `PHASE_*.5_PLAN_MERGE.md`, agent-to-agent reports, `CHANGELOG.md`, `README.md`, code, comments, and commit messages.
 
@@ -121,7 +121,7 @@ The command that the user invoked is the orchestrator. It asks the user question
 | Implementing a phase, fixing validation errors, applying a pruner report to tests | `dotclaude:coders:coder-{language}` (`dotclaude:coders:coder-generic` for languages without a dedicated coder) |
 | Validating a phase and owning its validate-fix loop | `dotclaude:code-validator` |
 | Finding redundant tests and over-long comments (report only) | `dotclaude:pruner` |
-| Reviewing a diff on the five axes (correctness, scope, safety, maintainability, tests) after validator PASS and before a PR (report only) | `dotclaude:reviewer` |
+| Reviewing a change on the five axes (correctness, scope, safety, maintainability, tests): phase depth after validator PASS (table only), PR depth before integration and for pull requests (report, re-runs and evidence rows in its review round directory) | `dotclaude:reviewer` |
 | Reading many files or searching the codebase to answer a question | the built-in `Explore` agent |
 
 Agents run with a fresh context and cannot ask the user anything. When an agent needs a decision, it stops and returns the question in its report; the orchestrator asks the user and calls the agent again with the answer.
@@ -157,10 +157,10 @@ Phase decomposition does not need user review: after SPEC approval, design runs 
 |------|------|---------|
 | After SPEC approval, once | `{working_directory}/{doc_dir}/SPEC.md` | `docs: add SPEC.md for {keyword}` |
 | After design documents are written and pruned | `{working_directory}/{doc_dir}/*.md` | `docs: add design documents for {keyword}` |
-| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, TEST, SPEC, REVIEW, and `EVIDENCE.md` documents the coder, validator, and reviewer updated, with the `evidence/*.log` files its rows cite | `feat/fix/refactor({keyword}): complete phase {k}` |
+| After code-validator returns PASS for a phase | changed code plus the PLAN, GLOBAL, TEST, SPEC, REVIEW, and `EVIDENCE.md` documents the coder, validator, and reviewer updated | `feat/fix/refactor({keyword}): complete phase {k}` |
 | After CHANGELOG/README update | `CHANGELOG.md`, `README.md`, and the last phase's EVIDENCE.md hash edit | `docs: update CHANGELOG and README for {version}` |
 
-No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while the session's own worktree, on a work branch, holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`.
+No commit happens without the validator's PASS for that phase, and no version number changes outside `/dotclaude:tagging`. The orchestrator commits; agents do not. Two hooks enforce this: a PreToolUse guard denies `git commit` of code on a work branch unless `{working_directory}/{doc_dir}/.validated/PHASE_{k}` exists for the phase named in the message (documents-only commits pass), and the Stop hook refuses to end a turn while the session's own worktree, on a work branch, holds uncommitted code. Commit messages for phases therefore always contain `phase {k}`. The `.validated/` marker directory is git-ignored: it is a local signal for the commit guard and is never committed.
 
 When `workspace_tracking` is `ignore`, document files are untracked and cannot be committed; each design commit point instead runs `mkdir -p {working_directory}/.snapshots && tar -czf {working_directory}/.snapshots/$(date +%Y%m%d-%H%M%S).tar.gz -C {working_directory} {doc_dir}` and keeps the newest 5 files in `.snapshots/` (`ls -1t {working_directory}/.snapshots/*.tar.gz | tail -n +6 | xargs -r rm --`).
 
@@ -169,9 +169,10 @@ When `workspace_tracking` is `ignore`, document files are untracked and cannot b
 `{working_directory}/{doc_dir}/EVIDENCE.md` records checks that someone else can repeat and get the same result. Its first writer creates it from `${CLAUDE_PLUGIN_ROOT}/templates/EVIDENCE.md`; each writer appends rows to its own section: the coder (`## coder`), the orchestrator, one row per run stage it ran (`## orchestrator (run stages)`), and a verification session outside the dotclaude flow, which uses the same form (`## verification session`). The reviewer reads `{doc_dir}/EVIDENCE.md` and never writes it, because it lies inside the worktree under review; its own rerun rows go to the `EVIDENCE.md` of its review round directory.
 
 - A row without a command and a raw output path is not evidence; it is read as a claim.
-- Raw outputs are saved as `.log` files under `{working_directory}/{doc_dir}/evidence/` (a reviewer's under its round directory), never under a temporary or session path, so a row stays checkable after the session ends; the row's raw output path is relative to the repository root.
+- Raw outputs are saved as `.log` files under `{working_directory}/{doc_dir}/evidence/` (a reviewer's under its round directory), never under a temporary or session path. That directory and the reviewer's round directories are git-ignored (`{working_directory}/*/evidence/` and `{working_directory}/reviews/`), so raw outputs stay on the machine that ran the check and a row is checked there; the row's raw output path is relative to the repository root.
 - A row written while its phase is still uncommitted carries `phase {k} (uncommitted)` in the commit column; right after the phase commit the orchestrator replaces that value with the commit hash in EVIDENCE.md, and the row then counts as evidence for that commit. That edit is committed with the next phase's commit, or with the CHANGELOG/README docs commit after the last phase.
-- Secrets (credentials, tokens, cookies, env dumps) are redacted from raw output before it is saved, because the files are committed when the workspace is tracked.
+- Secrets (credentials, tokens, cookies, env dumps) are redacted from raw output before it is saved: raw outputs are not committed, yet they are read by later sessions and agents.
+- EVIDENCE.md rows are committed, so a row states the check and its result only; it does not quote code, findings or data from a repository other than the one being worked on (a run of a dotclaude agent against another repository is such a case). Where the raw output lives in the other repository's review round directory, the row cites that path.
 - A row whose commit differs from the head under review is stale evidence: it shows the behavior at that commit only.
 - A team member's PR has no EVIDENCE.md; its CI results and the test statements in its PR body are read as claims.
 
@@ -183,7 +184,7 @@ code-validator owns the loop for one phase: validate, and on failure call the co
 
 `git reset --hard`, `git checkout -- <path>`, `git restore`, and `git stash` are not used to undo agent work, because they destroy uncommitted changes that may belong to another step. Revert by restoring from an explicit backup or `git show HEAD:<path>`. Never force-push. Never delete branches with `-D`.
 
-The pruner and the reviewer never modify files. Their Bash use is read-only.
+The pruner never modifies files and its Bash use is read-only. The reviewer never modifies the reviewed code, branch, or worktree; it writes only to its review round directory (`REVIEW.md`, `STATUS.md`, its own `EVIDENCE.md` rows, `.log` outputs), its temporary worktree, and the `finding` lines it appends to the review ledger.
 
 ## Limits
 
