@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.9.0] - 2026-11-08
+
+### Added
+
+- Reviewer restatement gate: `hooks/guard-review.sh` (PreToolUse) denies the reviewer's intent MCP tools and SPEC/PLAN reads until the `Restatement` section of its `STATUS.md` is filled ([#117](https://github.com/U-lis/dotclaude/issues/117)).
+- Review round directories `{working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/` holding `REVIEW.md`, `STATUS.md`, `EVIDENCE.md` and the cited `.log` outputs.
+- Evidence report `EVIDENCE.md` template with coder and orchestrator rows; the commit hash is filled after the phase commit.
+- Append-only tab-separated review ledger (`review-ledger.log`) with finding and disposition lines.
+- Knowledge records under `{working_directory}/knowledge/` written after pr-depth reviews and searched by the reviewer; records whose paths changed since the confirmed commit are marked stale (오래됨).
+- Finding dispositions with the loud/silent deferral rule: a deferred finding must be stated in the output, never dropped silently ([#111](https://github.com/U-lis/dotclaude/issues/111)).
+- `review.intent_tools` and `knowledge_dirs` config keys, also in `/dotclaude:configure`.
+
+### Changed
+
+- The reviewer is an outside auditor with two depths: phase (scope and safety gate) and pr (restatement, intent comparison via Jira/Notion/SPEC read by the reviewer itself, ripple, reinvention, evidence check with local rerun), ending in a verdict PASS / PASS+NOTES / FAIL with "사람이 직접 봐야 하는 곳" ([#117](https://github.com/U-lis/dotclaude/issues/117)).
+- `/dotclaude:review` runs at PR depth, prints the round's `REVIEW.md`, and no longer offers to post the table.
+- With `workspace_tracking: commit`, `*/evidence/`, `*/.validated/`, `reviews/`, `review-ledger.log` and `knowledge/` are git-ignored; `/dotclaude:init` adds the lines to `.gitignore`.
+
 ## [0.8.2] - 2026-11-02
 
 ### Added

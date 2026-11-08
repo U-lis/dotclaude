@@ -1,5 +1,5 @@
 ---
-description: Review the current diff on five axes with the reviewer agent, or triage the review comments on a pull request (including CodeRabbit), fix the accepted ones, reply, and resolve.
+description: Review the current diff at PR depth with the reviewer agent (outside auditor, verdict PASS / PASS+NOTES / FAIL, nothing posted), or triage the review comments on a pull request (including CodeRabbit), fix the accepted ones, reply, and resolve.
 ---
 
 # /dotclaude:review [PR URL | #N]

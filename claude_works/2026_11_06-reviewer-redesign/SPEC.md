@@ -6,7 +6,7 @@ worktree_path: ../dotclaude-feature-reviewer-redesign
 doc_dir: 2026_11_06-reviewer-redesign
 target_version: 0.9.0
 github_issue: 117
-stage: code
+stage: local_test
 approved_at: 2026-11-08T12:40:59Z
 approved_hash: 2279d76d33730b462a7cfca09f09c8224d5804d3a13541ac2c2f844e16b83e18
 decisions: ["warn-commit-ok-for-markdown-phases", "evidence-raw-output-ignored", "evidence-commit-filled-by-orchestrator"]
