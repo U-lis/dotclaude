@@ -7,8 +7,8 @@ doc_dir: 2026_11_06-reviewer-redesign
 target_version: 0.9.0
 github_issue: 117
 stage: local_test
-approved_at: 2026-11-08T12:40:59Z
-approved_hash: 2279d76d33730b462a7cfca09f09c8224d5804d3a13541ac2c2f844e16b83e18
+approved_at: 2026-11-09T00:47:02Z
+approved_hash: a097b76c354ebea877a7c6ffba24cdf415cef7fa276d88408100d048523966ac
 decisions: ["warn-commit-ok-for-markdown-phases", "evidence-raw-output-ignored", "evidence-commit-filled-by-orchestrator"]
 handoff: "phase 1~6, Docs, 전체 diff 리뷰(r1, PASS+NOTES)와 수정 라운드, #3493 head 재실행까지 커밋 완료. run stages 미설정. 대기: SPEC FR-10/FR-12 id 형식 변경 재승인, 'proceed' 뒤 /dotclaude:pr. 미결: reviewer 상속 MCP 쓰기 도구 훅 차단 여부(review.write_tools 제안), 승인 해시 vs 체크박스 불일치 별도 이슈, 개방 질문 체크 갱신."
 -->
