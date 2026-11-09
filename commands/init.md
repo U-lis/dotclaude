@@ -37,7 +37,7 @@ mkdir -p {working_directory}/$(date +%Y_%m_%d)-{keyword}
 
 Workspace tracking is checked in section 5 against `git check-ignore -q {working_directory}`.
 
-Create `{working_directory}/RULES.md` from `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md` when it does not exist; never overwrite an existing one.
+Create `{working_directory}/RULES.md` from `${CLAUDE_PLUGIN_ROOT}/templates/RULES.md` when it does not exist; never overwrite an existing one. Ensure `.gitignore` contains the lines `{working_directory}/*/.validated/`, `{working_directory}/*/evidence/`, `{working_directory}/review-ledger.log`, `{working_directory}/knowledge/` and `{working_directory}/reviews/`; append each one when missing, after the comment `# dotclaude local state: validator markers, evidence raw outputs, reviewer ledger and knowledge` (also appended only when missing). These stay local even when `workspace_tracking` is `commit`.
 
 When config `worktree.share_from_base` is true, then link dependency directories: for each of `.venv venv node_modules target vendor` that exists in the primary checkout and not in the worktree, create a relative symlink in the worktree pointing at the primary's directory (`ln -s "$(realpath --relative-to=. {primary}/{dir})" {dir}`). List what was linked in the init report.
 

@@ -36,7 +36,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── spec-validator.md        # Specification validation
 │   ├── code-validator.md        # Code quality validation
 │   ├── pruner.md                # Report-only bloat analysis
-│   ├── reviewer.md              # Report-only five-axis diff review
+│   ├── reviewer.md              # Five-axis review, Depth phase (table) or pr (report in a round dir; writes only there, a temp worktree, ledger finding lines)
 │   └── coders/                  # Language-specific coders
 │       ├── python.md            # Python specialist
 │       ├── javascript.md        # JS/TS specialist
@@ -63,6 +63,7 @@ This document shows the project directory structure for dotclaude. For the full 
 │   ├── check-validation-complete.sh  # Stop: uncommitted code in the session's dotclaude worktree
 │   ├── guard-commit.sh          # PreToolUse Bash: code commit needs .validated marker
 │   ├── guard-design.sh          # PreToolUse Agent: designer needs approved SPEC
+│   ├── guard-review.sh          # PreToolUse Write/Read/MCP: reviewer writes its Restatement before intent sources
 │   └── title-prefix.sh          # Terminal title prefix while waiting for the user
 ├── scripts/
 │   └── lint-prompts.sh          # Static checks for prompt files

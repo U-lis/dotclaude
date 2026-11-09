@@ -41,6 +41,7 @@ Ask, each defaulting to the current value:
 - `workspace_size_warn_primary`: boolean, default on. Off turns off the Stop hook's 10MB size warning on the primary checkout only; worktree warnings and purge archiving do not change.
 - `workspace_archive_dir`: directory purge moves bulky workspace files to, as `{dir}/{primary checkout name}/...`. Unset by default.
 - `parallel_phases`: boolean, default off. When on, the designer may propose parallel phase groups.
+- `review.intent_tools` (comma-separated globs of MCP tool names the reviewer may call only after its restatement; default `*jira*`, `*atlassian*`, `*notion*`) and `knowledge_dirs` (comma-separated directories of research documents the reviewer searches; empty by default). Each is stored as a JSON array (Contract: Configuration).
 
 Validate `stop_after` and `integration` against the allowed values above and re-ask only the invalid item. Stage commands are stored as entered.
 
@@ -62,6 +63,6 @@ Inside a git repository, ask whether to edit the project coding rules; the file 
 
 ## Step 5: Save and confirm
 
-Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `workspace_size_ignore`, `workspace_size_warn_primary`, `workspace_archive_dir`, `parallel_phases` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
+Write the keys (`language`, `working_directory`, `base_branch`, `version_files`, and `title_prefix`, `stages`, `integration`, `pr`, `worktree`, and `workspace_tracking`, `workspace_size_ignore`, `workspace_size_warn_primary`, `workspace_archive_dir`, `parallel_phases`, `review`, `knowledge_dirs` when set) as JSON to the chosen file, storing values exactly as entered after validation (no path normalization such as stripping a trailing slash) (create the parent directory if needed) and show the file path and the saved values. Changes apply to the next command invocation; nothing needs a restart. Do not create `working_directory`; commands create it when they need it.
 
 Report write errors (permissions, invalid directory) with the path and stop; do not retry silently.

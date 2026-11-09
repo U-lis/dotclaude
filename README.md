@@ -133,10 +133,12 @@ Interactive workflow to edit settings at global or local scope. Basic settings (
 | `pr.assignee` | string | `@me` | PR assignee; empty = none |
 | `pr.reviewers` | array | `[]` | PR reviewers |
 | `worktree.share_from_base` | boolean | `true` | Symlink `.venv`, `venv`, `node_modules`, `target`, `vendor` from the primary checkout into new worktrees |
-| `workspace_tracking` | string | `commit` | `commit` tracks `{working_directory}` in git. `ignore` adds it to `.gitignore`; design commit points then write `.snapshots/*.tar.gz` (newest 5 kept) instead |
+| `workspace_tracking` | string | `commit` | `commit` tracks `{working_directory}` in git. `ignore` adds it to `.gitignore`; design commit points then write `.snapshots/*.tar.gz` (newest 5 kept) instead. With `commit`, `*/evidence/`, `*/.validated/`, `reviews/`, `review-ledger.log` and `knowledge/` under it stay git-ignored (init adds the lines to `.gitignore`) |
 | `workspace_size_ignore` | array | `[]` | Globs for top-level entries of `{working_directory}` left out of the Stop hook's 10MB size warning and of `/dotclaude:purge` archiving, e.g. `["2026_06_29-exam-vision-eval", "ONE-*"]`; `YYYY_MM_DD-{name}` also matches when `{name}` does. For a primary checkout full of doc dirs use `workspace_size_warn_primary`; `*` here would also turn off the worktree warning and purge archiving |
 | `workspace_size_warn_primary` | boolean | `true` | `false` turns off the Stop hook's 10MB size warning when the session's worktree is the primary checkout. Worktree warnings, `workspace_size_ignore`, `/dotclaude:purge` archiving, and the uncommitted-code block do not change |
 | `workspace_archive_dir` | string | unset | Destination for files `/dotclaude:purge` moves out of `{working_directory}`: `{dir}/{primary checkout name}/{doc_dir}/...`, with an `ARCHIVED.md` row per file in the doc dir. Purge asks when unset |
+| `review.intent_tools` | array | `["*jira*","*atlassian*","*notion*"]` | Globs, matched case-insensitively against MCP tool names, of the intent tools the reviewer may call only after it has written its restatement (`hooks/guard-review.sh` denies them until then) |
+| `knowledge_dirs` | array | `[]` | Directories of existing research documents the reviewer searches besides `{working_directory}/knowledge/`; `~` expands |
 | `parallel_phases` | boolean | `false` | Allow the designer to propose parallel phase groups (`{k}A`/`{k}B` plus merge `{k}.5`); when false, phases are sequential unless you ask |
 
 #### Version Files
@@ -163,7 +165,7 @@ All dotclaude skills are prefixed with `dotclaude:` namespace:
 | `/dotclaude:update-docs` | Update documentation (CHANGELOG, README) |
 | `/dotclaude:purge [version]` | Clean up merged branches and orphaned worktrees |
 | `/dotclaude:prune [target]` | Analyze current diff or target (phase id / PR / issue / Jira key) and report deletion/merge candidates. Report-only. |
-| `/dotclaude:review [PR URL \| #N]` | Review the current diff on five axes (correctness, scope, safety, maintainability, tests), or triage a PR's review comments (CodeRabbit included) as accept / rebut / ignore, then fix, reply, and resolve the rows you approve |
+| `/dotclaude:review [PR URL \| #N]` | Review the current diff at PR depth (outside-auditor reviewer; verdict PASS / PASS+NOTES / FAIL in `REVIEW.md`, nothing is posted), or triage a PR's review comments (CodeRabbit included) as accept / rebut / ignore, then fix, reply, and resolve the rows you approve |
 
 ### Orchestrator
 
@@ -187,7 +189,7 @@ Shared rules (configuration, commits, limits, the validate-fix loop) are defined
 | spec-validator | Document consistency validation (report-only; does not add or instruct tests) |
 | code-validator | Code quality + plan verification, with post-PASS pruning pass |
 | pruner | Report-only bloat analyzer — deletion/merge candidates for tests and docstring/comment reduction candidates, in doc mode (design-time) or code mode (post-implementation) |
-| reviewer | Report-only five-axis diff review with Blocker/Major/Minor severity; runs after each phase's validator PASS and once on the full diff before integration |
+| reviewer | Outside auditor that writes only to its round directory and appends `finding` lines to the review ledger: phase depth (scope and safety gate after each phase's validator PASS) and pr depth (restatement, intent comparison, ripple, reinvention, evidence check; verdict PASS / PASS+NOTES / FAIL before integration and in `/dotclaude:review`); each round writes `{working_directory}/reviews/{YYYY_MM_DD}-{target}/r{n}/` |
 | Coders | Language-specific implementation; `coder-generic` is the fallback for languages without a dedicated coder |
 
 Agent frontmatter has `name`, `model` (a family alias), `description`, and an optional `tools` list. Agents are invoked via `dotclaude:{agent-name}`; coders are invoked as `dotclaude:coders:coder-{language}`. Init creates `{working_directory}/RULES.md` from `templates/RULES.md` when missing; coders and the reviewer read it as the project's coding rules.

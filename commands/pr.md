@@ -65,8 +65,8 @@ On rejection, display: "Cannot create PR from base branch. Switch to a working b
       - `[ ]` items: checks still pending before merge or deploy
       - Do NOT copy items from PHASE_*_TEST.md (automated tests already run in CI) and do NOT generate generic items. Never invent a check that was not performed.
       - Nothing to list → omit the Test plan section
-   f. Full-diff review: skip the call when REVIEW.md already has a `## Full diff` section from this commit range and build Review notes from that table. Otherwise call `dotclaude:reviewer` once with scope "the full branch diff", `Base: {base_branch}`, and the SPEC, RULES, and PLAN paths (prompt in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`, reviewer). If `BLOCKERS` is above 0, show the table and ask with AskUserQuestion: create the PR with the Blockers listed, or stop so they can be fixed first (`/dotclaude:review` after the fix). Stopping ends the command here; the branch stays pushed and no PR is created.
-      - Build the Review notes section from the reviewer table: the `issue` rows, Blocker first, then Major, then Minor, plus the Major and Minor rows carried from phase reviews in `{working_directory}/{doc_dir}/REVIEW.md` that the full-diff table does not already list (same location and finding). Translate only the Finding and Notes prose into the configured language. No `issue` rows anywhere → the section is the single line `No issues on the five review axes.`
+   f. Full-diff review: compute the target and ticket key (Contract: Names and paths, review round directory). Skip the call only when the latest round, the highest `r{n}` under the most recent `reviews/????_??_??-{target}` directory, has a `{round}/REVIEW.md` that ends with a `BLOCKERS: n` line and a STATUS.md `head` (the full 40-hex sha) equal to `git rev-parse HEAD`, or equal to `git rev-parse HEAD^` when every path listed by `git diff-tree --no-commit-id --name-only -r HEAD` is under `{working_directory}/` (the start-new full-diff record commit); then take `BLOCKERS` from that line and build Review notes from that REVIEW.md. Otherwise create the round directory (same section) and call `dotclaude:reviewer` once with scope "the full branch diff", `Depth: pr`, `Base: {base_branch}`, the SPEC, RULES, and PLAN paths, the target, ticket key and round directory, `Ledger: {primary}/{working_directory}/review-ledger.log` and `Finding id prefix: {YYYY_MM_DD}-{target}-r{n}` (Contract: Review ledger) (prompt in `${CLAUDE_PLUGIN_ROOT}/commands/_agent-prompts.md`, reviewer), then run the count check (Contract: Review ledger) and write the knowledge records (Contract: Knowledge records). If `BLOCKERS`, from the call or the reused REVIEW.md, is above 0, show the issue rows and ask with AskUserQuestion: create the PR with the Blockers listed, or stop so they can be fixed first (`/dotclaude:review` after the fix). Stopping ends the command here; the branch stays pushed and no PR is created.
+      - Build the Review notes section from the PR-depth report's issue rows, keeping `file:line`, Blocker first, then Major, then Minor, plus the Major and Minor rows carried from phase reviews in `{working_directory}/{doc_dir}/REVIEW.md` that the PR-depth report does not already list (same location and finding). Translate only the Finding and Notes prose of the carried phase rows into the configured language; the PR-depth report is already in it. No `issue` rows anywhere → the section is the single line `No issues on the five review axes.`
    g. Append attribution footer: `🤖 Generated with [Claude Code](https://claude.com/claude-code)`
    h. Assemble final PR body in order: Summary -> Resolves -> Changes -> Test plan (if any) -> Review notes -> Attribution
 10. Resolve label from branch prefix:
@@ -154,7 +154,7 @@ When no SPEC.md, GLOBAL.md, or PHASE_* documents exist:
 - **Summary**: Limit to 1-5 bullet points. If source material is longer, condense to the most important points.
 - **Changes**: List only files that appear in `git diff --stat`. Do not list files that were not modified. Each entry provides a meaningful description of what changed in that file.
 - **Test plan**: Only verification CI does not cover (performed or pending). Maximum 10 items. Omit the section when there is nothing to list.
-- **Review notes**: Always present. Rows come only from the reviewer output (step 9f); `checked` and `n/a` axes are not listed. Do not drop or soften a row.
+- **Review notes**: Always present. Rows come only from the PR-depth report and the carried phase rows (step 9f); `checked` and `n/a` axes are not listed. Do not drop or soften a row.
 - **Attribution footer**: Always present, always the last line of the PR body.
 
 ## Milestone
@@ -210,7 +210,7 @@ If the branch prefix doesn't match any known pattern, skip label assignment. If 
 | 17 | Very long commit history (50+ commits) | Summarize by grouping related changes; limit Summary to 5 bullet points |
 | 18 | SPEC.md has working_directory but directory does not exist | Treat as no design docs; use git-based fallback |
 | 19 | Full-diff review reports Blockers | Ask: create the PR with them listed in Review notes, or stop before `gh pr create` |
-| 20 | No `REVIEW.md` (no phase reviews, or PR outside the dotclaude workflow) | Review notes come from the full-diff review only |
+| 20 | No `REVIEW.md` (no phase reviews, or PR outside the dotclaude workflow) | Review notes come from the PR-depth review only |
 
 ## Safety
 
